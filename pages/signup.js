@@ -1,40 +1,46 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import lockImg from "../../assets/Images/lock.svg";
+import React, { useEffect, useRef, useState } from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import Link from 'next/link';
+import Image from 'next/image';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const passwordChecks = [
-  { label: "At least 1 uppercase", check: (v) => /[A-Z]/.test(v) },
-  { label: "At least 1 lowercase", check: (v) => /[a-z]/.test(v) },
-  { label: "At least 1 number", check: (v) => /\d/.test(v) },
-  { label: "At least 8 characters", check: (v) => v.length >= 8 },
+  { label: 'At least 1 uppercase', check: (v) => /[A-Z]/.test(v) },
+  { label: 'At least 1 lowercase', check: (v) => /[a-z]/.test(v) },
+  { label: 'At least 1 number', check: (v) => /\d/.test(v) },
+  { label: 'At least 8 characters', check: (v) => v.length >= 8 },
 ];
 
 const validationSchema = Yup.object({
   email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
+    .email('Invalid email address')
+    .required('Email is required'),
   password: Yup.string()
-    .required("Password is required")
-    .matches(/[A-Z]/, "At least 1 uppercase")
-    .matches(/[a-z]/, "At least 1 lowercase")
-    .matches(/\d/, "At least 1 number")
-    .min(8, "At least 8 characters"),
-  agree: Yup.boolean().oneOf([true], "You must accept the terms"),
+    .required('Password is required')
+    .matches(/[A-Z]/, 'At least 1 uppercase')
+    .matches(/[a-z]/, 'At least 1 lowercase')
+    .matches(/\d/, 'At least 1 number')
+    .min(8, 'At least 8 characters'),
+  agree: Yup.boolean().oneOf([true], 'You must accept the terms'),
 });
 
 const getPasswordStrength = (password) => {
   const checks = passwordChecks.map((c) => c.check(password));
   const passed = checks.filter(Boolean).length;
-  if (passed <= 2) return "weak";
-  if (passed === 3) return "moderate";
-  if (passed === 4) return "strong";
-  return "weak";
+  if (passed <= 2) return 'weak';
+  if (passed === 3) return 'moderate';
+  if (passed === 4) return 'strong';
+  return 'weak';
 };
 
-const SignUp = () => {
+export default function SignUp() {
+  const [showPassword, setShowPassword] = useState(false);
   const formik = useFormik({
-    initialValues: { email: "", password: "", agree: false },
+    initialValues: { email: '', password: '', agree: false },
     validationSchema,
     onSubmit: (values) => {
       // handle sign up logic here
@@ -47,7 +53,7 @@ const SignUp = () => {
   const prevStrength = useRef(strength);
 
   useEffect(() => {
-    if (strength === "strong" && prevStrength.current !== "strong") {
+    if (strength === 'strong' && prevStrength.current !== 'strong') {
       setShowStrong(true);
       const timer = setTimeout(() => setShowStrong(false), 2000);
       return () => clearTimeout(timer);
@@ -64,11 +70,15 @@ const SignUp = () => {
 
       {/* Left Section (Lock Image) */}
       <div className="w-full md:w-1/2 flex justify-center items-center bg-[#4A4742] md:bg-transparent py-12 md:py-0">
-        <img
-          src={lockImg}
-          alt="Security"
-          className="w-3/4 max-w-md object-contain"
-        />
+        <div className="w-3/4 max-w-md relative h-64 md:h-96">
+          <Image
+            src="/assets/images/lock.svg" 
+            alt="Security"
+            fill
+            style={{ objectFit: 'contain' }}
+            priority
+          />
+        </div>
       </div>
 
       {/* Right Section */}
@@ -78,10 +88,10 @@ const SignUp = () => {
             Sign up to XYZ Security App
           </h2>
           <p className="text-sm text-center text-gray-500 mb-6">
-            Already have an account?{" "}
-            <a href="#" className="text-blue-600 font-medium hover:underline">
+            Already have an account?{' '}
+            <Link href="/login" className="text-blue-600 font-medium hover:underline">
               Log in
-            </a>
+            </Link>
           </p>
 
           {/* Continue with buttons */}
@@ -114,9 +124,9 @@ const SignUp = () => {
           </button>
 
           <div className="flex items-center mb-4">
-            <hr className="flex-grow border-gray-300" />
+            <hr className="grow border-gray-300" />
             <span className="px-2 text-gray-400 text-sm">OR</span>
-            <hr className="flex-grow border-gray-300" />
+            <hr className="grow border-gray-300" />
           </div>
 
           {/* Form */}
@@ -130,8 +140,8 @@ const SignUp = () => {
                 name="email"
                 className={`w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${
                   formik.touched.email && formik.errors.email
-                    ? "border-red-500"
-                    : "border-gray-300"
+                    ? 'border-red-500'
+                    : 'border-gray-300'
                 }`}
                 placeholder="Enter your email"
                 value={formik.values.email}
@@ -150,29 +160,33 @@ const SignUp = () => {
               </label>
               <div className="relative">
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   name="password"
                   className={`w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none pr-10 ${
                     formik.touched.password && formik.errors.password
-                      ? "border-red-500"
-                      : "border-gray-300"
+                      ? 'border-red-500'
+                      : 'border-gray-300'
                   }`}
                   placeholder="Enter your password"
                   value={formik.values.password}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  {/* Eye icon placeholder */}
-                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" strokeWidth="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
-                    <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
-                  </svg>
-                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? (
+                    <VisibilityOffIcon fontSize="small" />
+                  ) : (
+                    <VisibilityIcon fontSize="small" />
+                  )}
+                </button>
               </div>
               {formik.touched.password && (
                 <div className="mt-2 text-xs">
-                  {strength === "weak" && (
+                  {strength === 'weak' && (
                     <>
                       <span className="text-red-600 font-medium">
                         Weak password. Must contain at least:
@@ -183,19 +197,15 @@ const SignUp = () => {
                             key={c.label}
                             className={
                               c.check(formik.values.password)
-                                ? "text-green-600 flex items-center gap-1"
-                                : "text-gray-400 flex items-center gap-1"
+                                ? 'text-green-600 flex items-center gap-1'
+                                : 'text-gray-400 flex items-center gap-1'
                             }
                           >
                             <span>
                               {c.check(formik.values.password) ? (
-                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
-                                  <path stroke="currentColor" strokeWidth="3" d="M5 13l4 4L19 7" />
-                                </svg>
+                                <CheckCircleIcon sx={{ fontSize: 14 }} />
                               ) : (
-                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
-                                  <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="2" />
-                                </svg>
+                                <RadioButtonUncheckedIcon sx={{ fontSize: 14 }} />
                               )}
                             </span>
                             {c.label}
@@ -204,7 +214,7 @@ const SignUp = () => {
                       </ul>
                     </>
                   )}
-                  {strength === "moderate" && (
+                  {strength === 'moderate' && (
                     <>
                       <span className="text-orange-600 font-medium">
                         Moderate password. Must contain at least:
@@ -215,19 +225,15 @@ const SignUp = () => {
                             key={c.label}
                             className={
                               c.check(formik.values.password)
-                                ? "text-green-600 flex items-center gap-1"
-                                : "text-gray-400 flex items-center gap-1"
+                                ? 'text-green-600 flex items-center gap-1'
+                                : 'text-gray-400 flex items-center gap-1'
                             }
                           >
                             <span>
                               {c.check(formik.values.password) ? (
-                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
-                                  <path stroke="currentColor" strokeWidth="3" d="M5 13l4 4L19 7" />
-                                </svg>
+                                <CheckCircleIcon sx={{ fontSize: 14 }} />
                               ) : (
-                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
-                                  <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="2" />
-                                </svg>
+                                <RadioButtonUncheckedIcon sx={{ fontSize: 14 }} />
                               )}
                             </span>
                             {c.label}
@@ -236,7 +242,7 @@ const SignUp = () => {
                       </ul>
                     </>
                   )}
-                  {strength === "strong" && showStrong && (
+                  {strength === 'strong' && showStrong && (
                     <span className="text-green-600 font-medium">
                       Strong password. Your password is secure.
                     </span>
@@ -254,14 +260,14 @@ const SignUp = () => {
                 className="accent-blue-600"
               />
               <label htmlFor="terms" className="text-sm">
-                I agree to the{" "}
-                <a href="#" className="text-blue-600 hover:underline">
+                I agree to the{' '}
+                <Link href="#" className="text-blue-600 hover:underline">
                   Terms & Conditions
-                </a>{" "}
-                and{" "}
-                <a href="#" className="text-blue-600 hover:underline">
+                </Link>{' '}
+                and{' '}
+                <Link href="#" className="text-blue-600 hover:underline">
                   Privacy Policy
-                </a>
+                </Link>
                 .
               </label>
             </div>
@@ -287,8 +293,8 @@ const SignUp = () => {
                 !!formik.errors.email ||
                 !!formik.errors.password ||
                 !!formik.errors.agree
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-[#1769a3]"
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-[#1769a3]'
               }`}
             >
               Get Started
@@ -298,6 +304,4 @@ const SignUp = () => {
       </div>
     </div>
   );
-};
-
-export default SignUp;
+}

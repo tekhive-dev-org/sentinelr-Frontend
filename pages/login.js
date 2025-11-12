@@ -1,23 +1,26 @@
-import React from "react";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import { useAuth } from "../../context/AuthContext";
-import lock from "../../assets/Images/lock.svg";
+import React from 'react';
+import { useRouter } from 'next/router';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useAuth } from '../context/AuthContext';
 
 const validationSchema = Yup.object({
   email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
+    .email('Invalid email address')
+    .required('Email is required'),
   password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
-    .required("Password is required"),
+    .min(6, 'Password must be at least 6 characters')
+    .required('Password is required'),
 });
 
-const LoginPage = () => {
+export default function Login() {
+  const router = useRouter();
   const { user, login, logout, loading } = useAuth();
 
   const formik = useFormik({
-    initialValues: { email: "", password: "" },
+    initialValues: { email: '', password: '' },
     validationSchema,
     onSubmit: async (values) => {
       await login(values.email, values.password);
@@ -47,7 +50,15 @@ const LoginPage = () => {
 
       {/* Left Section (Lock Image) */}
       <div className="w-full md:w-1/2 flex justify-center items-center bg-[#4A4742] md:bg-transparent py-12 md:py-0">
-        <img src={lock} alt="Security" className="w-2/3 max-w-md object-contain" />
+        <div className="w-2/3 max-w-md relative h-64 md:h-96">
+          <Image 
+            src="/assets/images/lock.svg" 
+            alt="Security" 
+            fill
+            style={{ objectFit: 'contain' }}
+            priority
+          />
+        </div>
       </div>
 
       {/* Right Section */}
@@ -57,10 +68,10 @@ const LoginPage = () => {
             Login to your account
           </h2>
           <p className="text-sm text-center text-gray-500 mb-6">
-            Don’t have an account?{" "}
-            <a href="#" className="text-green-600 font-medium hover:underline">
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="text-green-600 font-medium hover:underline">
               Sign up
-            </a>
+            </Link>
           </p>
 
           {/* Continue with buttons */}
@@ -111,8 +122,8 @@ const LoginPage = () => {
                 name="email"
                 className={`w-full mt-1 p-2 border rounded-lg focus:ring-1 focus:ring-[#0E4B68] outline-none ${
                   formik.touched.email && formik.errors.email
-                    ? "border-red-500"
-                    : "border-gray-300"
+                    ? 'border-red-500'
+                    : 'border-gray-300'
                 }`}
                 placeholder="Enter your email"
                 value={formik.values.email}
@@ -135,8 +146,8 @@ const LoginPage = () => {
                 name="password"
                 className={`w-full mt-1 p-2 border rounded-lg focus:ring-1 focus:ring-[#0E4B68] outline-none ${
                   formik.touched.password && formik.errors.password
-                    ? "border-red-500"
-                    : "border-gray-300"
+                    ? 'border-red-500'
+                    : 'border-gray-300'
                 }`}
                 placeholder="Enter your password"
                 value={formik.values.password}
@@ -149,12 +160,12 @@ const LoginPage = () => {
                 </div>
               )}
               <div className="flex justify-end mt-1">
-                <a
+                <Link
                   href="#"
                   className="text-sm text-green-600 hover:underline"
                 >
                   Forgot Password?
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -163,17 +174,15 @@ const LoginPage = () => {
               disabled={loading}
               className={`w-full text-white py-2 rounded-lg transition ${
                 loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-[#0E4B68] hover:bg-blue-800"
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-[#0E4B68] hover:bg-blue-800'
               }`}
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
         </div>
       </div>
     </div>
   );
-};
-
-export default LoginPage;
+}

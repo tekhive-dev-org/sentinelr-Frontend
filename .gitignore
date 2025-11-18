@@ -37,6 +37,9 @@ lerna-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# documentation
+/docs
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

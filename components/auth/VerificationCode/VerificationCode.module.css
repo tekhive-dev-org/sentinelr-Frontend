@@ -1,0 +1,122 @@
+/* Verification Code Component Styles */
+.container {
+  @apply min-h-screen flex overflow-auto;
+}
+
+.leftSection {
+  @apply hidden md:flex md:w-1/2 justify-center rounded-r-3xl items-center bg-[#4A4742] relative;
+}
+
+.lockImageWrapper {
+  @apply w-full max-h-[90%] h-full relative;
+}
+
+.rightSection {
+  @apply w-full md:w-1/2 flex flex-col justify-center items-center px-6 py-10 mobile:py-20 bg-white;
+}
+
+.formContainer {
+  @apply w-full max-w-[400px] flex flex-col items-center;
+}
+
+.iconWrapper {
+  @apply w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-6;
+}
+
+.icon {
+  @apply w-8 h-8 text-gray-600;
+}
+
+.title {
+  @apply text-[24px] mobile:text-[18px] font-semibold text-center mb-2 text-black;
+}
+
+.subtitle {
+  @apply text-sm text-center text-gray-600 mb-8;
+}
+
+.codeInputs {
+  @apply flex gap-4 mb-6;
+}
+
+.codeInput {
+  @apply w-16 h-16 text-center text-2xl font-semibold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E4B68] focus:border-[#0E4B68] outline-none transition-all;
+}
+
+.verifyButton {
+  @apply w-full bg-[#0E4B68] text-white py-3 rounded-lg transition-all text-[15px] font-medium mb-6;
+}
+
+.verifyButtonEnabled {
+  @apply hover:bg-[#0C3D54];
+}
+
+.verifyButtonDisabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+.resendContainer {
+  @apply text-center;
+}
+
+.resendText {
+  @apply text-sm text-gray-600;
+}
+
+.resendLink {
+  @apply text-[#5C8A3A] font-medium hover:underline;
+}
+
+/* Success State Styles */
+.successIconCircle {
+  @apply !w-24 !h-24 rounded-full bg-[#0E4B68] flex items-center justify-center relative;
+}
+
+.successIconCircle::before {
+  content: '';
+  @apply absolute inset-0 rounded-full bg-[#0E4B68] opacity-20 !w-24 !h-24 ;
+  transform: scale(1.3);
+}
+
+.successIcon {
+  @apply !w-24 !h-12 text-white;
+}
+
+.successTitle {
+  @apply text-[28px] mobile:text-[22px] font-semibold text-center mb-4 text-black;
+}
+
+.successSubtitle {
+  @apply text-base text-center text-gray-600 mb-8 max-w-sm;
+}
+
+.homeButton {
+  @apply w-full bg-[#0E4B68] text-white py-3 rounded-lg transition-all text-[15px] font-medium hover:bg-[#0C3D54];
+}
+
+/* Failed State Styles */
+.failedIconCircle {
+  @apply !w-24 !h-24 rounded-full bg-red-500 flex items-center justify-center relative;
+}
+
+.failedIconCircle::before {
+  content: '';
+  @apply absolute inset-0 rounded-full bg-red-500 opacity-20 !w-24 !h-24;
+  transform: scale(1.3);
+}
+
+.failedIcon {
+  @apply !w-24 !h-12 text-white;
+}
+
+.failedTitle {
+  @apply text-[28px] mobile:text-[22px] font-semibold text-center mb-4 text-black;
+}
+
+.failedSubtitle {
+  @apply text-base text-center text-gray-600 mb-8 max-w-sm;
+}
+
+.reverifyButton {
+  @apply w-full bg-[#0E4B68] text-white py-3 rounded-lg transition-all text-[15px] font-medium hover:bg-[#0C3D54];
+}

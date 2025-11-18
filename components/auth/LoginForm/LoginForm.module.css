@@ -1,0 +1,121 @@
+/* Login Form Component Styles */
+.container {
+  @apply min-h-screen flex overflow-auto;
+}
+
+.leftBackground {
+  @apply hidden md:block fixed rounded-r-3xl top-0 left-0 h-screen w-1/2 bg-[#4A4742] -z-10;
+}
+
+.leftSection {
+  @apply hidden md:flex md:w-1/2 justify-center rounded-r-3xl items-center bg-[#4A4742] relative;
+}
+
+.lockImageWrapper {
+  @apply w-full max-h-[90%] h-full relative;
+}
+
+.rightSection {
+  @apply w-full md:w-1/2 flex flex-col justify-center items-center px-6 py-10 mobile:py-20 bg-white;
+}
+
+.formContainer {
+  @apply w-full max-w-[400px];
+}
+
+.title {
+  @apply text-[24px] mobile:text-[18px] font-semibold text-center mb-2 text-black;
+}
+
+.subtitle {
+  @apply text-base text-center text-gray-600 mb-6;
+}
+
+.signupLink {
+  @apply text-[#5C8A3A] font-medium hover:underline;
+}
+
+.socialButton {
+  @apply w-full border border-gray-300 rounded-lg py-3 px-4 flex items-center justify-center gap-2 mb-3 hover:bg-gray-50 transition-colors text-[15px] font-medium text-gray-700;
+}
+
+.divider {
+  @apply flex items-center mb-4;
+}
+
+.dividerLine {
+  @apply flex-grow border-t border-gray-300;
+}
+
+.dividerText {
+  @apply px-2 text-gray-400 text-sm;
+}
+
+.form {
+  @apply space-y-4;
+}
+
+.formField {
+  @apply relative;
+}
+
+.label {
+  @apply text-sm font-medium text-left block mb-2 text-gray-700;
+}
+
+.input {
+  @apply w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E4B68] focus:border-[#0E4B68] outline-none transition-all text-[15px];
+}
+
+.inputError {
+  @apply border-red-500;
+}
+
+.passwordWrapper {
+  @apply relative;
+}
+
+.togglePasswordButton {
+  @apply absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors;
+}
+
+.errorText {
+  @apply text-red-500 text-xs mt-1 text-left;
+}
+
+.forgotPasswordContainer {
+  @apply flex justify-end mt-1;
+}
+
+.forgotPasswordLink {
+  @apply text-sm text-[#5C8A3A] hover:underline;
+}
+
+.submitButton {
+  @apply w-full bg-[#0E4B68] text-white py-3 rounded-lg transition-all text-[15px] font-medium mt-6;
+}
+
+.submitButtonEnabled {
+  @apply hover:bg-[#0C3D54];
+}
+
+.submitButtonDisabled {
+  @apply bg-gray-400 cursor-not-allowed;
+}
+
+/* Welcome Screen Styles */
+.welcomeContainer {
+  @apply flex flex-col items-center justify-center h-screen text-center bg-gray-50;
+}
+
+.welcomeTitle {
+  @apply text-2xl font-semibold mb-2;
+}
+
+.welcomeEmail {
+  @apply text-gray-600 mb-4;
+}
+
+.logoutButton {
+  @apply bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors;
+}

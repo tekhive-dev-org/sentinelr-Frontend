@@ -1,0 +1,164 @@
+/* Signup Form Component Styles */
+.container {
+  @apply min-h-screen flex overflow-auto;
+}
+
+.leftSection {
+  @apply hidden md:flex md:w-1/2 justify-center rounded-r-3xl items-center bg-[#4A4742] relative;
+}
+
+.lockImageWrapper {
+  @apply w-full max-h-[90%]  h-full  relative;
+
+}
+
+.rightSection {
+  @apply w-full md:w-1/2 flex flex-col justify-center items-center px-6 py-10 mobile:py-20 bg-white;
+}
+
+.formContainer {
+  @apply w-full max-w-[400px];
+}
+
+.title {
+  @apply text-[24px]  mobile:text-[18px] font-semibold text-center mb-2 text-black;
+}
+
+.subtitle {
+  @apply text-base text-center text-gray-600 mb-6;
+}
+
+.loginLink {
+  @apply text-[#5C8A3A] font-medium hover:underline;
+}
+
+.socialButton {
+  @apply w-full border border-gray-300 rounded-lg py-3 px-4 flex items-center justify-center gap-2 mb-3 hover:bg-gray-50 transition-colors text-[15px] font-medium text-gray-700;
+}
+
+.divider {
+  @apply flex items-center my-4;
+}
+
+.dividerLine {
+  @apply flex-1 border-t border-gray-300;
+}
+
+.dividerText {
+  @apply px-4 text-gray-400 text-sm;
+}
+
+.formField {
+  @apply mb-4;
+}
+
+.label {
+  @apply text-sm font-medium text-left block mb-2 text-gray-700;
+}
+
+.input {
+  @apply w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E4B68] focus:border-[#0E4B68] outline-none transition-all text-[15px];
+}
+
+.inputError {
+  @apply border-red-500;
+}
+
+.passwordWrapper {
+  @apply relative;
+}
+
+.togglePasswordButton {
+  @apply absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors;
+}
+
+.passwordStrengthContainer {
+  @apply mt-3;
+}
+
+.passwordStrengthBars {
+  @apply flex gap-2 mb-2;
+}
+
+.strengthBar {
+  @apply h-1 flex-1 rounded-full bg-gray-200 transition-all duration-300;
+}
+
+.strengthBarWeak {
+  @apply bg-red-500;
+}
+
+.strengthBarModerate {
+  @apply bg-orange-500;
+}
+
+.strengthBarStrong {
+  @apply bg-[#5C8A3A];
+}
+
+.passwordStrengthText {
+  @apply text-xs font-medium;
+}
+
+.weakText {
+  @apply text-red-600;
+}
+
+.moderateText {
+  @apply text-orange-600;
+}
+
+.strongText {
+  @apply text-[#5C8A3A];
+}
+
+.passwordChecklist {
+  @apply mt-2 space-y-1;
+}
+
+.checklistItem {
+  @apply flex items-center gap-2 text-xs;
+}
+
+.checklistItemValid {
+  @apply text-[#5C8A3A];
+}
+
+.checklistItemInvalid {
+  @apply text-gray-400;
+}
+
+.checklistIcon {
+  @apply w-4 h-4;
+}
+
+.checkboxContainer {
+  @apply flex items-start gap-2 mt-4;
+}
+
+.checkbox {
+  @apply mt-1 w-4 h-4 accent-[#0E4B68] cursor-pointer;
+}
+
+.checkboxLabel {
+  @apply text-sm text-gray-700;
+}
+
+.termsLink {
+  @apply text-[#5C8A3A] hover:underline;
+}
+
+.submitButton {
+  @apply w-full bg-[#0E4B68] text-white py-3 rounded-lg transition-all text-[15px] font-medium mt-6;
+}
+
+.submitButtonEnabled {
+  @apply hover:bg-[#0C3D54];
+}
+
+.submitButtonDisabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+
+

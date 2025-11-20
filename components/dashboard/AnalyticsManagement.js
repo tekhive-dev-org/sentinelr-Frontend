@@ -4,7 +4,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import styles from './AnalyticsManagement.module.css';
 
 export default function AnalyticsManagement() {
-  const [activeTab, setActiveTab] = useState('Active Users');
+  const [activeTab, setActiveTab] = useState('Device Usage');
 
   const barChartData = {
     'Device Usage': [
@@ -45,8 +45,8 @@ export default function AnalyticsManagement() {
     ]
   };
 
-  const currentData = barChartData[activeTab] || barChartData['Active Users'];
-  const maxValue = Math.max(...currentData.map(d => d.value));
+  const currentData = barChartData[activeTab] || barChartData['Device Usage'];
+  const maxValue = 100;
 
   const getBarColor = (tab) => {
     switch (tab) {
@@ -91,33 +91,34 @@ export default function AnalyticsManagement() {
         <div className={styles.chartContainer}>
           <h3 className={styles.chartTitle}>
             {activeTab === 'Active Users' ? 'Active Users by Groupings' : 
+             activeTab === 'Device Usage' ? 'Device Usage' :
+             activeTab === 'Subscription Revenue' ? 'Subscription Revenue' :
              activeTab === 'Churn Rates' ? 'Churn Rates' : activeTab}
           </h3>
 
           <div className={styles.barChart}>
-            <div className={styles.yAxis}>
-              <span>60</span>
-              <span>40</span>
-              <span>20</span>
-              <span>0</span>
-            </div>
-
             <div className={styles.chartArea}>
               <div className={styles.bars}>
                 {currentData.map((item, index) => (
                   <div key={index} className={styles.barWrapper}>
+                    <div className={styles.barLabelLeft}>{item.label}</div>
                     <div className={styles.barContainer}>
                       <div
                         className={styles.bar}
                         style={{
-                          height: `${(item.value / maxValue) * 100}%`,
-                          backgroundColor: activeTab === 'Churn Rates' ? '#0e7490' : '#10b981'
+                          width: `${(item.value / maxValue) * 100}%`,
+                          backgroundColor: '#10b981'
                         }}
                       ></div>
                     </div>
-                    <span className={styles.barLabel}>{item.label}</span>
                   </div>
                 ))}
+              </div>
+              <div className={styles.xAxis}>
+                <span>0</span>
+                <span>20</span>
+                <span>40</span>
+                <span>60</span>
               </div>
             </div>
           </div>

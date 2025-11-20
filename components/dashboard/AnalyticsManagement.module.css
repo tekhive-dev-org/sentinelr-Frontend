@@ -1,6 +1,9 @@
 .analyticsManagement {
   padding: 0 32px 32px;
   max-width: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .analyticsCard {
@@ -8,6 +11,8 @@
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   overflow: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 .cardHeader {
@@ -57,7 +62,7 @@
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background: #0f172a;
+  background: #0e7490;
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -68,7 +73,7 @@
 }
 
 .exportBtn:hover {
-  background: #1e293b;
+  background: #0c6581;
 }
 
 .dropdownIcon {
@@ -78,32 +83,35 @@
 .tabs {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 20px 24px 0;
+  gap: 32px;
+  padding: 16px 24px 0;
   border-bottom: 1px solid #e5e7eb;
 }
 
 .tab {
-  padding: 12px 0;
+  padding: 8px 4px;
   background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
-  color: #64748b;
-  font-size: 14px;
-  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 400;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-bottom: -1px;
+  white-space: nowrap;
 }
 
 .tab:hover {
-  color: #1e293b;
+  color: #94a3b8;
 }
 
 .tab.activeTab {
   color: #1e293b;
+  font-weight: 700;
   border-bottom-color: #1e293b;
+  background: transparent;
 }
+
 
 .chartContainer {
   padding: 32px 24px;
@@ -118,64 +126,80 @@
 
 .barChart {
   display: flex;
-  gap: 16px;
+  gap: 0;
   align-items: stretch;
-}
-
-.yAxis {
-  display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 20px 0;
-  font-size: 12px;
-  color: #64748b;
-  min-width: 30px;
 }
 
 .chartArea {
   flex: 1;
+  min-width: 0;
+  width: 100%;
 }
 
 .bars {
   display: flex;
+  flex-direction: column;
   gap: 20px;
-  align-items: flex-end;
-  height: 350px;
-  padding: 20px 0;
+  width: 100%;
+  min-width: min-content;
+  margin-bottom: 12px;
 }
 
 .barWrapper {
-  flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  width: 100%;
+}
+
+.barLabelLeft {
+  font-size: 14px;
+  color: #64748b;
+  text-align: left;
+  min-width: 95px;
+  white-space: nowrap;
 }
 
 .barContainer {
-  width: 100%;
-  height: 100%;
+  flex: 1;
+  height: 28px;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  border-radius: 4px;
 }
 
 .bar {
-  width: 80%;
-  max-width: 60px;
-  border-radius: 4px 4px 0 0;
+  height: 100%;
+  min-width: 0;
+  border-radius: 4px;
   transition: all 0.3s ease;
 }
 
 .bar:hover {
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
-.barLabel {
+.xAxis {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0;
+  padding-left: 111px;
   font-size: 12px;
-  color: #64748b;
+  color: #94a3b8;
+  width: 100%;
+  margin-top: 0;
+}
+
+.xAxis span {
   text-align: center;
-  white-space: nowrap;
+}
+
+.xAxis span:first-child {
+  text-align: left;
 }
 
 @media (max-width: 1024px) {
@@ -187,33 +211,131 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+    padding: 20px 20px 0;
   }
 
   .titleSection {
     flex-direction: column;
     align-items: flex-start;
+    gap: 12px;
+    width: 100%;
   }
 
   .tabs {
     overflow-x: auto;
     white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px 20px 0;
   }
 
-  .bars {
-    gap: 12px;
-  }
-
-  .barLabel {
-    font-size: 10px;
+  .chartContainer {
+    padding: 24px 20px;
   }
 }
 
 @media (max-width: 768px) {
+  .analyticsManagement {
+    padding: 0 16px 16px;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .analyticsCard {
+    border-radius: 8px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .cardHeader {
+    padding: 16px 16px 0;
+  }
+
+  .cardTitle {
+    font-size: 16px;
+  }
+
+  .titleSection {
+    width: 100%;
+  }
+
+  .weekSelector {
+    width: 100%;
+    justify-content: center;
+    font-size: 13px;
+    padding: 8px 12px;
+    box-sizing: border-box;
+  }
+
+  .exportBtn {
+    width: 100%;
+    justify-content: center;
+    font-size: 13px;
+    padding: 10px 16px;
+    box-sizing: border-box;
+  }
+
+  .tabs {
+    padding: 12px 16px 0;
+    gap: 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    font-size: 12px;
+    padding: 10px 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .chartContainer {
+    padding: 20px 16px;
+    overflow-x: hidden;
+  }
+
+  .chartTitle {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .barChart {
+    gap: 0;
+  }
+
+  .chartArea {
+    overflow-x: visible;
+    width: 100%;
+  }
+
   .bars {
-    height: 250px;
+    gap: 16px;
+    margin-bottom: 10px;
+  }
+
+  .barWrapper {
+    gap: 10px;
+  }
+
+  .barLabelLeft {
+    font-size: 12px;
+    min-width: 70px;
+  }
+
+  .barContainer {
+    height: 24px;
   }
 
   .bar {
-    max-width: 40px;
+    border-radius: 3px;
+  }
+
+  .xAxis {
+    font-size: 10px;
+    padding-left: 80px;
   }
 }

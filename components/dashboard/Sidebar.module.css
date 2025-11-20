@@ -163,9 +163,36 @@
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
+    box-shadow: none;
   }
 
   .sidebar.open {
     transform: translateX(0);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .sidebarContent {
+    padding: 80px 0 20px;
+  }
+
+  .navigation {
+    padding: 0 8px;
+  }
+
+  .menuItem {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .userProfile {
+    padding: 14px 16px;
+  }
+
+  .profileName {
+    font-size: 13px;
+  }
+
+  .profileEmail {
+    font-size: 11px;
   }
 }

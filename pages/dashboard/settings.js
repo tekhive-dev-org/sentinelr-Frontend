@@ -27,7 +27,14 @@ export default function Settings() {
 
   return (
     <DashboardLayout>
-      <div style={{ padding: '0 32px 32px' }}>
+      <div style={{ padding: '0 32px 32px' }} className="dashboard-content">
+        <style jsx>{`
+          @media (max-width: 768px) {
+            .dashboard-content {
+              padding: 0 16px 16px !important;
+            }
+          }
+        `}</style>
         <p>Settings content will go here</p>
       </div>
     </DashboardLayout>

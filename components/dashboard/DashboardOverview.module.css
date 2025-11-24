@@ -66,6 +66,7 @@
   height: 220px;
   min-width: 0;
   overflow: hidden;
+  position: relative;
 }
 
 .svg {
@@ -96,20 +97,30 @@
 .tableTabs {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 0 20px;
-  border-bottom: 1px solid #e5e7eb;
+  justify-content: space-between;
+  padding: 0 20px 20px;
+  gap: 20px;
   flex-wrap: wrap;
 }
 
+.tabsList {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: #f8fafc;
+  border-radius: 8px;
+  width: fit-content;
+}
+
 .tab {
-  padding: 10px 12px;
+  padding: 8px 16px;
   background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-radius: 6px;
   color: #64748b;
   font-size: 13px;
-  font-weight: 400;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -119,23 +130,33 @@
 }
 
 .tab.activeTab {
+  background: #ffffff;
   color: #1e293b;
-  font-weight: 500;
-  border-bottom-color: #1e293b;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .searchContainer {
-  margin-left: auto;
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 20px;
 }
 
 .searchInput {
-  padding: 6px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
+  padding: 10px 12px 10px 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
   font-size: 13px;
-  width: 180px;
+  width: 240px;
   outline: none;
   transition: all 0.2s ease;
+  background: #ffffff;
 }
 
 .searchInput::placeholder {
@@ -143,7 +164,8 @@
 }
 
 .searchInput:focus {
-  border-color: #94a3b8;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
 .tableContainer {
@@ -179,43 +201,33 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 12px;
-  border-radius: 16px;
+  padding: 6px 12px;
+  border-radius: 6px;
   font-size: 13px;
   font-weight: 500;
+  border: 1px solid transparent;
 }
 
-.statusDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
+.statusIcon {
+  font-size: 16px !important;
 }
 
 .statusBadge.flagged {
-  background-color: #fef3c7;
-  color: #92400e;
-}
-
-.statusBadge.flagged .statusDot {
-  background-color: #f59e0b;
+  background-color: #ffffff;
+  color: #64748b;
+  border-color: #e2e8f0;
 }
 
 .statusBadge.approved {
-  background-color: #d1fae5;
-  color: #065f46;
-}
-
-.statusBadge.approved .statusDot {
-  background-color: #10b981;
+  background-color: #ffffff;
+  color: #10b981;
+  border-color: #e2e8f0;
 }
 
 .statusBadge.blocked {
-  background-color: #fee2e2;
-  color: #991b1b;
-}
-
-.statusBadge.blocked .statusDot {
-  background-color: #ef4444;
+  background-color: #ffffff;
+  color: #ef4444;
+  border-color: #e2e8f0;
 }
 
 .moreBtn {
@@ -308,14 +320,21 @@
   }
 
   .tableTabs {
-    padding: 0 16px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    flex-wrap: nowrap;
-    scrollbar-width: none;
+    padding: 0 16px 16px;
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 12px;
   }
 
-  .tableTabs::-webkit-scrollbar {
+  .tabsList {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    box-sizing: border-box;
+  }
+
+  .tabsList::-webkit-scrollbar {
     display: none;
   }
 
@@ -328,10 +347,8 @@
 
   .searchContainer {
     width: 100%;
-    margin-top: 0;
-    padding: 0 16px 12px;
-    order: 10;
-    flex-basis: 100%;
+    margin: 0;
+    padding: 0;
   }
 
   .searchInput {

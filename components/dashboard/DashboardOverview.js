@@ -1,59 +1,72 @@
-import { useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import styles from './DashboardOverview.module.css';
+import { useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+} from "recharts";
+import {
+  MoreVert as MoreVertIcon,
+  Search as SearchIcon,
+  CheckCircle as CheckCircleIcon,
+  Block as BlockIcon,
+  Cancel as CancelIcon,
+} from "@mui/icons-material";
+import styles from "./DashboardOverview.module.css";
 
 export default function DashboardOverview() {
   const [userData] = useState({
     allUsers: 0,
     approvedAccounts: 0,
     blockedAccounts: 0,
-    flaggedUsers: 0
+    flaggedUsers: 0,
   });
 
   const [users] = useState([
     {
       id: 1,
-      name: 'Sharon Bliss',
-      email: 'sharonbliss9@gmail.com',
-      phone: '08160032043',
-      lastActive: '07-08-2025',
-      status: 'Flagged'
+      name: "Sharon Bliss",
+      email: "sharonbliss9@gmail.com",
+      phone: "08160032043",
+      lastActive: "07-08-2025",
+      status: "Flagged",
     },
     {
       id: 2,
-      name: 'Nneka Amadi',
-      email: 'nnekaamadi45@gmail.com',
-      phone: '09058394839',
-      lastActive: '07-08-2025',
-      status: 'Approved'
+      name: "Nneka Amadi",
+      email: "nnekaamadi45@gmail.com",
+      phone: "09058394839",
+      lastActive: "07-08-2025",
+      status: "Approved",
     },
     {
       id: 3,
-      name: 'Chidiebere British',
-      email: 'chidieberebritish@gmail.com',
-      phone: '08160032043',
-      lastActive: '07-08-2025',
-      status: 'Blocked'
-    }
+      name: "Chidiebere British",
+      email: "chidieberebritish@gmail.com",
+      phone: "08160032043",
+      lastActive: "07-08-2025",
+      status: "Blocked",
+    },
   ]);
 
-  const [activeTab, setActiveTab] = useState('All');
+  const [activeTab, setActiveTab] = useState("All");
 
   const subscriptionData = [
-    { name: 'Mon', value: 500 },
-    { name: 'Tue', value: 150 },
-    { name: 'Wed', value: 450 },
-    { name: 'Thur', value: 100 },
-    { name: 'Fri', value: 750 }
+    { name: "Mon", value: 500 },
+    { name: "Tue", value: 150 },
+    { name: "Wed", value: 450 },
+    { name: "Thur", value: 100 },
+    { name: "Fri", value: 750 },
   ];
 
   const analyticsData = [
-    { name: 'Jan', value: 250 },
-    { name: 'Mar', value: 650 },
-    { name: 'May', value: 200 },
-    { name: 'July', value: 600 },
-    { name: 'Sep', value: 850 }
+    { name: "Jan", value: 250 },
+    { name: "Mar", value: 650 },
+    { name: "May", value: 200 },
+    { name: "July", value: 600 },
+    { name: "Sep", value: 850 },
   ];
 
   return (
@@ -83,27 +96,31 @@ export default function DashboardOverview() {
         <div className={styles.chartCard}>
           <h3 className={styles.chartTitle}>Subscription</h3>
           <div className={styles.chart}>
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <LineChart data={subscriptionData}>
-                <CartesianGrid strokeDasharray="0" stroke="#f0f0f0" vertical={false} />
-                <XAxis 
-                  dataKey="name" 
+                <CartesianGrid
+                  strokeDasharray="0"
+                  stroke="#f0f0f0"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="name"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#64748b', fontSize: 12 }}
+                  tick={{ fill: "#64748b", fontSize: 12 }}
                   dy={10}
                 />
-                <YAxis 
+                <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#64748b', fontSize: 12 }}
+                  tick={{ fill: "#64748b", fontSize: 12 }}
                   domain={[0, 800]}
                   ticks={[0, 200, 400, 600, 800]}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="value" 
-                  stroke="#10b981" 
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#10b981"
                   strokeWidth={2.5}
                   dot={false}
                 />
@@ -113,29 +130,35 @@ export default function DashboardOverview() {
         </div>
 
         <div className={styles.chartCard}>
-          <h3 className={styles.chartTitle}>Analytics- Real-time device usage</h3>
+          <h3 className={styles.chartTitle}>
+            Analytics- Real-time device usage
+          </h3>
           <div className={styles.chart}>
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <LineChart data={analyticsData}>
-                <CartesianGrid strokeDasharray="0" stroke="#f0f0f0" vertical={false} />
-                <XAxis 
-                  dataKey="name" 
+                <CartesianGrid
+                  strokeDasharray="0"
+                  stroke="#f0f0f0"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="name"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#64748b', fontSize: 12 }}
+                  tick={{ fill: "#64748b", fontSize: 12 }}
                   dy={10}
                 />
-                <YAxis 
+                <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#64748b', fontSize: 12 }}
+                  tick={{ fill: "#64748b", fontSize: 12 }}
                   domain={[0, 900]}
                   ticks={[0, 250, 500, 750, 900]}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="value" 
-                  stroke="#10b981" 
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#10b981"
                   strokeWidth={2.5}
                   dot={false}
                 />
@@ -152,16 +175,21 @@ export default function DashboardOverview() {
         </div>
 
         <div className={styles.tableTabs}>
-          {['All', 'Approved', 'Blocked', 'Flagged'].map((tab) => (
-            <button
-              key={tab}
-              className={`${styles.tab} ${activeTab === tab ? styles.activeTab : ''}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
+          <div className={styles.tabsList}>
+            {["All", "Approved", "Blocked", "Flagged"].map((tab) => (
+              <button
+                key={tab}
+                className={`${styles.tab} ${
+                  activeTab === tab ? styles.activeTab : ""
+                }`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
           <div className={styles.searchContainer}>
+            <SearchIcon className={styles.searchIcon} />
             <input
               type="text"
               placeholder="Search..."
@@ -190,8 +218,14 @@ export default function DashboardOverview() {
                   <td>{user.phone}</td>
                   <td>{user.lastActive}</td>
                   <td>
-                    <span className={`${styles.statusBadge} ${styles[user.status.toLowerCase()]}`}>
-                      <span className={styles.statusDot}></span>
+                    <span
+                      className={`${styles.statusBadge} ${
+                        styles[user.status.toLowerCase()]
+                      }`}
+                    >
+                      {user.status === 'Approved' && <CheckCircleIcon className={styles.statusIcon} />}
+                      {user.status === 'Flagged' && <BlockIcon className={styles.statusIcon} />}
+                      {user.status === 'Blocked' && <CancelIcon className={styles.statusIcon} />}
                       {user.status}
                     </span>
                   </td>

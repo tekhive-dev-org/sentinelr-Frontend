@@ -20,7 +20,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 100px 0;
+  padding: 74px 0 20px;
 }
 
 .logo {
@@ -56,15 +56,30 @@
   color: #64748b;
   font-size: 15px;
   font-weight: 400;
+  position: relative;
 }
 
 .menuItem:hover {
-  background-color: #f8f9fa;
+  background-color: #f8fafc;
 }
 
 .menuItem.active {
-  background-color: #e8f5e9;
-  color: #2e7d32;
+  background-color: #f1f5f9;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.menuItem.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 24px;
+  width: 4px;
+  background-color: #2563eb;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 
 .menuIcon {
@@ -88,11 +103,11 @@
 
 .menuItem.active .menuIcon img {
   opacity: 1;
-  filter: brightness(0) saturate(100%) invert(29%) sepia(48%) saturate(1347%) hue-rotate(97deg) brightness(94%) contrast(89%);
+  filter: brightness(0) saturate(100%) invert(32%) sepia(96%) saturate(1936%) hue-rotate(202deg) brightness(93%) contrast(96%);
 }
 
 .menuItem.active .menuIcon svg {
-  color: #2e7d32;
+  color: #2563eb;
 }
 
 .menuLabel {
@@ -106,27 +121,28 @@
   display: flex;
   align-items: center;
   padding: 16px 20px;
-  margin: 0 8px;
+  margin: 0 20px 20px;
   border-top: 1px solid #e5e7eb;
+  padding-top: 20px;
   gap: 12px;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 0;
   transition: background-color 0.2s ease;
 }
 
 .userProfile:hover {
-  background-color: #f8f9fa;
+  background-color: transparent;
 }
 
 .profileAvatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  background-color: #fde68a;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: #78350f;
   font-weight: 600;
   font-size: 14px;
   flex-shrink: 0;

@@ -3,3 +3,4 @@ export { default as Sidebar } from './Sidebar';
 export { default as PageHeader } from './PageHeader';
 export { default as DashboardOverview } from './DashboardOverview';
 export { default as AnalyticsManagement } from './AnalyticsManagement';
+export { default as SubscriptionManagement } from './SubscriptionManagement';

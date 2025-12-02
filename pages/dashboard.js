@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext';
 import { DashboardLayout, DashboardOverview } from '../components/dashboard';
+import UserDashboardOverview from '../components/dashboard/UserDashboardOverview';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -27,7 +28,11 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <DashboardOverview />
+      {user?.role === 'admin' ? (
+        <DashboardOverview />
+      ) : (
+        <UserDashboardOverview />
+      )}
     </DashboardLayout>
   );
 }

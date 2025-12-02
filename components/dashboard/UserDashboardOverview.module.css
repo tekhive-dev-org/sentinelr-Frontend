@@ -1,0 +1,285 @@
+.container {
+  padding: 24px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #666;
+}
+
+.mapSection {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.detailsLink {
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mapPlaceholder {
+  height: 200px;
+  background-color: #eef2f6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.mapImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mapWarning {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  color: #ef4444;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.statHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.statIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statIcon.blue { background: #e0f2fe; color: #0284c7; }
+.statIcon.red { background: #fee2e2; color: #dc2626; }
+
+.statTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin-left: 12px;
+}
+
+.statValue {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-align: right;
+}
+
+.avatars {
+  display: flex;
+  margin-top: 8px;
+}
+
+.avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid white;
+  margin-left: -8px;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #666;
+}
+
+.avatar:first-child { margin-left: 0; }
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.chartCard {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.mainContentGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.activityCard {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.activityItem {
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.activityHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.activityTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.activityTime {
+  font-size: 12px;
+  color: #666;
+}
+
+.activityStatus {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #666;
+  background: #f8f9fa;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.statusBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+}
+
+.statusBadge.cancelled {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.screenTimeCard {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.appItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.appInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.appName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.appTime {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.appIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+@media (max-width: 1024px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+  .mainContentGrid {
+    grid-template-columns: 1fr;
+  }
+}

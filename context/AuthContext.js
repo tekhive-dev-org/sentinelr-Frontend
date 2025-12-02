@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
@@ -8,8 +8,8 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Check for stored user on mount (client-side only)
-    if (typeof window !== 'undefined') {
-      const storedUser = localStorage.getItem('user');
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("user");
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
@@ -20,10 +20,16 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       // Simulate API call - replace with real authentication
-      const fakeUser = { email, name: 'John Doe', token: '123abc' };
+      const role = email.toLowerCase().includes('admin') ? 'admin' : 'user';
+      const fakeUser = {
+        email,
+        name: role === 'admin' ? 'Chidi British' : 'John Doe',
+        token: "123abc",
+        role: role,
+      };
       setUser(fakeUser);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('user', JSON.stringify(fakeUser));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("user", JSON.stringify(fakeUser));
       }
     } finally {
       setLoading(false);
@@ -32,8 +38,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null);
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('user');
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("user");
     }
   };
 
@@ -41,10 +47,15 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       // Simulate API call - replace with real authentication
-      const fakeUser = { email, name: 'New User', token: 'xyz456' };
+      const fakeUser = {
+        email,
+        name: "New User",
+        token: "xyz456",
+        role: "admin",
+      };
       setUser(fakeUser);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('user', JSON.stringify(fakeUser));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("user", JSON.stringify(fakeUser));
       }
     } finally {
       setLoading(false);

@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
 import { DashboardLayout } from '../../components/dashboard';
 
-export default function Alerts() {
+export default function Devices() {
   const router = useRouter();
   const { user, loading } = useAuth();
 
@@ -25,8 +25,6 @@ export default function Alerts() {
     return null;
   }
 
-  const title = user.role === 'admin' ? 'Alert & Report Handling' : 'Sos Alert';
-
   return (
     <DashboardLayout>
       <div style={{ padding: '0 32px 32px' }} className="dashboard-content">
@@ -37,8 +35,7 @@ export default function Alerts() {
             }
           }
         `}</style>
-        <h1>{title}</h1>
-        <p>{title} content will go here</p>
+        <p>Devices & Users content will go here</p>
       </div>
     </DashboardLayout>
   );

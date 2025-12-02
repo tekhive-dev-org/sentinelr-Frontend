@@ -1,44 +1,88 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useAuth } from '../../context/AuthContext';
 import Sidebar from './Sidebar';
 import PageHeader from './PageHeader';
 import styles from './DashboardLayout.module.css';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 
 const pageConfig = {
   '/dashboard': {
     title: 'Dashboard',
-    subtitle: 'Manage all users available on Sentinelr'
+    subtitle: 'Manage all users available on Sentinelr',
+    icon: '/assets/icons/layout-grid.png'
   },
   '/dashboard/users': {
-    title: 'Dashboard',
-    subtitle: 'Manage all users available on Sentinelr'
+    title: 'Users & Family Management',
+    subtitle: 'Manage all users available on Sentinelr',
+    icon: '/assets/icons/user.png'
   },
   '/dashboard/analytics': {
-    title: 'Dashboard',
-    subtitle: 'Manage all users available on Sentinelr'
+    title: 'Analytics Management',
+    subtitle: 'Manage all users available on Sentinelr',
+    icon: '/assets/icons/line-chart.png'
   },
   '/dashboard/alerts': {
-    title: 'Dashboard',
-    subtitle: 'Manage all users available on Sentinelr'
+    title: 'Alert & Report Handling',
+    subtitle: 'Manage all users available on Sentinelr',
+    icon: '/assets/icons/megaphone.png'
   },
   '/dashboard/content': {
-    title: 'Dashboard',
-    subtitle: 'Manage all users available on Sentinelr'
+    title: 'Content Management',
+    subtitle: 'Manage all users available on Sentinelr',
+    icon: DescriptionOutlinedIcon
   },
   '/dashboard/subscription': {
-    title: 'Dashboard',
-    subtitle: 'Manage all users available on Sentinelr'
+    title: 'Subscription Management',
+    subtitle: 'Manage all users available on Sentinelr',
+    icon: '/assets/icons/bank-card.png'
   },
   '/dashboard/settings': {
-    title: 'Dashboard',
-    subtitle: 'Manage all users available on Sentinelr'
+    title: 'Settings',
+    subtitle: 'Manage and update your SENTINELR account information',
+    icon: '/assets/icons/settings.png'
+  },
+  '/dashboard/devices': {
+    title: 'Devices & Users',
+    subtitle: 'Manage devices and users',
+    icon: '/assets/icons/user.png'
+  },
+  '/dashboard/history': {
+    title: 'History & Reports',
+    subtitle: 'View history and reports',
+    icon: '/assets/icons/line-chart.png' // Using line-chart as placeholder
+  },
+  '/dashboard/parental': {
+    title: 'Parental Control',
+    subtitle: 'Manage parental control settings',
+    icon: '/assets/icons/user.png' // Using user as placeholder
+  },
+  '/dashboard/geofencing': {
+    title: 'Geofencing',
+    subtitle: 'Manage geofencing zones',
+    icon: '/assets/icons/layout-grid.png' // Using layout-grid as placeholder
+  },
+  '/dashboard/insights': {
+    title: 'Usage Insights',
+    subtitle: 'View usage insights',
+    icon: '/assets/icons/line-chart.png'
   }
 };
 
 export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const router = useRouter();
-  const currentPage = pageConfig[router.pathname] || pageConfig['/dashboard'];
+  const { user } = useAuth();
+  
+  let currentPage = pageConfig[router.pathname] || pageConfig['/dashboard'];
+
+  // Override subtitle for user dashboard
+  if (router.pathname === '/dashboard' && user?.role !== 'admin') {
+    currentPage = {
+      ...currentPage,
+      subtitle: 'Personal sentinelr overview dashboard'
+    };
+  }
 
   // Close sidebar on mobile by default
   useEffect(() => {
@@ -65,29 +109,23 @@ export default function DashboardLayout({ children }) {
     }
   }, [router.pathname]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
   return (
-    <div className={styles.dashboardContainer}>
-      {/* Overlay for mobile */}
-      {isSidebarOpen && (
-        <div 
-          className={styles.overlay} 
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-      
+    <div className={styles.layout}>
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
-      <main className={`${styles.mainContent} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
+      
+      <div className={`${styles.mainContent} ${!isSidebarOpen ? styles.mainContentExpanded : ''}`}>
         <PageHeader 
-          title={currentPage.title} 
-          subtitle={currentPage.subtitle}
-          onMenuClick={toggleSidebar}
+          title={currentPage?.title} 
+          subtitle={currentPage?.subtitle}
+          icon={currentPage?.icon}
+          user={user}
+          onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
         />
-        {children}
-      </main>
+        
+        <main className={styles.pageContent}>
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

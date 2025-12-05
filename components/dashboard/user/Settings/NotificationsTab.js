@@ -1,23 +1,15 @@
 import React, { useState } from 'react';
 import Toast from '../../../common/Toast';
 import styles from './Settings.module.css';
+import CloseIcon from '@mui/icons-material/Close';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 
-export default function NotificationsTab() {
-  const [preferences, setPreferences] = useState({
-    projectFeedback: true,
-    newContent: true,
-    specialPromotions: false,
-    weeklyProgress: false
-  });
+export default function NotificationsTab({ formik }) {
   const [toast, setToast] = useState(null);
 
   const handleToggle = (key) => {
-    setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const handleSave = () => {
-    console.log('Notification preferences updated:', preferences);
-    setToast({ message: 'Notification preferences saved!', type: 'success' });
+    formik.setFieldValue(key, !formik.values[key]);
   };
 
   return (
@@ -39,7 +31,7 @@ export default function NotificationsTab() {
           <label className={styles.switch}>
             <input 
               type="checkbox" 
-              checked={preferences.projectFeedback}
+              checked={formik.values.projectFeedback}
               onChange={() => handleToggle('projectFeedback')}
             />
             <span className={styles.slider}></span>
@@ -54,7 +46,7 @@ export default function NotificationsTab() {
           <label className={styles.switch}>
             <input 
               type="checkbox" 
-              checked={preferences.newContent}
+              checked={formik.values.newContent}
               onChange={() => handleToggle('newContent')}
             />
             <span className={styles.slider}></span>
@@ -69,7 +61,7 @@ export default function NotificationsTab() {
           <label className={styles.switch}>
             <input 
               type="checkbox" 
-              checked={preferences.specialPromotions}
+              checked={formik.values.specialPromotions}
               onChange={() => handleToggle('specialPromotions')}
             />
             <span className={styles.slider}></span>
@@ -84,7 +76,7 @@ export default function NotificationsTab() {
           <label className={styles.switch}>
             <input 
               type="checkbox" 
-              checked={preferences.weeklyProgress}
+              checked={formik.values.weeklyProgress}
               onChange={() => handleToggle('weeklyProgress')}
             />
             <span className={styles.slider}></span>
@@ -94,11 +86,6 @@ export default function NotificationsTab() {
             <div className={styles.toggleDescription}>Keep track of your weekly activity and receive an informative weekly report.</div>
           </div>
         </div>
-      </div>
-
-      <div className={styles.actions}>
-        <button type="button" className={styles.secondaryButton}>Discard</button>
-        <button type="button" className={styles.primaryButton} onClick={handleSave}>Apply Changes</button>
       </div>
     </div>
   );

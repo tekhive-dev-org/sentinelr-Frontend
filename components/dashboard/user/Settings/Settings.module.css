@@ -2,7 +2,8 @@
   padding: 0;
   background-color: #fff;
   min-height: 100vh;
-  max-width: 500px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .tabs {
@@ -10,10 +11,10 @@
   background-color: #f3f4f6;
   padding: 4px;
   border-radius: 8px;
-  margin: 0 32px;
   border-bottom: none;
   gap: 4px;
   width: fit-content;
+  margin: 0 auto;
 }
 
 .tab {
@@ -42,7 +43,8 @@
 .content {
   padding: 0px 32px 32px;
   background: #ffffff;
- 
+   max-width: 600px;
+   margin: 0 auto;
 }
 
 .section {
@@ -51,7 +53,8 @@
   border: none;
   border-radius: 0;
   padding: 0;
-  max-width: 400px !important;
+  margin: 0 auto;
+
 }
 
 .sectionTitle {

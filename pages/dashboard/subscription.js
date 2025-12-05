@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
-import { DashboardLayout, SubscriptionManagement } from '../../components/dashboard';
+import { DashboardLayout, SubscriptionManagement, UserSubscription } from '../../components/dashboard';
 
 export default function Subscription() {
   const router = useRouter();
@@ -27,7 +27,11 @@ export default function Subscription() {
 
   return (
     <DashboardLayout>
-<SubscriptionManagement />
+      {user?.role === 'admin' ? (
+        <SubscriptionManagement />
+      ) : (
+        <UserSubscription />
+      )}
     </DashboardLayout>
   );
 }

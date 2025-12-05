@@ -33,8 +33,8 @@ const pageConfig = {
     icon: DescriptionOutlinedIcon
   },
   '/dashboard/subscription': {
-    title: 'Subscription Management',
-    subtitle: 'Manage all users available on Sentinelr',
+    title: 'Subscription',
+    subtitle: 'Choose subscription plan suitable for you',
     icon: '/assets/icons/bank-card.png'
   },
   '/dashboard/settings': {
@@ -81,6 +81,15 @@ export default function DashboardLayout({ children }) {
     currentPage = {
       ...currentPage,
       subtitle: 'Personal sentinelr overview dashboard'
+    };
+  }
+
+  // Override title/subtitle for admin subscription page
+  if (router.pathname === '/dashboard/subscription' && user?.role === 'admin') {
+    currentPage = {
+      ...currentPage,
+      title: 'Subscription Management',
+      subtitle: 'Manage all users available on Sentinelr'
     };
   }
 

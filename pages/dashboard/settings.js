@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
-import { DashboardLayout } from '../../components/dashboard';
-import UserSettings from '../../components/dashboard/user/Settings/UserSettings';
+import { DashboardLayout, UserSettings } from '../../components/dashboard';
 
 export default function Settings() {
   const router = useRouter();

@@ -7,40 +7,11 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import Toast from '../../../common/Toast';
 import styles from './Settings.module.css';
 
-export default function PasswordTab() {
+export default function PasswordTab({ formik }) {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [oldPasswordError, setOldPasswordError] = useState('');
   const [toast, setToast] = useState(null);
-
-  // Simulated correct password for validation (in real app, this would be server-side)
-  const CORRECT_OLD_PASSWORD = 'Chidiebere2025';
-
-  const formik = useFormik({
-    initialValues: {
-      oldPassword: '',
-      newPassword: '',
-    },
-    validationSchema: Yup.object({
-      oldPassword: Yup.string().required('Old password is required'),
-      newPassword: Yup.string()
-        .min(8, 'Password must be at least 8 characters')
-        .required('New password is required'),
-    }),
-    onSubmit: (values) => {
-      // Validate old password
-      if (values.oldPassword !== CORRECT_OLD_PASSWORD) {
-        setOldPasswordError('Provided password is not correct');
-        return;
-      }
-      
-      console.log('Password updated:', values);
-      setToast({ message: 'Password updated successfully!', type: 'success' });
-      // Reset form
-      formik.resetForm();
-      setOldPasswordError('');
-    },
-  });
 
   // Handle old password change and clear error
   const handleOldPasswordChange = (e) => {
@@ -62,7 +33,9 @@ export default function PasswordTab() {
       <h3 className={styles.sectionTitle}>Password</h3>
       <p className={styles.sectionDescription}>Update your password to ensure your account remains private and secure.</p>
 
-      <form onSubmit={formik.handleSubmit}>
+      <p className={styles.sectionDescription}>Update your password to ensure your account remains private and secure.</p>
+
+      <div>
         <div className={styles.formGroup}>
           <label className={styles.label}>Old Password</label>
           <div className={styles.passwordWrapper}>
@@ -132,14 +105,7 @@ export default function PasswordTab() {
           )}
         </div>
 
-        <div className={styles.actions}>
-          <button type="button" className={styles.secondaryButton} onClick={() => {
-            formik.resetForm();
-            setOldPasswordError('');
-          }}>Discard</button>
-          <button type="submit" className={styles.primaryButton}>Apply Changes</button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 }

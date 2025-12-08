@@ -64,7 +64,7 @@ const pageConfig = {
   },
   '/dashboard/insights': {
     title: 'Usage Insights',
-    subtitle: 'View usage insights',
+    subtitle: 'An overview of usage your applications',
     icon: '/assets/icons/line-chart.png'
   }
 };

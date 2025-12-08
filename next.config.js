@@ -5,6 +5,7 @@ const nextConfig = {
   images: {
     domains: [],
   },
+  transpilePackages: ['@mui/x-date-pickers', '@mui/material'],
 };
 
 module.exports = nextConfig;

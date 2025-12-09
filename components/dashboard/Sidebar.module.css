@@ -4,7 +4,13 @@
   top: 0;
   width: 240px;
   height: 100vh;
-  background-color: #ffffff;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
   border-right: 1px solid #e5e7eb;
   transition: transform 0.3s ease;
   z-index: 1000;
@@ -117,26 +123,91 @@
   text-overflow: ellipsis;
 }
 
+/* User Section Wrapper to handle positioning */
+.userSection {
+  margin-top: auto;
+  position: relative;
+  margin-left: 12px;
+  margin-right: 12px;
+  margin-bottom: 20px;
+}
+
 .userProfile {
   display: flex;
   align-items: center;
-  padding: 16px 20px;
-  margin: 0 20px 20px;
-  border-top: 1px solid #e5e7eb;
-  padding-top: 20px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: white;
   gap: 12px;
   cursor: pointer;
-  border-radius: 0;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .userProfile:hover {
-  background-color: transparent;
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
 }
 
+.userMenu {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  margin-bottom: 8px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 6px;
+  overflow: hidden;
+  animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.userMenuItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.userMenuItem:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.userMenuItem.danger {
+  color: #dc2626;
+}
+
+.userMenuItem.danger:hover {
+  background: #fef2f2;
+}
+
+.menuDivider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 4px 0;
+}
+
+/* ... existing profile items ... */
 .profileAvatar {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background-color: #fde68a;
   display: flex;
@@ -144,7 +215,7 @@
   justify-content: center;
   color: #78350f;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   flex-shrink: 0;
 }
 
@@ -154,7 +225,7 @@
 }
 
 .profileName {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #1e293b;
   white-space: nowrap;
@@ -173,7 +244,7 @@
 .profileArrow {
   color: #94a3b8;
   flex-shrink: 0;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 @media (max-width: 768px) {
@@ -212,3 +283,5 @@
     font-size: 11px;
   }
 }
+
+/* Removed logoutWrapper/Btn/Label styles */

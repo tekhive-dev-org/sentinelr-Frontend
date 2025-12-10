@@ -1,51 +1,79 @@
 .header {
- 
- margin-bottom: 32px;
+  margin-bottom: 32px;
   padding: 32px 32px 0px;
-  background-color: #ffffff;
-
+  background: transparent; /* Transparent to let glassmorphism work on container if needed, or moved to container */
+  position: relative;
+  z-index: 10; 
 }
-.headerContainer{
+
+.headerContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 24px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 24px 32px; /* Increased padding slightly for premium feel */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3); /* Subtle white border */
+  
+  /* Glassmorphism */
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 16px;
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5); /* Inner shine */
+    
+  position: relative;
+  overflow: hidden; /* For the accent bar */
+}
+
+/* Brand Accent Bar */
+.headerContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #F6C102, transparent); /* Brand Gold Gradient */
+  opacity: 0.8;
 }
 
 .leftSection {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px; /* Increased gap */
   flex: 1;
 }
 
 .rightSection {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
 }
 
 .iconWrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+  width: 52px; /* Slightly larger */
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  color: #F6C102; /* Brand color for icon if possible */
 }
 
 .menuBtn {
   display: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.8);
   cursor: pointer;
   align-items: center;
   justify-content: center;
@@ -55,7 +83,9 @@
 }
 
 .menuBtn:hover {
-  background: #f8f9fa;
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .headerContent {
@@ -64,24 +94,29 @@
 }
 
 .title {
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 26px; /* Larger */
+  font-weight: 700;
   color: #1e293b;
   margin: 0 0 4px 0;
+  letter-spacing: -0.5px;
 }
 
 .subtitle {
   font-size: 14px;
   color: #64748b;
   margin: 0;
+  font-weight: 500;
 }
 
 .userAvatar {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   position: relative;
   flex-shrink: 0;
+  padding: 2px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .avatarImage {
@@ -89,26 +124,26 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #f1f5f9;
 }
 
 .onlineStatus {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   background-color: #10b981;
   border-radius: 50%;
   border: 2px solid #ffffff;
 }
 
 .notificationBtn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%; /* Changed to circle to match design */
-  border: none; /* Removed border to match design */
-  background: transparent;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px; /* Soft square */
+  border: 1px solid rgba(0,0,0,0.05);
+  background: rgba(255, 255, 255, 0.6);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -120,26 +155,34 @@
 }
 
 .notificationBtn:hover {
-  background: #f1f5f9;
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  color: #F6C102; /* Accent hover */
 }
 
 .notificationBadge {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 6px;
-  height: 6px;
+  top: 10px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
   background-color: #ef4444;
   border-radius: 50%;
+  border: 1px solid #fff;
 }
 
 @media (max-width: 768px) {
   .header {
     padding: 16px;
     padding-bottom: 0;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+  }
+  
+  .headerContainer {
+     flex-direction: column;
+     align-items: flex-start;
+     gap: 16px;
+     padding: 20px;
   }
 
   .leftSection {
@@ -148,8 +191,8 @@
 
   .rightSection {
     position: absolute;
-    top: 16px;
-    right: 16px;
+    top: 20px;
+    right: 20px;
   }
 
   .menuBtn {
@@ -157,7 +200,7 @@
   }
 
   .title {
-    font-size: 20px;
+    font-size: 22px;
   }
 
   .subtitle {
@@ -165,6 +208,6 @@
   }
   
   .iconWrapper {
-    display: none; /* Hide icon on mobile to save space if needed, or keep it */
+    display: none; /* Hide icon on mobile to save space */
   }
 }

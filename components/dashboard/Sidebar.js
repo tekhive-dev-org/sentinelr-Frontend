@@ -2,14 +2,29 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import styles from './Sidebar.module.css';
 import { useAuth } from '../../context/AuthContext';
+import LogoutModal from './LogoutModal';
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [activeMenu, setActiveMenu] = useState('');
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showUserMenu && !event.target.closest(`.${styles.userSection}`)) {
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showUserMenu]);
 
   // Update active menu based on current route
   useEffect(() => {
@@ -150,11 +165,15 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     router.push(item.path);
   };
 
+  const handleLogout = () => {
+      logout();
+      router.push('/login');
+  };
+
   return (
     <aside className={`${styles.sidebar} ${isOpen ? styles.open : styles.closed}`}>
       <div className={styles.sidebarContent}>
         
-
         <nav className={styles.navigation}>
           {menuItems.map((item) => {
             const IconComponent = item.iconComponent;
@@ -183,15 +202,51 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           })}
         </nav>
 
-        <div className={styles.userProfile}>
-          <div className={styles.profileAvatar}>LM</div>
-          <div className={styles.profileInfo}>
-            <div className={styles.profileName}>{user?.name || 'User'}</div>
-            <div className={styles.profileEmail}>{user?.email || 'user@xyz.com'}</div>
-          </div>
-          <ChevronRightIcon className={styles.profileArrow} />
+        <div className={styles.userSection}>
+            {showUserMenu && (
+              <div className={styles.userMenu}>
+                <button className={styles.userMenuItem} onClick={() => {
+                    setShowUserMenu(false);
+                    router.push('/dashboard/settings');
+                }}>
+                  <span className={styles.menuIcon}>
+                    <img src="/assets/icons/settings.png" alt="Settings" width={20} height={20} style={{ opacity: 0.6 }} /> 
+                  </span>
+                  My Profile
+                </button>
+                <div className={styles.menuDivider} />
+                <button className={`${styles.userMenuItem} ${styles.danger}`} onClick={() => {
+                    setShowUserMenu(false);
+                    setIsLogoutModalOpen(true);
+                }}>
+                  <span className={styles.menuIcon}>
+                    <LogoutOutlinedIcon style={{ fontSize: 20 }} />
+                  </span>
+                  Logout
+                </button>
+              </div>
+            )}
+
+            <div className={styles.userProfile} onClick={() => setShowUserMenu(!showUserMenu)}>
+              <div className={styles.profileAvatar}>LM</div>
+              <div className={styles.profileInfo}>
+                <div className={styles.profileName}>{user?.name || 'User'}</div>
+                <div className={styles.profileEmail}>{user?.email || 'user@xyz.com'}</div>
+              </div>
+              <ChevronRightIcon 
+                className={styles.profileArrow} 
+                style={{ transform: showUserMenu ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
+              />
+            </div>
         </div>
+
       </div>
+      
+      <LogoutModal 
+        isOpen={isLogoutModalOpen} 
+        onClose={() => setIsLogoutModalOpen(false)} 
+        onConfirm={handleLogout} 
+      />
     </aside>
   );
 }

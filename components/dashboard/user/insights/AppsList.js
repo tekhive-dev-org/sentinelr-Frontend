@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import LoadingSpinner from '../../../ui/LoadingSpinner';
+import styles from './AppsList.module.css';
 
 export default function AppsList({ apps, loading }) {
 
@@ -16,31 +17,23 @@ export default function AppsList({ apps, loading }) {
   // For this step I will link to presumed paths.
 
   return (
-    <div style={{ marginTop: '32px' }}>
-      <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#111827', marginBottom: '4px' }}>Most Used Apps</h3>
-      <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '24px' }}>Total screen time for each app used.</p>
+    <div className={styles.container}>
+      <h3 className={styles.heading}>Most Used Apps</h3>
+      <p className={styles.subtext}>Total screen time for each app used.</p>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div className={styles.list}>
         {loading ? (
              <LoadingSpinner />
         ) : apps?.map((app) => (
-          <div key={app.id} style={{ 
-            display: 'grid', 
-            gridTemplateColumns: '1fr 1fr auto',
-            alignItems: 'center', 
-            padding: '16px 24px', 
-            border: '1px solid #e5e7eb', 
-            borderRadius: '12px',
-            background: '#fff'
-          }}>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ color: '#4b5563', fontSize: '13px', marginBottom: '4px' }}>{app.name}</span>
-                <span style={{ color: '#111827', fontSize: '14px', fontWeight: 600 }}>{app.subval}</span>
+          <div key={app.id} className={styles.appItem}>
+            <div className={styles.column}>
+                <span className={styles.label}>{app.name}</span>
+                <span className={styles.value}>{app.subval}</span>
             </div>
             
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ color: '#4b5563', fontSize: '13px', marginBottom: '4px' }}>Time Spent</span>
-                <span style={{ color: '#111827', fontSize: '14px', fontWeight: 600 }}>{app.time}</span>
+            <div className={styles.column}>
+                <span className={styles.label}>Time Spent</span>
+                <span className={styles.value}>{app.time}</span>
             </div>
             
             <Image 
@@ -48,7 +41,7 @@ export default function AppsList({ apps, loading }) {
                 alt={app.name} 
                 width={56} 
                 height={56} 
-                style={{ borderRadius: '12px' }}
+                className={styles.appIcon}
             />
           </div>
         ))}

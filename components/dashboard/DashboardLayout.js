@@ -5,6 +5,8 @@ import Sidebar from './Sidebar';
 import PageHeader from './PageHeader';
 import styles from './DashboardLayout.module.css';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import UserBackground from './backgrounds/UserBackground';
+import AdminBackground from './backgrounds/AdminBackground';
 
 const pageConfig = {
   '/dashboard': {
@@ -120,20 +122,24 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className={styles.layout}>
-      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+      {user?.role === 'admin' ? <AdminBackground /> : <UserBackground />}
       
-      <div className={`${styles.mainContent} ${!isSidebarOpen ? styles.mainContentExpanded : ''}`}>
-        <PageHeader 
-          title={currentPage?.title} 
-          subtitle={currentPage?.subtitle}
-          icon={currentPage?.icon}
-          user={user}
-          onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        />
+      <div className={styles.dashboardContainer}>
+        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
         
-        <main className={styles.pageContent}>
-          {children}
-        </main>
+        <div className={`${styles.mainContent} ${!isSidebarOpen ? styles.mainContentExpanded : ''}`}>
+          <PageHeader 
+            title={currentPage?.title} 
+            subtitle={currentPage?.subtitle}
+            icon={currentPage?.icon}
+            user={user}
+            onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          />
+          
+          <main className={styles.pageContent}>
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   );

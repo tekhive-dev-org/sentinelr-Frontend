@@ -82,7 +82,13 @@
   border: 1px solid #E0E0E0;
   border-radius: 8px;
   padding: 32px 24px;
-  background: white;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5); /* Inner shine */
   display: flex;
   flex-direction: column;
   transition: all 0.3s ease;
@@ -224,7 +230,13 @@
   border-radius: 10px;
   padding: 20px;
   margin-bottom: 16px;
-  background: white;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5); /* Inner shine */
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -276,7 +288,13 @@
 .methodDetails {
   margin-top: 24px;
   padding: 24px;
-  background: #FAFAFA;
+ background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5); /* Inner shine */ background: #FAFAFA;
   border-radius: 8px;
 }
 
@@ -368,7 +386,13 @@
   border-radius: 12px;
   padding: 24px;
   height: fit-content;
-  background: white;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5); /* Inner shine */
 }
 
 .summaryHeader {

@@ -1,0 +1,122 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.leftGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  margin-right: 16px;
+}
+
+/* Pill/Button Styles */
+.pillTrigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5); /* Inner shine */
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  outline: none;
+  height: 40px;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+.pillTrigger:hover {
+  background: #f9fafb;
+}
+
+/* Date Picker Wrapper */
+.datePickerWrapper {
+  position: relative;
+  
+}
+
+.hiddenPicker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Override visibility to ensure sizing is calculated */
+.hiddenPicker :global(.MuiFormControl-root) {
+  width: 100%;
+  height: 100%;
+}
+
+/* Native Select Styles Removed - Using CustomSelect component */
+
+/* Specific widths for containers - Increased as requested */
+.periodSelect {
+  min-width: 160px; /* Increased from 140px */
+}
+
+.typeSelect {
+  min-width: 200px; /* Increased from 180px */
+}
+
+/* Export Button */
+.exportBtn {
+  background-color: #0f3c5f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  height: 36px;
+  transition: background-color 0.2s;
+}
+
+.exportBtn:hover {
+  background-color: #0c314e;
+}
+
+.icon {
+  font-size: 16px !important;
+  color: #6b7280;
+}
+
+.exportIcon {
+  font-size: 18px !important;
+}
+
+.selectIcon {
+  font-size: 16px !important;
+  color: #6b7280;
+  position: absolute;
+  right: 12px;
+  pointer-events: none;
+}

@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import CloseIcon from '@mui/icons-material/Close';
 import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined';
 import PublicIcon from '@mui/icons-material/Public';
@@ -26,9 +27,16 @@ export default function ProfilePictureModal({
     fileInputRef.current.click();
   };
 
-  if (!isOpen) return null;
+  const [mounted, setMounted] = React.useState(false);
 
-  return (
+  React.useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
+
+  const content = (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()} style={{ maxWidth: '450px' }}>
         <div className={styles.modalHeader} style={{ justifyContent: 'center', position: 'relative', marginBottom: '8px' }}>
@@ -89,4 +97,6 @@ export default function ProfilePictureModal({
       </div>
     </div>
   );
+
+  return ReactDOM.createPortal(content, document.body);
 }

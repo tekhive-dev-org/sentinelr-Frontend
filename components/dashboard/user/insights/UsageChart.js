@@ -1,10 +1,8 @@
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Area, BarChart, Bar } from 'recharts';
 import LoadingSpinner from '../../../ui/LoadingSpinner';
+import styles from './UsageChart.module.css';
 
 export default function UsageChart({ chartType, data, loading }) {
-  // Colors based on images
-
-  // Colors based on images
   // Colors based on images
   const lineColor = '#6CAE6C'; // Greenish 
   const barColor1 = '#0f3c5f'; // Brand Navy
@@ -12,10 +10,10 @@ export default function UsageChart({ chartType, data, loading }) {
   const barColor3 = '#e5e7eb'; // Gray/Light (Background)
 
   return (
-    <div style={{ width: '100%', height: 400, background: '#fff', borderRadius: '16px', border: '1px solid #e5e7eb', padding: '24px' }}>
-        <div style={{ marginBottom: '24px' }}>
-            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#111827' }}>
-                Avg Screen time <span style={{ color: '#1f2937' }}>7h 30m</span>
+    <div className={styles.chartContainer}>
+        <div className={styles.header}>
+            <h3 className={styles.title}>
+                Avg Screen time <span className={styles.timeHighlight}>7h 30m</span>
             </h3>
         </div>
 

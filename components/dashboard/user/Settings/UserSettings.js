@@ -107,7 +107,7 @@ export default function UserSettings({ user }) {
       </div>
 
       {/* Global Actions */}
-      <div className={styles.actions} style={{ marginTop: '0px', padding: '0 32px 52px' }}>
+      <div className={styles.actions} style={{ marginTop: '20px', padding: '0 32px 52px' }}>
         <button type="button" className={styles.secondaryButton} onClick={handleDiscard}>Discard</button>
         <button type="button" className={styles.primaryButton} onClick={formik.handleSubmit}>Apply Changes</button>
       </div>

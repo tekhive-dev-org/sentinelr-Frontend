@@ -4,6 +4,8 @@ import * as Yup from 'yup';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from '../../../context/AuthContext';
+import Toast from '../../common/Toast';
 import styles from './SignUpForm.module.css';
 
 const passwordChecks = [
@@ -13,6 +15,8 @@ const passwordChecks = [
 ];
 
 const validationSchema = Yup.object({
+  userName: Yup.string()
+    .required('Username is required'),
   email: Yup.string()
     .email('Invalid email address')
     .required('Email is required'),
@@ -21,6 +25,9 @@ const validationSchema = Yup.object({
     .matches(/[A-Z]/, 'At least 1 uppercase')
     .matches(/\d/, 'At least 1 number')
     .min(8, 'At least 8 characters'),
+  confirmPassword: Yup.string()
+    .required('Please confirm your password')
+    .oneOf([Yup.ref('password')], 'Passwords must match'),
   agree: Yup.boolean().oneOf([true], 'You must accept the terms'),
 });
 
@@ -37,15 +44,23 @@ const getPasswordStrength = (password) => {
 export default function SignUpForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [toast, setToast] = useState(null);
+  const { signup, loading } = useAuth();
   const formik = useFormik({
-    initialValues: { email: '', password: '', agree: false },
+    initialValues: { userName: '', email: '', role: 'Parent', password: '', confirmPassword: '', agree: false },
     validationSchema,
     onSubmit: async (values) => {
-      // Handle sign up logic here
-      console.log(values);
-      // After successful signup, redirect to verification page
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      router.push(`/verify?email=${encodeURIComponent(values.email)}`);
+      // Pass all fields to signup
+      const result = await signup(values.userName, values.email, values.password, values.confirmPassword, values.role);
+      
+      if (result.success) {
+        // After successful signup, redirect to verification page
+        router.push(`/verify?email=${encodeURIComponent(values.email)}`);
+      } else {
+        const errorMsg = result.error ? result.error.replace('Error: ', '') : 'Signup failed';
+        setToast({ message: errorMsg, type: 'error' });
+        formik.setFieldError('email', errorMsg);
+      }
     },
   });
 
@@ -54,6 +69,13 @@ export default function SignUpForm() {
 
   return (
     <div className={styles.container}>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       {/* Left Section (Lock Image) */}
       <div className={styles.leftSection}>
         <div className={styles.lockImageWrapper}>
@@ -123,6 +145,55 @@ export default function SignUpForm() {
           <form onSubmit={formik.handleSubmit}>
             <div className={styles.formField}>
               <label className={styles.label}>
+                Username
+              </label>
+              <input
+                type="text"
+                name="userName"
+                className={`${styles.input} ${
+                  formik.touched.userName && formik.errors.userName ? styles.inputError : ''
+                }`}
+                placeholder=""
+                value={formik.values.userName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              {formik.touched.userName && formik.errors.userName && (
+                <div className={styles.errorText}>
+                   {/* Add a simple error text style if not present in module, assuming it is handled or inherited,
+                       but looking at other fields, there doesn't seem to be explicit error text rendered for them in the original snippet,
+                       only inputError class. I will add error text block like in LoginForm if available, 
+                       or sticking to the pattern. The original file didn't show error text div for email?
+                       Wait, looking at line 132 in original SignUpForm... ah, actually it DOESN'T show error text for email in the snippet I saw!
+                       It only applies `inputError` class.
+                       However, it's better to show it. I'll add it.
+                   */}
+                   {formik.errors.userName}
+                </div>
+              )}
+            </div>
+
+            <div className={styles.formField}>
+              <label className={styles.label}>
+                Role
+              </label>
+              <select
+                name="role"
+                className={styles.input} // Reusing input style for consistency
+                value={formik.values.role}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                style={{ appearance: 'none', backgroundImage: 'none' }} // Simple reset, browser arrow might be hidden or default. 
+                // To support a custom arrow, usually we need a wrapper, but for now standard select is fine or simple styling.
+                // Actually, let's just leave standard appearance or minimal style.
+              >
+                <option value="Parent">Parent</option>
+                <option value="Child">Child</option>
+              </select>
+            </div>
+
+            <div className={styles.formField}>
+              <label className={styles.label}>
                 Email Address
               </label>
               <input
@@ -172,6 +243,31 @@ export default function SignUpForm() {
                 </button>
               </div>
 
+              </div>
+
+              <div className={styles.formField}>
+                <label className={styles.label}>
+                  Confirm Password
+                </label>
+                <div className={styles.passwordWrapper}>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="confirmPassword"
+                    className={`${styles.input} ${
+                      formik.touched.confirmPassword && formik.errors.confirmPassword ? styles.inputError : ''
+                    }`}
+                    placeholder=""
+                    value={formik.values.confirmPassword}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  />
+                 {formik.touched.confirmPassword && formik.errors.confirmPassword && ( 
+                      <div style={{color: '#e53935', fontSize: '12px', marginTop: '4px'}}>
+                          {formik.errors.confirmPassword}
+                      </div>
+                  )}
+                </div>
+              </div>
               {formik.values.password && (
                 <div className={styles.passwordStrengthContainer}>
                   {/* Password Strength Bars */}
@@ -266,7 +362,7 @@ export default function SignUpForm() {
                   )}
                 </div>
               )}
-            </div>
+
 
             <div className={styles.checkboxContainer}>
               <input
@@ -294,16 +390,19 @@ export default function SignUpForm() {
               type="submit"
               disabled={
                 !formik.values.email ||
+                !formik.values.userName ||
                 !allValid ||
-                !formik.values.agree
+                !formik.values.agree ||
+                !formik.values.confirmPassword ||
+                loading
               }
               className={`${styles.submitButton} ${
-                !formik.values.email || !allValid || !formik.values.agree
+                !formik.values.email || !formik.values.userName || !allValid || !formik.values.agree || !formik.values.confirmPassword || loading
                   ? styles.submitButtonDisabled
                   : styles.submitButtonEnabled
               }`}
             >
-              Get Started
+              {loading ? 'Signing Up...' : 'Get Started'}
             </button>
           </form>
         </div>

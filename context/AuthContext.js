@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }) => {
       
       // checks for pending user data from signup
       let role = "Parent";
-      let name = "Mock User";
+      let name = "User";
       
       if (typeof window !== "undefined") {
           const pendingStr = localStorage.getItem("mock_pending_user");

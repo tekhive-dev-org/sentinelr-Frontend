@@ -3,6 +3,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import { useAuth } from '../../../context/AuthContext';
 import styles from './ResetPassword.module.css';
 
 const passwordChecks = [
@@ -37,15 +38,26 @@ export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const { resetPassword } = useAuth();
+  const { token } = router.query;
+
   const formik = useFormik({
     initialValues: { password: '', confirmPassword: '' },
     validationSchema,
     onSubmit: async (values) => {
-      // Handle reset password logic here
-      console.log('Resetting password');
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      // Redirect to success page
-      router.push('/login');
+      if (!token) {
+        formik.setFieldError('password', 'Invalid or missing reset token');
+        return;
+      }
+
+      const result = await resetPassword(token, values.password);
+
+      if (result.success) {
+        // Redirect to login page
+        router.push('/login');
+      } else {
+        formik.setFieldError('password', result.error || 'Failed to reset password');
+      }
     },
   });
 

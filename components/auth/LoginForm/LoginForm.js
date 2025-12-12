@@ -25,9 +25,13 @@ export default function LoginForm() {
     initialValues: { email: '', password: '' },
     validationSchema,
     onSubmit: async (values) => {
-      await login(values.email, values.password);
-      // Redirect to dashboard after successful login
-      router.push('/dashboard');
+      const result = await login(values.email, values.password);
+      if (result.success) {
+        router.push('/dashboard');
+      } else {
+        // You might want to set a formik error or a local state error here
+        formik.setFieldError('email', result.error || 'Login failed');
+      }
     },
   });
 

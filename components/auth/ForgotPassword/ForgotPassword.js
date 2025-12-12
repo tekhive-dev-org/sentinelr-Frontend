@@ -3,6 +3,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from '../../../context/AuthContext';
 import styles from './ForgotPassword.module.css';
 
 const validationSchema = Yup.object({
@@ -12,15 +13,21 @@ const validationSchema = Yup.object({
 });
 
 export default function ForgotPassword() {
+  const { forgotPassword } = useAuth();
+  const [successMessage, setSuccessMessage] = React.useState('');
+
   const formik = useFormik({
     initialValues: { email: '' },
     validationSchema,
     onSubmit: async (values) => {
-      // Handle forgot password logic here
-      console.log('Sending reset link to:', values.email);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      // Redirect to success page or show success message
+      setSuccessMessage('');
+      const result = await forgotPassword(values.email);
+      
+      if (result.success) {
+        setSuccessMessage(result.message || 'Password reset link sent to your email.');
+      } else {
+        formik.setFieldError('email', result.error || 'Failed to send reset link');
+      }
     },
   });
 
@@ -53,6 +60,12 @@ export default function ForgotPassword() {
           <p className={styles.subtitle}>
             No worries, we'll send you reset instructions
           </p>
+
+          {successMessage && (
+            <div style={{ color: 'green', fontSize: '14px', marginBottom: '16px', textAlign: 'center' }}>
+              {successMessage}
+            </div>
+          )}
 
           {/* Form */}
           <form onSubmit={formik.handleSubmit} className={styles.form}>

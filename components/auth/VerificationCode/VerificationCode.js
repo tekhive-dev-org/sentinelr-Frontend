@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import { useAuth } from '../../../context/AuthContext';
 import styles from './VerificationCode.module.css';
 
 export default function VerificationCode({ email = 'user@sentinelr.com' }) {
@@ -55,6 +56,8 @@ export default function VerificationCode({ email = 'user@sentinelr.com' }) {
     inputRefs[lastIndex].current?.focus();
   };
 
+  const { verifyEmail } = useAuth(); // Destructure verifyEmail from context
+  
   const handleVerify = async () => {
     const verificationCode = code.join('');
     
@@ -65,15 +68,13 @@ export default function VerificationCode({ email = 'user@sentinelr.com' }) {
     setIsVerifying(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const result = await verifyEmail(email, verificationCode);
       
-      // For demo: accept code "4709" as valid
-      if (verificationCode === '4709') {
+      if (result.success) {
         setVerificationState('success');
-        // Redirect to home after 2 seconds
+        // Redirect to home or dashboard after 2 seconds
         setTimeout(() => {
-          router.push('/');
+          router.push('/dashboard'); // Changed to dashboard to match flow
         }, 2000);
       } else {
         setVerificationState('failed');

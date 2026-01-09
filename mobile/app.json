@@ -1,0 +1,62 @@
+{
+  "expo": {
+    "name": "Sentinelr",
+    "slug": "sentinelr-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a1a2e"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sentinelr.mobile",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Sentinelr needs access to your location to track device position for family safety.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Sentinelr needs continuous access to your location for real-time tracking and safety alerts.",
+        "UIBackgroundModes": ["location", "fetch"]
+      }
+    },
+    "android": {
+      "package": "com.sentinelr.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1a1a2e"
+      },
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Sentinelr needs continuous access to your location for real-time tracking and safety alerts.",
+          "locationAlwaysPermission": "Allow Sentinelr to access your location in the background for continuous tracking.",
+          "locationWhenInUsePermission": "Allow Sentinelr to access your location while using the app.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#1a1a2e"
+        }
+      ]
+    ],
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

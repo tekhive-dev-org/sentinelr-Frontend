@@ -20,17 +20,24 @@ export default function LoginForm() {
   const router = useRouter();
   const { user, login, logout, loading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [loginSuccess, setLoginSuccess] = useState(false);
 
   const formik = useFormik({
     initialValues: { email: '', password: '' },
     validationSchema,
     onSubmit: async (values) => {
+      setFormError(''); // Clear previous errors
       const result = await login(values.email, values.password);
       if (result.success) {
-        router.push('/dashboard');
+        setLoginSuccess(true);
+        // Brief delay to show success state before redirect
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 1500);
       } else {
-        // You might want to set a formik error or a local state error here
-        formik.setFieldError('email', result.error || 'Login failed');
+        // Display API error as a form-level error
+        setFormError(result.error || 'Login failed. Please try again.');
       }
     },
   });
@@ -44,6 +51,17 @@ export default function LoginForm() {
 
   return (
     <div className={styles.container}>
+      {/* Login Success Loading Screen */}
+      {loginSuccess && (
+        <div className={styles.loadingOverlay}>
+          <div className={styles.loadingContent}>
+            <div className={styles.spinner}></div>
+            <h2 className={styles.loadingTitle}>Welcome back!</h2>
+            <p className={styles.loadingSubtitle}>Preparing your dashboard...</p>
+          </div>
+        </div>
+      )}
+
       {/* Left Background Section (desktop only) */}
       <div className={styles.leftBackground}></div>
 
@@ -185,6 +203,16 @@ export default function LoginForm() {
                 </Link>
               </div>
             </div>
+
+            {/* Form-level error message */}
+            {formError && (
+              <div className={styles.formError}>
+                <svg className={styles.formErrorIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {formError}
+              </div>
+            )}
 
             <button
               type="submit"

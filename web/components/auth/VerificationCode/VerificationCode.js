@@ -2,14 +2,21 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { useAuth } from '../../../context/AuthContext';
+import Toast from '../../common/Toast';
 import styles from './VerificationCode.module.css';
 
-export default function VerificationCode({ email = 'user@sentinelr.com' }) {
+export default function VerificationCode({ email = '' }) {
   const router = useRouter();
-  const [code, setCode] = useState(['', '', '', '']);
+  const [code, setCode] = useState(['', '', '', '', '', '']); // 6 digits
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationState, setVerificationState] = useState('input'); // 'input', 'success', 'failed'
-  const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
+  const [toast, setToast] = useState(null);
+  
+  // OTP expiry countdown - 10 minutes (600 seconds)
+  const OTP_EXPIRY_SECONDS = 600;
+  const [timeRemaining, setTimeRemaining] = useState(OTP_EXPIRY_SECONDS);
+  const [isExpired, setIsExpired] = useState(false);
+  const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null)]; // 6 refs
 
   useEffect(() => {
     // Focus first input on mount
@@ -17,6 +24,38 @@ export default function VerificationCode({ email = 'user@sentinelr.com' }) {
       inputRefs[0].current?.focus();
     }
   }, [verificationState]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (verificationState !== 'input' || isExpired) return;
+    
+    const timer = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev <= 1) {
+          setIsExpired(true);
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [verificationState, isExpired]);
+
+  // Format time as MM:SS
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Calculate progress percentage for circular indicator
+  const progressPercent = (timeRemaining / OTP_EXPIRY_SECONDS) * 100;
+  
+  // Determine urgency level
+  const isUrgent = timeRemaining <= 60; // Last minute
+  const isWarning = timeRemaining <= 180 && !isUrgent; // Last 3 minutes
 
   const handleChange = (index, value) => {
     // Only allow single digit
@@ -30,7 +69,7 @@ export default function VerificationCode({ email = 'user@sentinelr.com' }) {
     setCode(newCode);
 
     // Auto-focus next input
-    if (value && index < 3) {
+    if (value && index < 5) {
       inputRefs[index + 1].current?.focus();
     }
   };
@@ -44,24 +83,24 @@ export default function VerificationCode({ email = 'user@sentinelr.com' }) {
 
   const handlePaste = (e) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').slice(0, 4);
+    const pastedData = e.clipboardData.getData('text').slice(0, 6);
     
     if (!/^\d+$/.test(pastedData)) return;
 
-    const newCode = pastedData.split('').slice(0, 4);
-    setCode([...newCode, ...Array(4 - newCode.length).fill('')]);
+    const newCode = pastedData.split('').slice(0, 6);
+    setCode([...newCode, ...Array(6 - newCode.length).fill('')]);
     
     // Focus last filled input
-    const lastIndex = Math.min(newCode.length - 1, 3);
+    const lastIndex = Math.min(newCode.length - 1, 5);
     inputRefs[lastIndex].current?.focus();
   };
 
-  const { verifyEmail } = useAuth(); // Destructure verifyEmail from context
+  const { verifyEmail, resendOTP, loading } = useAuth();
   
   const handleVerify = async () => {
     const verificationCode = code.join('');
     
-    if (verificationCode.length !== 4) {
+    if (verificationCode.length !== 6) {
       return;
     }
 
@@ -86,16 +125,35 @@ export default function VerificationCode({ email = 'user@sentinelr.com' }) {
     }
   };
 
+  const [resending, setResending] = useState(false);
+  
   const handleResend = async () => {
-    setCode(['', '', '', '']);
+    if (!email || resending) return;
+    
+    setResending(true);
+    setCode(['', '', '', '', '', '']);
     inputRefs[0].current?.focus();
-    // Simulate resend API call
-    console.log('Resending verification code...');
+    
+    try {
+      const result = await resendOTP(email);
+      if (result.success) {
+        setToast({ message: 'Verification code sent!', type: 'success' });
+        // Reset timer on successful resend
+        setTimeRemaining(OTP_EXPIRY_SECONDS);
+        setIsExpired(false);
+      } else {
+        setToast({ message: result.error || 'Failed to resend code', type: 'error' });
+      }
+    } catch (error) {
+      setToast({ message: 'Failed to resend code', type: 'error' });
+    } finally {
+      setResending(false);
+    }
   };
 
   const handleReverify = () => {
     setVerificationState('input');
-    setCode(['', '', '', '']);
+    setCode(['', '', '', '', '', '']);
     inputRefs[0].current?.focus();
   };
 
@@ -107,6 +165,13 @@ export default function VerificationCode({ email = 'user@sentinelr.com' }) {
 
   return (
     <div className={styles.container}>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       {/* Left Section (Lock Image) */}
       <div className={styles.leftSection}>
         <div className={styles.lockImageWrapper}>
@@ -137,6 +202,42 @@ export default function VerificationCode({ email = 'user@sentinelr.com' }) {
               <p className={styles.subtitle}>
                 We've sent a code to <strong>{email}</strong>
               </p>
+
+              {/* OTP Expiry Countdown Timer */}
+              <div className={`${styles.timerContainer} ${isExpired ? styles.timerExpired : ''} ${isUrgent ? styles.timerUrgent : ''} ${isWarning ? styles.timerWarning : ''}`}>
+                <div className={styles.timerCircle}>
+                  <svg className={styles.timerSvg} viewBox="0 0 36 36">
+                    {/* Background circle */}
+                    <path
+                      className={styles.timerBg}
+                      d="M18 2.0845
+                        a 15.9155 15.9155 0 0 1 0 31.831
+                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                    {/* Progress circle */}
+                    <path
+                      className={styles.timerProgress}
+                      strokeDasharray={`${progressPercent}, 100`}
+                      d="M18 2.0845
+                        a 15.9155 15.9155 0 0 1 0 31.831
+                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                  </svg>
+                  <div className={styles.timerIcon}>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className={styles.timerInfo}>
+                  <span className={styles.timerLabel}>
+                    {isExpired ? 'Code expired' : 'Code expires in'}
+                  </span>
+                  <span className={styles.timerValue}>
+                    {isExpired ? '00:00' : formatTime(timeRemaining)}
+                  </span>
+                </div>
+              </div>
 
               {/* Code Input */}
               <div className={styles.codeInputs}>

@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
 import { DashboardLayout } from '../../components/dashboard';
+import { DevicesAndUsers } from '../../components/dashboard/user/devices';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 export default function Devices() {
   const router = useRouter();
@@ -14,11 +16,7 @@ export default function Devices() {
   }, [user, loading, router]);
 
   if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        Loading...
-      </div>
-    );
+    return <LoadingSpinner fullScreen />;
   }
 
   if (!user) {
@@ -27,16 +25,7 @@ export default function Devices() {
 
   return (
     <DashboardLayout>
-      <div style={{ padding: '0 32px 32px' }} className="dashboard-content">
-        <style jsx>{`
-          @media (max-width: 768px) {
-            .dashboard-content {
-              padding: 0 16px 16px !important;
-            }
-          }
-        `}</style>
-        <p>Devices & Users content will go here</p>
-      </div>
+      <DevicesAndUsers />
     </DashboardLayout>
   );
 }

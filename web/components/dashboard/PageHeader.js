@@ -24,6 +24,21 @@ export default function PageHeader({ title, subtitle, icon, user, onMenuClick, h
     );
   };
 
+  const profileImage =
+    user?.profilePictureUrl ||
+    user?.profilePicture ||
+    user?.avatarUrl ||
+    user?.avatar ||
+    user?.imageUrl ||
+    user?.photoUrl;
+
+  const getInitials = (value) => {
+    if (!value) return 'U';
+    const parts = value.trim().split(' ');
+    if (parts.length === 1) return parts[0][0]?.toUpperCase() || 'U';
+    return `${parts[0][0] || ''}${parts[1][0] || ''}`.toUpperCase();
+  };
+
   return (
     <header className={styles.header}>
       <div className={styles.headerContainer}> 
@@ -42,12 +57,17 @@ export default function PageHeader({ title, subtitle, icon, user, onMenuClick, h
 
       <div className={styles.rightSection}>
         <div className={styles.userAvatar}>
-          {/* Mock User Image or Initial */}
-          <img 
-            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" 
-            alt="User" 
-            className={styles.avatarImage}
-          />
+          {profileImage ? (
+            <img
+              src={profileImage}
+              alt="User"
+              className={styles.avatarImage}
+            />
+          ) : (
+            <div className={styles.avatarFallback}>
+              {getInitials(user?.userName || user?.name || user?.email)}
+            </div>
+          )}
           <span className={styles.onlineStatus}></span>
         </div>
         

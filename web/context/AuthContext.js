@@ -8,6 +8,50 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 const API_URL = `${API_BASE_URL}/auth`;
 const LOGGED_IN_USER_URL = `${API_URL}/logged-in-user`;
 
+// Helper function to extract a user-friendly error message
+const parseErrorMessage = (data, status, statusText) => {
+  // If data is a valid JSON object with a message
+  if (data && typeof data === "object" && data.message) {
+    return data.message;
+  }
+  
+  // If data is a string, check if it looks like HTML (error page)
+  if (typeof data === "string") {
+    // Check if it's an HTML response (error page)
+    if (data.includes("<!DOCTYPE") || data.includes("<html") || data.includes("<HTML")) {
+      // Return a user-friendly message based on status code
+      switch (status) {
+        case 400:
+          return "Invalid request. Please check your input and try again.";
+        case 401:
+          return "Invalid credentials. Please check your email and password.";
+        case 403:
+          return "Access denied. You don't have permission to perform this action.";
+        case 404:
+          return "Service temporarily unavailable. Please try again later.";
+        case 422:
+          return "Invalid data provided. Please check your input.";
+        case 429:
+          return "Too many attempts. Please wait a moment and try again.";
+        case 500:
+        case 502:
+        case 503:
+        case 504:
+          return "Server error. Please try again later.";
+        default:
+          return `Request failed. Please try again. (Error ${status})`;
+      }
+    }
+    // If it's a short string, it might be a valid error message
+    if (data.length < 200) {
+      return data;
+    }
+  }
+  
+  // Fallback to status text or generic message
+  return statusText || `Request failed with status ${status}`;
+};
+
 // Helper function for API calls with proper error handling
 const apiRequest = async (endpoint, method, body = null, token = null) => {
   const url = `${API_URL}/${endpoint}`;
@@ -43,7 +87,7 @@ const apiRequest = async (endpoint, method, body = null, token = null) => {
   logger.api.response(response.status, response.statusText, data);
 
   if (!response.ok) {
-    const errorMessage = data?.message || data || `Request failed with status ${response.status}`;
+    const errorMessage = parseErrorMessage(data, response.status, response.statusText);
     throw new Error(errorMessage);
   }
 
@@ -92,7 +136,7 @@ export const AuthProvider = ({ children }) => {
 
       // Retry with raw token if backend expects it
       if (!response.ok) {
-        const errorMessage = data?.message || data || "";
+        const errorMessage = parseErrorMessage(data, response.status, response.statusText);
         if (
           typeof errorMessage === "string" &&
           errorMessage.toLowerCase().includes("invalid")
@@ -106,7 +150,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       if (!response.ok) {
-        throw new Error(data?.message || data || `Failed to fetch user with status ${response.status}`);
+        throw new Error(parseErrorMessage(data, response.status, response.statusText));
       }
 
       logger.auth.info("Logged-in user fetched successfully");
@@ -156,13 +200,30 @@ export const AuthProvider = ({ children }) => {
       
       logger.auth.info("Login successful");
       
-      const userData = data.user || data;
       const token = data.token;
-
-      setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
+      
+      // Store token first so fetchLoggedInUser can use it
       if (token) {
         localStorage.setItem("token", token);
+      }
+      
+      // Fetch complete user data from API
+      if (token) {
+        const userResult = await fetchLoggedInUser(token);
+        if (userResult.success) {
+          setUser(userResult.user);
+          localStorage.setItem("user", JSON.stringify(userResult.user));
+        } else {
+          // Fallback to login response user data if fetch fails
+          const userData = data.user || data;
+          setUser(userData);
+          localStorage.setItem("user", JSON.stringify(userData));
+        }
+      } else {
+        // No token, use login response user data
+        const userData = data.user || data;
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
       }
       
       return { success: true, data };

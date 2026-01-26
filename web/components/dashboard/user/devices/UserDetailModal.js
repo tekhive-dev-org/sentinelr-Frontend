@@ -12,6 +12,14 @@ export default function UserDetailModal({ isOpen, onClose, user, onPairDevice })
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
+  const profileImage =
+    user?.profilePictureUrl ||
+    user?.profilePicture ||
+    user?.avatarUrl ||
+    user?.avatar ||
+    user?.imageUrl ||
+    user?.photoUrl;
+
   const controls = [
     {
       title: 'Screen time limit',
@@ -33,7 +41,15 @@ export default function UserDetailModal({ isOpen, onClose, user, onPairDevice })
         {/* User Header */}
         <div className={styles.userDetailHeader}>
           <div className={styles.userDetailAvatar}>
-            {getInitials(user.name)}
+            {profileImage ? (
+              <img
+                src={profileImage}
+                alt={user.name || 'User'}
+                className={styles.userDetailAvatarImage}
+              />
+            ) : (
+              getInitials(user.name || user.userName || user.email)
+            )}
           </div>
           <div className={styles.userDetailInfo}>
             <h2 className={styles.userDetailName}>{user.name}</h2>

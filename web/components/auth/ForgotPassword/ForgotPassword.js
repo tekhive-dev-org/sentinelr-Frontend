@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/router';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Link from 'next/link';
@@ -15,6 +16,7 @@ const validationSchema = Yup.object({
 export default function ForgotPassword() {
   const { forgotPassword } = useAuth();
   const [successMessage, setSuccessMessage] = React.useState('');
+  const router = useRouter();
 
   const formik = useFormik({
     initialValues: { email: '' },
@@ -25,6 +27,9 @@ export default function ForgotPassword() {
       
       if (result.success) {
         setSuccessMessage(result.message || 'Password reset link sent to your email.');
+        setTimeout(() => {
+          router.push(`/reset-password?email=${encodeURIComponent(values.email)}`);
+        }, 800);
       } else {
         formik.setFieldError('email', result.error || 'Failed to send reset link');
       }

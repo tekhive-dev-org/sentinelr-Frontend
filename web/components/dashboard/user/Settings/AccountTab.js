@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './Settings.module.css';
 import Toast from '../../../common/Toast';
 
@@ -21,12 +21,20 @@ export default function AccountTab({ formik }) {
   const [isDeleting, setIsDeleting] = useState(false);
   
   // Image state
-  const [previewImage, setPreviewImage] = useState(DEFAULT_AVATAR);
+  const [previewImage, setPreviewImage] = useState(
+    formik.values.profilePictureUrl || DEFAULT_AVATAR
+  );
 
   // Toast
   const [toast, setToast] = useState(null);
 
   // Handlers
+  useEffect(() => {
+    if (formik.values.profilePictureUrl) {
+      setPreviewImage(formik.values.profilePictureUrl);
+    }
+  }, [formik.values.profilePictureUrl]);
+
   const handleImageChange = (file) => {
     formik.setFieldValue('profilePicture', file);
     const reader = new FileReader();
@@ -41,6 +49,7 @@ export default function AccountTab({ formik }) {
   const handleImageRemove = () => {
     setPreviewImage(DEFAULT_AVATAR);
     formik.setFieldValue('profilePicture', null);
+    formik.setFieldValue('profilePictureUrl', '');
     setShowProfileModal(false);
     setToast({ message: 'Profile picture removed', type: 'info' });
   };

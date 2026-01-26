@@ -47,7 +47,7 @@ export default function SignUpForm() {
   const [toast, setToast] = useState(null);
   const { signup, loading } = useAuth();
   const formik = useFormik({
-    initialValues: { userName: '', email: '', role: 'Parent', password: '', confirmPassword: '', agree: false },
+    initialValues: { userName: '', email: '',  password: '', confirmPassword: '', agree: false },
     validationSchema,
     onSubmit: async (values) => {
       // Pass all fields to signup
@@ -173,7 +173,7 @@ export default function SignUpForm() {
               )}
             </div>
 
-            <div className={styles.formField}>
+            {/* <div className={styles.formField}>
               <label className={styles.label}>
                 Role
               </label>
@@ -190,7 +190,7 @@ export default function SignUpForm() {
                 <option value="Parent">Parent</option>
                 <option value="Child">Child</option>
               </select>
-            </div>
+            </div> */}
 
             <div className={styles.formField}>
               <label className={styles.label}>

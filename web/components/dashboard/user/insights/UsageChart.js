@@ -17,7 +17,7 @@ export default function UsageChart({ chartType, data, loading }) {
             </h3>
         </div>
 
-      <ResponsiveContainer width="100%" height={320}>
+      <ResponsiveContainer width="100%" height={320} minWidth={0} minHeight={0}>
         {loading ? (
              <LoadingSpinner />
         ) : chartType === 'graph' ? (

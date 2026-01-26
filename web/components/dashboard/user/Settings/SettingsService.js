@@ -1,39 +1,70 @@
 // ============================================
 // SETTINGS SERVICE - API Ready Structure
 // ============================================
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://sentinelr-backend.onrender.com/api";
+const AUTH_BASE_URL = `${API_BASE_URL}/auth`;
+
+const getAuthToken = () => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("token");
+};
+
+const parseResponse = async (response) => {
+  const contentType = response.headers.get("content-type");
+  if (contentType && contentType.includes("application/json")) {
+    return response.json();
+  }
+  return response.text();
+};
+
 const SettingsService = {
   // Account Settings
   async updateProfile(profileData) {
-    // TODO: Replace with actual API call
-    // return await fetch('/api/user/profile', {
-    //   method: 'PUT',
-    //   body: JSON.stringify(profileData)
-    // }).then(res => res.json());
-    
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ success: true, message: 'Profile updated successfully' });
-      }, 1000);
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error("Missing auth token");
+    }
+
+    const response = await fetch(`${AUTH_BASE_URL}/user/update-profile`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify(profileData),
     });
+
+    const data = await parseResponse(response);
+    if (!response.ok) {
+      throw new Error(data?.message || data || "Failed to update profile");
+    }
+
+    return data;
   },
 
   async uploadProfilePicture(file) {
-    // TODO: Replace with actual file upload API
-    // const formData = new FormData();
-    // formData.append('file', file);
-    // return await fetch('/api/user/avatar', {
-    //   method: 'POST',
-    //   body: formData
-    // }).then(res => res.json());
-    
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ 
-          success: true, 
-          url: URL.createObjectURL(file) 
-        });
-      }, 500);
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error("Missing auth token");
+    }
+
+    const formData = new FormData();
+    formData.append("profilePicture", file);
+
+    const response = await fetch(`${AUTH_BASE_URL}/user/update-profile-picture`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+      body: formData,
     });
+
+    const data = await parseResponse(response);
+    if (!response.ok) {
+      throw new Error(data?.message || data || "Failed to upload profile picture");
+    }
+
+    return data;
   },
 
   // Password

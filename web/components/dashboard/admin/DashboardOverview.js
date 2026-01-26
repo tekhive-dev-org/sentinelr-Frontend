@@ -96,7 +96,7 @@ export default function DashboardOverview() {
         <div className={styles.chartCard}>
           <h3 className={styles.chartTitle}>Subscription</h3>
           <div className={styles.chart}>
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <LineChart data={subscriptionData}>
                 <CartesianGrid
                   strokeDasharray="0"
@@ -134,7 +134,7 @@ export default function DashboardOverview() {
             Analytics- Real-time device usage
           </h3>
           <div className={styles.chart}>
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <LineChart data={analyticsData}>
                 <CartesianGrid
                   strokeDasharray="0"

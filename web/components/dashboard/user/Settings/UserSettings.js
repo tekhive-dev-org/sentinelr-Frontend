@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import AccountTab from './AccountTab';
@@ -15,16 +15,18 @@ export default function UserSettings({ user }) {
   const CORRECT_OLD_PASSWORD = 'Chidiebere2025';
 
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
       // Account
-      fullName: user?.fullName || 'Chidiebere Abraham Nwachukwu',
-      phoneNumber: user?.phoneNumber || '+234',
-      username: user?.name || 'British',
-      email: user?.email || 'chidibritish@gmail.com',
+      fullName: user?.fullName || user?.userName || user?.name || '',
+      phoneNumber: user?.phoneNumber || user?.phone || '',
+      username: user?.username || user?.userName || user?.name || '',
+      email: user?.email || '',
       profilePicture: null,
+      profilePictureUrl: user?.profilePicture || user?.avatarUrl || user?.photoUrl || '',
       
       // 2FA
-      is2FAEnabled: false,
+      is2FAEnabled: Boolean(user?.is2FAEnabled),
 
       // Password
       oldPassword: '',
@@ -49,7 +51,7 @@ export default function UserSettings({ user }) {
       }),
       newPassword: Yup.string().min(8, 'Password must be at least 8 characters'),
     }),
-    onSubmit: (values, { resetForm }) => {
+    onSubmit: async (values, { resetForm }) => {
       // Password Validation Logic
       if (values.newPassword) {
         if (!values.oldPassword) {
@@ -62,12 +64,28 @@ export default function UserSettings({ user }) {
         }
       }
 
-      console.log('All Settings Updated:', values);
-      setToast({ message: 'All changes saved successfully!', type: 'success' });
-      
-      // Clear password fields after successful save
-      if (values.newPassword) {
-        resetForm({ values: { ...values, oldPassword: '', newPassword: '' } });
+      try {
+        const profilePayload = {
+          fullName: values.fullName,
+          phoneNumber: values.phoneNumber,
+          username: values.username,
+          email: values.email,
+        };
+
+        await SettingsService.updateProfile(profilePayload);
+
+        if (values.profilePicture) {
+          await SettingsService.uploadProfilePicture(values.profilePicture);
+        }
+
+        setToast({ message: 'All changes saved successfully!', type: 'success' });
+
+        // Clear password fields after successful save
+        if (values.newPassword) {
+          resetForm({ values: { ...values, oldPassword: '', newPassword: '' } });
+        }
+      } catch (error) {
+        setToast({ message: error.message || 'Failed to update settings', type: 'error' });
       }
     },
   });

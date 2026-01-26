@@ -13,6 +13,8 @@ const passwordChecks = [
 ];
 
 const validationSchema = Yup.object({
+  email: Yup.string().email('Invalid email address'),
+  otp: Yup.string(),
   password: Yup.string()
     .required('Password is required')
     .matches(/[A-Z]/, 'At least 1 uppercase')
@@ -40,13 +42,30 @@ export default function ResetPassword() {
 
   const { resetPassword } = useAuth();
   const { token } = router.query;
+  const requiresOtp = !token;
 
   const formik = useFormik({
-    initialValues: { password: '', confirmPassword: '' },
+    enableReinitialize: true,
+    initialValues: { otp: '', password: '', confirmPassword: '' },
     validationSchema,
     onSubmit: async (values) => {
-      if (!token) {
-        formik.setFieldError('password', 'Invalid or missing reset token');
+      if (requiresOtp) {
+        if (!values.otp || values.otp.length < 6) {
+          formik.setFieldError('otp', 'OTP is required');
+          return;
+        }
+
+        const result = await resetPassword({
+          otp: values.otp,
+          newPassword: values.password,
+          confirmPassword: values.confirmPassword,
+        });
+
+        if (result.success) {
+          router.push('/login');
+        } else {
+          formik.setFieldError('password', result.error || 'Failed to reset password');
+        }
         return;
       }
 
@@ -96,6 +115,26 @@ export default function ResetPassword() {
 
           {/* Form */}
           <form onSubmit={formik.handleSubmit} className={styles.form}>
+            {requiresOtp && (
+              <div className={styles.formField}>
+                <label className={styles.label}>OTP Code</label>
+                <input
+                  type="text"
+                  name="otp"
+                  className={`${styles.input} ${
+                    formik.touched.otp && formik.errors.otp ? styles.inputError : ''
+                  }`}
+                  value={formik.values.otp}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  placeholder="Enter the 6-digit code"
+                />
+                {formik.touched.otp && formik.errors.otp && (
+                  <div className={styles.errorText}>{formik.errors.otp}</div>
+                )}
+              </div>
+            )}
+
             <div className={styles.formField}>
               <label className={styles.label}>
                 New Password

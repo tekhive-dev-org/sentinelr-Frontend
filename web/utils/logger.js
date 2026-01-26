@@ -36,9 +36,9 @@ const logger = {
     if (currentLevel <= LOG_LEVELS.DEBUG) {
       const formatted = formatMessage('DEBUG', prefix, message);
       if (data) {
-        console.log(formatted, data);
+        // console.log(formatted, data);
       } else {
-        console.log(formatted);
+        // console.log(formatted);
       }
     }
   },
@@ -50,9 +50,9 @@ const logger = {
     if (currentLevel <= LOG_LEVELS.INFO) {
       const formatted = formatMessage('INFO', prefix, message);
       if (data) {
-        console.info(formatted, data);
+        // console.info(formatted, data);
       } else {
-        console.info(formatted);
+        // console.info(formatted);
       }
     }
   },
@@ -64,7 +64,7 @@ const logger = {
     if (currentLevel <= LOG_LEVELS.WARN) {
       const formatted = formatMessage('WARN', prefix, message);
       if (data) {
-        console.warn(formatted, data);
+        // console.warn(formatted, data);
       } else {
         console.warn(formatted);
       }

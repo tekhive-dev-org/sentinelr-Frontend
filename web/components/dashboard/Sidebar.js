@@ -10,13 +10,16 @@ import LogoutModal from './LogoutModal';
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, logout, loggedUser } = useAuth();
   const [activeMenu, setActiveMenu] = useState('');
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
-  // Close menu when clicking outside
-  useEffect(() => {
+  // console.log(loggedUser);
+
+
+// Close menu when clicking outside
+useEffect(() => {
     const handleClickOutside = (event) => {
       if (showUserMenu && !event.target.closest(`.${styles.userSection}`)) {
         setShowUserMenu(false);
@@ -230,8 +233,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             <div className={styles.userProfile} onClick={() => setShowUserMenu(!showUserMenu)}>
               <div className={styles.profileAvatar}>LM</div>
               <div className={styles.profileInfo}>
-                <div className={styles.profileName}>{user?.name || 'User'}</div>
-                <div className={styles.profileEmail}>{user?.email || 'user@xyz.com'}</div>
+                <div className={styles.profileName}>{loggedUser?.userName || 'User'}</div>
+                <div className={styles.profileEmail}>{loggedUser?.email || 'user@xyz.com'}</div>
               </div>
               <ChevronRightIcon 
                 className={styles.profileArrow} 

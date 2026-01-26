@@ -4,7 +4,9 @@ import logger from "../utils/logger";
 
 const AuthContext = createContext();
 
-const API_URL = "https://sentinelr-backend.onrender.com/api/auth";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
+const API_URL = `${API_BASE_URL}/auth`;
+const LOGGED_IN_USER_URL = `${API_URL}/logged-in-user`;
 
 // Helper function for API calls with proper error handling
 const apiRequest = async (endpoint, method, body = null, token = null) => {
@@ -50,8 +52,71 @@ const apiRequest = async (endpoint, method, body = null, token = null) => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loggedUser, setLoggedUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  // Fetch logged-in user from API
+  const fetchLoggedInUser = async (token) => {
+    try {
+      logger.auth.debug("Fetching logged-in user from API");
+      const callLoggedInUser = async (headers) => {
+        const response = await fetch(LOGGED_IN_USER_URL, {
+          method: "GET",
+          headers,
+        });
+
+        const contentType = response.headers.get("content-type");
+        let data;
+
+        if (contentType && contentType.includes("application/json")) {
+          data = await response.json();
+        } else {
+          data = await response.text();
+        }
+
+        logger.api.response(response.status, response.statusText, data);
+        return { response, data };
+      };
+
+      const baseHeaders = {
+        "Content-Type": "application/json",
+        "x-access-token": token,
+      };
+
+      // First attempt with Bearer token
+      let { response, data } = await callLoggedInUser({
+        ...baseHeaders,
+        "Authorization": `Bearer ${token}`,
+      });
+
+      // Retry with raw token if backend expects it
+      if (!response.ok) {
+        const errorMessage = data?.message || data || "";
+        if (
+          typeof errorMessage === "string" &&
+          errorMessage.toLowerCase().includes("invalid")
+        ) {
+          logger.auth.warn("Retrying logged-in user request with raw token");
+          ({ response, data } = await callLoggedInUser({
+            ...baseHeaders,
+            "Authorization": token,
+          }));
+        }
+      }
+
+      if (!response.ok) {
+        throw new Error(data?.message || data || `Failed to fetch user with status ${response.status}`);
+      }
+
+      logger.auth.info("Logged-in user fetched successfully");
+      setLoggedUser(data.user);
+      return { success: true, user: data.user || data };
+    } catch (error) {
+      logger.auth.error("Failed to fetch logged-in user", error);
+      return { success: false, error: error.message };
+    }
+  };
 
   useEffect(() => {
     // Check for stored user/token on mount
@@ -60,8 +125,20 @@ export const AuthProvider = ({ children }) => {
         const storedUser = localStorage.getItem("user");
         const token = localStorage.getItem("token");
         
-        if (storedUser && token) {
-          setUser(JSON.parse(storedUser));
+        if (token) {
+          // Try to fetch fresh user data from API
+          const result = await fetchLoggedInUser(token);
+          
+          if (result.success) {
+            setUser(result.user);
+            localStorage.setItem("user", JSON.stringify(result.user));
+          } else if (storedUser) {
+            // Fall back to stored user if API fails
+            setUser(JSON.parse(storedUser));
+          } else {
+            // Token is invalid, clear it
+            localStorage.removeItem("token");
+          }
         }
       }
       setLoading(false);
@@ -193,6 +270,15 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         localStorage.setItem("token", token);
       }
+
+      // Fetch fresh user data after verification
+      if (token) {
+        const freshUserResult = await fetchLoggedInUser(token);
+        if (freshUserResult.success) {
+          setUser(freshUserResult.user);
+          localStorage.setItem("user", JSON.stringify(freshUserResult.user));
+        }
+      }
       
       // Cleanup pending data
       localStorage.removeItem("pending_user");
@@ -225,15 +311,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const resetPassword = async (token, newPassword) => {
+  const resetPassword = async (tokenOrPayload, newPassword) => {
     setLoading(true);
     try {
       logger.auth.debug("Resetting password with token");
-      
-      const data = await apiRequest("reset-password", "POST", { 
-        token, 
-        newPassword 
-      });
+
+      let payload;
+      if (typeof tokenOrPayload === "string") {
+        payload = { token: tokenOrPayload, newPassword };
+      } else {
+        payload = tokenOrPayload;
+      }
+
+      const data = await apiRequest("reset-password", "POST", payload);
       
       logger.auth.info("Password reset successful");
       
@@ -266,7 +356,7 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem("token");
       
       // For file uploads, we need to use FormData without JSON content-type
-      const response = await fetch(`${API_URL}/update-profile-picture`, {
+      const response = await fetch(`${API_URL}/user/update-profile-picture`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -299,7 +389,6 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Resend OTP verification code
-   * TODO: Update endpoint when backend implements dedicated resend-otp endpoint
    */
   const resendOTP = async (email) => {
     setLoading(true);
@@ -317,15 +406,21 @@ export const AuthProvider = ({ children }) => {
         throw new Error("Email mismatch. Please sign up again.");
       }
 
-      // TODO: Replace with dedicated resend-otp endpoint when available
-      // For now, this is a placeholder that indicates the feature needs backend support
-      // const data = await apiRequest("resend-otp", "POST", { email });
-      
-      logger.auth.warn("Resend OTP endpoint not yet implemented - backend pending");
-      
+      const pendingToken = localStorage.getItem("pending_token");
+      const authToken = pendingToken || localStorage.getItem("token");
+
+      if (!authToken) {
+        throw new Error("Missing verification token. Please sign up again.");
+      }
+
+      const data = await apiRequest("send/otp", "POST", { email }, authToken);
+
+      logger.auth.info("OTP resend request successful");
+
       return { 
-        success: false, 
-        error: "Resend OTP feature coming soon. Please wait a moment and try verification again." 
+        success: true, 
+        message: data.message || "OTP sent successfully",
+        data
       };
     } catch (error) {
       logger.auth.error("Resend OTP failed", error);
@@ -346,7 +441,8 @@ export const AuthProvider = ({ children }) => {
         forgotPassword,
         resetPassword,
         updateProfilePicture,
-        resendOTP
+        resendOTP,
+        loggedUser
     }}>
       {children}
     </AuthContext.Provider>

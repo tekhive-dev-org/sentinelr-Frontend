@@ -96,7 +96,7 @@ export default function UserDashboardOverview() {
             <div className={styles.chartCard}>
               <h3 className={styles.sectionTitle} style={{ marginBottom: '16px' }}>Usage Insight</h3>
               <div style={{ height: '200px' }}>
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                   <BarChart data={usageData}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} fontSize={12} />
@@ -113,7 +113,7 @@ export default function UserDashboardOverview() {
             <div className={styles.chartCard}>
               <h3 className={styles.sectionTitle} style={{ marginBottom: '16px' }}>Subscription</h3>
               <div style={{ height: '200px' }}>
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                   <LineChart data={subscriptionData}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} fontSize={10} />

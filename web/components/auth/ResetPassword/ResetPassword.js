@@ -8,7 +8,8 @@ import styles from './ResetPassword.module.css';
 
 const passwordChecks = [
   { label: 'At least 1 uppercase', check: (v) => /[A-Z]/.test(v) },
-  { label: 'At least 1 number', check: (v) => /\d/.test(v) },
+  { label: 'At least 1 number', check: (v) => /[0-9]/.test(v) },
+  { label: 'At least 1 special character', check: (v) => /[^A-Za-z0-9]/.test(v) },
   { label: 'At least 8 characters', check: (v) => v.length >= 8 },
 ];
 
@@ -18,7 +19,8 @@ const validationSchema = Yup.object({
   password: Yup.string()
     .required('Password is required')
     .matches(/[A-Z]/, 'At least 1 uppercase')
-    .matches(/\d/, 'At least 1 number')
+    .matches(/[0-9]/, 'At least 1 number')
+    .matches(/[^A-Za-z0-9]/, 'At least 1 special character')
     .min(8, 'At least 8 characters'),
   confirmPassword: Yup.string()
     .required('Please confirm your password')
@@ -29,9 +31,9 @@ const getPasswordStrength = (password) => {
   const checks = passwordChecks.map((c) => c.check(password));
   const passed = checks.filter(Boolean).length;
   if (passed === 0) return 'none';
-  if (passed <= 1) return 'weak';
-  if (passed === 2) return 'moderate';
-  if (passed === 3) return 'strong';
+  if (passed <= 2) return 'weak';
+  if (passed === 3) return 'moderate';
+  if (passed === 4) return 'strong';
   return 'none';
 };
 

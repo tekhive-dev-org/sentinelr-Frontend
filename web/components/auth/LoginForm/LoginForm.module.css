@@ -76,7 +76,8 @@
 }
 
 .title {
-  @apply text-[24px] mobile:text-[18px] font-semibold text-center mb-2 text-black;
+  @apply text-[24px] mobile:text-[18px] font-semibold text-center mb-8 text-black;
+  font-family: 'Playfair Display', serif;
 }
 
 .subtitle {

@@ -74,7 +74,7 @@ const pageConfig = {
 export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loggedUser } = useAuth();
   
   let currentPage = pageConfig[router.pathname] || pageConfig['/dashboard'];
 
@@ -132,7 +132,7 @@ export default function DashboardLayout({ children }) {
             title={currentPage?.title} 
             subtitle={currentPage?.subtitle}
             icon={currentPage?.icon}
-            user={user}
+            user={loggedUser || user}
             onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
           />
           

@@ -21,7 +21,8 @@
 }
 
 .title {
-  @apply text-[24px]  mobile:text-[18px] font-semibold text-center mb-2 text-black;
+  @apply text-[24px] mobile:text-[18px] font-semibold text-center mb-8 text-black;
+  font-family: 'Playfair Display', serif;
 }
 
 .subtitle {
@@ -49,7 +50,7 @@
 }
 
 .formField {
-  @apply mb-4;
+  @apply mb-2;
 }
 
 .label {
@@ -57,7 +58,7 @@
 }
 
 .input {
-  @apply w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E4B68] focus:border-[#0E4B68] outline-none transition-all text-[15px];
+  @apply w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E4B68] focus:border-[#0E4B68] outline-none transition-all text-[15px];
 }
 
 .inputError {

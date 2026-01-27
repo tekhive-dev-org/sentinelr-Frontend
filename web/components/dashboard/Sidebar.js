@@ -15,6 +15,22 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
+  const profileUser = loggedUser || user;
+  const profileImage =
+    profileUser?.profilePictureUrl ||
+    profileUser?.profilePicture ||
+    profileUser?.avatarUrl ||
+    profileUser?.avatar ||
+    profileUser?.imageUrl ||
+    profileUser?.photoUrl;
+
+  const getInitials = (value) => {
+    if (!value) return 'U';
+    const parts = value.trim().split(' ');
+    if (parts.length === 1) return parts[0][0]?.toUpperCase() || 'U';
+    return `${parts[0][0] || ''}${parts[1][0] || ''}`.toUpperCase();
+  };
+
   // console.log(loggedUser);
 
 
@@ -231,10 +247,20 @@ useEffect(() => {
             )}
 
             <div className={styles.userProfile} onClick={() => setShowUserMenu(!showUserMenu)}>
-              <div className={styles.profileAvatar}>LM</div>
+              <div className={styles.profileAvatar}>
+                {profileImage ? (
+                  <img
+                    src={profileImage}
+                    alt="Profile"
+                    className={styles.profileAvatarImage}
+                  />
+                ) : (
+                  getInitials(profileUser?.userName || profileUser?.name || profileUser?.email)
+                )}
+              </div>
               <div className={styles.profileInfo}>
-                <div className={styles.profileName}>{loggedUser?.userName || 'User'}</div>
-                <div className={styles.profileEmail}>{loggedUser?.email || 'user@xyz.com'}</div>
+                <div className={styles.profileName}>{profileUser?.userName || profileUser?.name || 'User'}</div>
+                <div className={styles.profileEmail}>{profileUser?.email || 'user@xyz.com'}</div>
               </div>
               <ChevronRightIcon 
                 className={styles.profileArrow} 

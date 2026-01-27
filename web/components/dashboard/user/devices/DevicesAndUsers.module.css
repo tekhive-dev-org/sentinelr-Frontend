@@ -880,6 +880,14 @@
   font-size: 24px;
   font-weight: 600;
   color: #9CA3AF;
+  overflow: hidden;
+}
+
+.userDetailAvatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .userDetailInfo {

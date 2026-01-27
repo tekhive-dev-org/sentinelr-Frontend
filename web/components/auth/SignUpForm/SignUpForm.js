@@ -1,44 +1,45 @@
-import React, { useState } from 'react';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useAuth } from '../../../context/AuthContext';
-import Toast from '../../common/Toast';
-import styles from './SignUpForm.module.css';
+import React, { useState } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import Image from "next/image";
+import { useAuth } from "../../../context/AuthContext";
+import Toast from "../../common/Toast";
+import styles from "./SignUpForm.module.css";
 
 const passwordChecks = [
-  { label: 'At least 1 uppercase', check: (v) => /[A-Z]/.test(v) },
-  { label: 'At least 1 number', check: (v) => /\d/.test(v) },
-  { label: 'At least 8 characters', check: (v) => v.length >= 8 },
+  { label: "At least 1 uppercase", check: (v) => /[A-Z]/.test(v) },
+  { label: "At least 1 number", check: (v) => /[0-9]/.test(v) },
+  { label: "At least 1 special character", check: (v) => /[^A-Za-z0-9]/.test(v) },
+  { label: "At least 8 characters", check: (v) => v.length >= 8 },
 ];
 
 const validationSchema = Yup.object({
-  userName: Yup.string()
-    .required('Username is required'),
+  userName: Yup.string().required("Username is required"),
   email: Yup.string()
-    .email('Invalid email address')
-    .required('Email is required'),
+    .email("Invalid email address")
+    .required("Email is required"),
   password: Yup.string()
-    .required('Password is required')
-    .matches(/[A-Z]/, 'At least 1 uppercase')
-    .matches(/\d/, 'At least 1 number')
-    .min(8, 'At least 8 characters'),
+    .required("Password is required")
+    .matches(/[A-Z]/, "At least 1 uppercase")
+    .matches(/[0-9]/, "At least 1 number")
+    .matches(/[^A-Za-z0-9]/, "At least 1 special character")
+    .min(8, "At least 8 characters"),
   confirmPassword: Yup.string()
-    .required('Please confirm your password')
-    .oneOf([Yup.ref('password')], 'Passwords must match'),
-  agree: Yup.boolean().oneOf([true], 'You must accept the terms'),
+    .required("Please confirm your password")
+    .oneOf([Yup.ref("password")], "Passwords must match"),
+  agree: Yup.boolean().oneOf([true], "You must accept the terms"),
 });
 
 const getPasswordStrength = (password) => {
   const checks = passwordChecks.map((c) => c.check(password));
   const passed = checks.filter(Boolean).length;
-  if (passed === 0) return 'none';
-  if (passed <= 1) return 'weak';
-  if (passed === 2) return 'moderate';
-  if (passed === 3) return 'strong';
-  return 'none';
+  if (passed === 0) return "none";
+  if (passed <= 2) return "weak";
+  if (passed === 3) return "moderate";
+  if (passed === 4) return "strong";
+  return "none";
 };
 
 export default function SignUpForm() {
@@ -47,19 +48,33 @@ export default function SignUpForm() {
   const [toast, setToast] = useState(null);
   const { signup, loading } = useAuth();
   const formik = useFormik({
-    initialValues: { userName: '', email: '',  password: '', confirmPassword: '', agree: false },
+    initialValues: {
+      userName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      agree: false,
+    },
     validationSchema,
     onSubmit: async (values) => {
       // Pass all fields to signup
-      const result = await signup(values.userName, values.email, values.password, values.confirmPassword, values.role);
-      
+      const result = await signup(
+        values.userName,
+        values.email,
+        values.password,
+        values.confirmPassword,
+        values.role,
+      );
+
       if (result.success) {
         // After successful signup, redirect to verification page
         router.push(`/verify?email=${encodeURIComponent(values.email)}`);
       } else {
-        const errorMsg = result.error ? result.error.replace('Error: ', '') : 'Signup failed';
-        setToast({ message: errorMsg, type: 'error' });
-        formik.setFieldError('email', errorMsg);
+        const errorMsg = result.error
+          ? result.error.replace("Error: ", "")
+          : "Signup failed";
+        setToast({ message: errorMsg, type: "error" });
+        formik.setFieldError("email", errorMsg);
       }
     },
   });
@@ -80,10 +95,10 @@ export default function SignUpForm() {
       <div className={styles.leftSection}>
         <div className={styles.lockImageWrapper}>
           <Image
-            src="/assets/images/lock.svg" 
+            src="/assets/images/lock.svg"
             alt="Security"
             fill
-            style={{ objectFit: 'cover' }}
+            style={{ objectFit: "cover" }}
             priority
           />
         </div>
@@ -91,11 +106,369 @@ export default function SignUpForm() {
       {/* Right Section */}
       <div className={styles.rightSection}>
         <div className={styles.formContainer}>
-          <h1 className={styles.title}>
-            Sign up to Sentinelr Security App
-          </h1>
+          <h1 className={styles.title}>Sign up to Sentinelr Security App</h1>
+
+          {/* Form */}
+          <form onSubmit={formik.handleSubmit}>
+            <div className={styles.formField}>
+              <label className={styles.label}>Username</label>
+              <input
+                type="text"
+                name="userName"
+                className={`${styles.input} ${
+                  formik.touched.userName && formik.errors.userName
+                    ? styles.inputError
+                    : ""
+                }`}
+                placeholder=""
+                value={formik.values.userName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              {formik.touched.userName && formik.errors.userName && (
+                <div className={styles.errorText}>
+                  {/* Add a simple error text style if not present in module, assuming it is handled or inherited,
+                       but looking at other fields, there doesn't seem to be explicit error text rendered for them in the original snippet,
+                       only inputError class. I will add error text block like in LoginForm if available, 
+                       or sticking to the pattern. The original file didn't show error text div for email?
+                       Wait, looking at line 132 in original SignUpForm... ah, actually it DOESN'T show error text for email in the snippet I saw!
+                       It only applies `inputError` class.
+                       However, it's better to show it. I'll add it.
+                   */}
+                  {formik.errors.userName}
+                </div>
+              )}
+            </div>
+
+            {/* <div className={styles.formField}>
+              <label className={styles.label}>
+                Role
+              </label>
+              <select
+                name="role"
+                className={styles.input} // Reusing input style for consistency
+                value={formik.values.role}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                style={{ appearance: 'none', backgroundImage: 'none' }} // Simple reset, browser arrow might be hidden or default. 
+                // To support a custom arrow, usually we need a wrapper, but for now standard select is fine or simple styling.
+                // Actually, let's just leave standard appearance or minimal style.
+              >
+                <option value="Parent">Parent</option>
+                <option value="Child">Child</option>
+              </select>
+            </div> */}
+
+            <div className={styles.formField}>
+              <label className={styles.label}>Email Address</label>
+              <input
+                type="email"
+                name="email"
+                className={`${styles.input} ${
+                  formik.touched.email && formik.errors.email
+                    ? styles.inputError
+                    : ""
+                }`}
+                placeholder=""
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+            </div>
+
+            <div className={styles.formField}>
+              <label className={styles.label}>Password</label>
+              <div className={styles.passwordWrapper}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  className={`${styles.input} ${
+                    formik.touched.password && formik.errors.password
+                      ? styles.inputError
+                      : ""
+                  }`}
+                  placeholder=""
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className={styles.togglePasswordButton}
+                >
+                  {showPassword ? (
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className={styles.formField}>
+              <label className={styles.label}>Confirm Password</label>
+              <div className={styles.passwordWrapper}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  className={`${styles.input} ${
+                    formik.touched.confirmPassword &&
+                    formik.errors.confirmPassword
+                      ? styles.inputError
+                      : ""
+                  }`}
+                  placeholder=""
+                  value={formik.values.confirmPassword}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                {formik.touched.confirmPassword &&
+                  formik.errors.confirmPassword && (
+                    <div
+                      style={{
+                        color: "#e53935",
+                        fontSize: "12px",
+                        marginTop: "4px",
+                      }}
+                    >
+                      {formik.errors.confirmPassword}
+                    </div>
+                  )}
+              </div>
+            </div>
+            {formik.values.password && (
+              <div className={styles.passwordStrengthContainer}>
+                {/* Password Strength Bars */}
+                <div className={styles.passwordStrengthBars}>
+                  <div
+                    className={`${styles.strengthBar} ${strength === "weak" ? styles.strengthBarWeak : strength === "moderate" ? styles.strengthBarModerate : strength === "strong" ? styles.strengthBarStrong : ""}`}
+                  ></div>
+                  <div
+                    className={`${styles.strengthBar} ${strength === "moderate" ? styles.strengthBarModerate : strength === "strong" ? styles.strengthBarStrong : ""}`}
+                  ></div>
+                  <div
+                    className={`${styles.strengthBar} ${strength === "strong" ? styles.strengthBarStrong : ""}`}
+                  ></div>
+                </div>
+
+                {/* Password Strength Text and Checklist */}
+                {strength === "weak" && (
+                  <>
+                    <p
+                      className={`${styles.passwordStrengthText} ${styles.weakText}`}
+                    >
+                      Weak password. Must contain at least;
+                    </p>
+                    <div className={styles.passwordChecklist}>
+                      {passwordChecks.map((check) => (
+                        <div
+                          key={check.label}
+                          className={`${styles.checklistItem} ${
+                            check.check(formik.values.password)
+                              ? styles.checklistItemValid
+                              : styles.checklistItemInvalid
+                          }`}
+                        >
+                          {check.check(formik.values.password) ? (
+                            <svg
+                              className={styles.checklistIcon}
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              className={styles.checklistIcon}
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                          <span>{check.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {strength === "moderate" && (
+                  <>
+                    <p
+                      className={`${styles.passwordStrengthText} ${styles.moderateText}`}
+                    >
+                      Moderate password. Must contain at least;
+                    </p>
+                    <div className={styles.passwordChecklist}>
+                      {passwordChecks.map((check) => (
+                        <div
+                          key={check.label}
+                          className={`${styles.checklistItem} ${
+                            check.check(formik.values.password)
+                              ? styles.checklistItemValid
+                              : styles.checklistItemInvalid
+                          }`}
+                        >
+                          {check.check(formik.values.password) ? (
+                            <svg
+                              className={styles.checklistIcon}
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              className={styles.checklistIcon}
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                          <span>{check.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {strength === "strong" && (
+                  <>
+                    <p
+                      className={`${styles.passwordStrengthText} ${styles.strongText}`}
+                    >
+                      Strong password. Your password is secure.
+                    </p>
+                    <div className={styles.passwordChecklist}>
+                      {passwordChecks.map((check) => (
+                        <div
+                          key={check.label}
+                          className={`${styles.checklistItem} ${styles.checklistItemValid}`}
+                        >
+                          <svg
+                            className={styles.checklistIcon}
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          <span>{check.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            <div className={styles.checkboxContainer}>
+              <input
+                type="checkbox"
+                name="agree"
+                checked={formik.values.agree}
+                onChange={formik.handleChange}
+                id="terms"
+                className={styles.checkbox}
+              />
+              <label htmlFor="terms" className={styles.checkboxLabel}>
+                I agree to the{" "}
+                <Link href="#" className={styles.termsLink}>
+                  Terms & Conditions
+                </Link>{" "}
+                and{" "}
+                <Link href="#" className={styles.termsLink}>
+                  Privacy Policy
+                </Link>
+                .
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              disabled={
+                !formik.values.email ||
+                !formik.values.userName ||
+                !allValid ||
+                !formik.values.agree ||
+                !formik.values.confirmPassword ||
+                loading
+              }
+              className={`${styles.submitButton} ${
+                !formik.values.email ||
+                !formik.values.userName ||
+                !allValid ||
+                !formik.values.agree ||
+                !formik.values.confirmPassword ||
+                loading
+                  ? styles.submitButtonDisabled
+                  : styles.submitButtonEnabled
+              }`}
+            >
+              {loading ? "Signing Up..." : "Get Started"}
+            </button>
+          </form>
+
+          <div className={styles.divider}>
+            <div className={styles.dividerLine}></div>
+            <span className={styles.dividerText}>OR</span>
+            <div className={styles.dividerLine}></div>
+          </div>
+
           <p className={styles.subtitle}>
-            Already have an account?{' '}
+            Already have an account?{" "}
             <Link href="/login" className={styles.loginLink}>
               Log in
             </Link>
@@ -131,280 +504,9 @@ export default function SignUpForm() {
             Continue with Apple
           </button>
 
-          <button className={styles.socialButton} type="button">
+          {/* <button className={styles.socialButton} type="button">
             Guest Mode
-          </button>
-
-          <div className={styles.divider}>
-            <div className={styles.dividerLine}></div>
-            <span className={styles.dividerText}>OR</span>
-            <div className={styles.dividerLine}></div>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={formik.handleSubmit}>
-            <div className={styles.formField}>
-              <label className={styles.label}>
-                Username
-              </label>
-              <input
-                type="text"
-                name="userName"
-                className={`${styles.input} ${
-                  formik.touched.userName && formik.errors.userName ? styles.inputError : ''
-                }`}
-                placeholder=""
-                value={formik.values.userName}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-              {formik.touched.userName && formik.errors.userName && (
-                <div className={styles.errorText}>
-                   {/* Add a simple error text style if not present in module, assuming it is handled or inherited,
-                       but looking at other fields, there doesn't seem to be explicit error text rendered for them in the original snippet,
-                       only inputError class. I will add error text block like in LoginForm if available, 
-                       or sticking to the pattern. The original file didn't show error text div for email?
-                       Wait, looking at line 132 in original SignUpForm... ah, actually it DOESN'T show error text for email in the snippet I saw!
-                       It only applies `inputError` class.
-                       However, it's better to show it. I'll add it.
-                   */}
-                   {formik.errors.userName}
-                </div>
-              )}
-            </div>
-
-            {/* <div className={styles.formField}>
-              <label className={styles.label}>
-                Role
-              </label>
-              <select
-                name="role"
-                className={styles.input} // Reusing input style for consistency
-                value={formik.values.role}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                style={{ appearance: 'none', backgroundImage: 'none' }} // Simple reset, browser arrow might be hidden or default. 
-                // To support a custom arrow, usually we need a wrapper, but for now standard select is fine or simple styling.
-                // Actually, let's just leave standard appearance or minimal style.
-              >
-                <option value="Parent">Parent</option>
-                <option value="Child">Child</option>
-              </select>
-            </div> */}
-
-            <div className={styles.formField}>
-              <label className={styles.label}>
-                Email Address
-              </label>
-              <input
-                type="email"
-                name="email"
-                className={`${styles.input} ${
-                  formik.touched.email && formik.errors.email ? styles.inputError : ''
-                }`}
-                placeholder=""
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-            </div>
-
-            <div className={styles.formField}>
-              <label className={styles.label}>
-                Password
-              </label>
-              <div className={styles.passwordWrapper}>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  className={`${styles.input} ${
-                    formik.touched.password && formik.errors.password ? styles.inputError : ''
-                  }`}
-                  placeholder=""
-                  value={formik.values.password}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className={styles.togglePasswordButton}
-                >
-                  {showPassword ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  )}
-                </button>
-              </div>
-
-              </div>
-
-              <div className={styles.formField}>
-                <label className={styles.label}>
-                  Confirm Password
-                </label>
-                <div className={styles.passwordWrapper}>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    name="confirmPassword"
-                    className={`${styles.input} ${
-                      formik.touched.confirmPassword && formik.errors.confirmPassword ? styles.inputError : ''
-                    }`}
-                    placeholder=""
-                    value={formik.values.confirmPassword}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  />
-                 {formik.touched.confirmPassword && formik.errors.confirmPassword && ( 
-                      <div style={{color: '#e53935', fontSize: '12px', marginTop: '4px'}}>
-                          {formik.errors.confirmPassword}
-                      </div>
-                  )}
-                </div>
-              </div>
-              {formik.values.password && (
-                <div className={styles.passwordStrengthContainer}>
-                  {/* Password Strength Bars */}
-                  <div className={styles.passwordStrengthBars}>
-                    <div className={`${styles.strengthBar} ${strength === 'weak' ? styles.strengthBarWeak : strength === 'moderate' ? styles.strengthBarModerate : strength === 'strong' ? styles.strengthBarStrong : ''}`}></div>
-                    <div className={`${styles.strengthBar} ${strength === 'moderate' ? styles.strengthBarModerate : strength === 'strong' ? styles.strengthBarStrong : ''}`}></div>
-                    <div className={`${styles.strengthBar} ${strength === 'strong' ? styles.strengthBarStrong : ''}`}></div>
-                  </div>
-
-                  {/* Password Strength Text and Checklist */}
-                  {strength === 'weak' && (
-                    <>
-                      <p className={`${styles.passwordStrengthText} ${styles.weakText}`}>
-                        Weak password. Must contain at least;
-                      </p>
-                      <div className={styles.passwordChecklist}>
-                        {passwordChecks.map((check) => (
-                          <div
-                            key={check.label}
-                            className={`${styles.checklistItem} ${
-                              check.check(formik.values.password)
-                                ? styles.checklistItemValid
-                                : styles.checklistItemInvalid
-                            }`}
-                          >
-                            {check.check(formik.values.password) ? (
-                              <svg className={styles.checklistIcon} fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                              </svg>
-                            ) : (
-                              <svg className={styles.checklistIcon} fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd" />
-                              </svg>
-                            )}
-                            <span>{check.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-
-                  {strength === 'moderate' && (
-                    <>
-                      <p className={`${styles.passwordStrengthText} ${styles.moderateText}`}>
-                        Moderate password. Must contain at least;
-                      </p>
-                      <div className={styles.passwordChecklist}>
-                        {passwordChecks.map((check) => (
-                          <div
-                            key={check.label}
-                            className={`${styles.checklistItem} ${
-                              check.check(formik.values.password)
-                                ? styles.checklistItemValid
-                                : styles.checklistItemInvalid
-                            }`}
-                          >
-                            {check.check(formik.values.password) ? (
-                              <svg className={styles.checklistIcon} fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                              </svg>
-                            ) : (
-                              <svg className={styles.checklistIcon} fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd" />
-                              </svg>
-                            )}
-                            <span>{check.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-
-                  {strength === 'strong' && (
-                    <>
-                      <p className={`${styles.passwordStrengthText} ${styles.strongText}`}>
-                        Strong password. Your password is secure.
-                      </p>
-                      <div className={styles.passwordChecklist}>
-                        {passwordChecks.map((check) => (
-                          <div
-                            key={check.label}
-                            className={`${styles.checklistItem} ${styles.checklistItemValid}`}
-                          >
-                            <svg className={styles.checklistIcon} fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                            <span>{check.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
-
-
-            <div className={styles.checkboxContainer}>
-              <input
-                type="checkbox"
-                name="agree"
-                checked={formik.values.agree}
-                onChange={formik.handleChange}
-                id="terms"
-                className={styles.checkbox}
-              />
-              <label htmlFor="terms" className={styles.checkboxLabel}>
-                I agree to the{' '}
-                <Link href="#" className={styles.termsLink}>
-                  Terms & Conditions
-                </Link>{' '}
-                and{' '}
-                <Link href="#" className={styles.termsLink}>
-                  Privacy Policy
-                </Link>
-                .
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              disabled={
-                !formik.values.email ||
-                !formik.values.userName ||
-                !allValid ||
-                !formik.values.agree ||
-                !formik.values.confirmPassword ||
-                loading
-              }
-              className={`${styles.submitButton} ${
-                !formik.values.email || !formik.values.userName || !allValid || !formik.values.agree || !formik.values.confirmPassword || loading
-                  ? styles.submitButtonDisabled
-                  : styles.submitButtonEnabled
-              }`}
-            >
-              {loading ? 'Signing Up...' : 'Get Started'}
-            </button>
-          </form>
+          </button> */}
         </div>
       </div>
     </div>

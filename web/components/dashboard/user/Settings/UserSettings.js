@@ -6,6 +6,7 @@ import PasswordTab from './PasswordTab';
 import NotificationsTab from './NotificationsTab';
 import styles from './Settings.module.css';
 import Toast from '../../../common/Toast';
+import SettingsService from './SettingsService';
 
 export default function UserSettings({ user }) {
   const [activeTab, setActiveTab] = useState('Account');
@@ -66,16 +67,20 @@ export default function UserSettings({ user }) {
 
       try {
         const profilePayload = {
-          fullName: values.fullName,
-          phoneNumber: values.phoneNumber,
-          username: values.username,
+          userName: values.username || values.fullName,
           email: values.email,
+          phone: values.phoneNumber,
         };
 
         await SettingsService.updateProfile(profilePayload);
 
         if (values.profilePicture) {
-          await SettingsService.uploadProfilePicture(values.profilePicture);
+          const uploadResult = await SettingsService.uploadProfilePicture(values.profilePicture);
+          const uploadedUrl = uploadResult?.profilePicture || uploadResult?.data?.profilePicture;
+          if (uploadedUrl) {
+            formik.setFieldValue('profilePictureUrl', uploadedUrl);
+          }
+          formik.setFieldValue('profilePicture', null);
         }
 
         setToast({ message: 'All changes saved successfully!', type: 'success' });

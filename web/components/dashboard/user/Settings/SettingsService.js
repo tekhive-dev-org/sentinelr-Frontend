@@ -2,7 +2,6 @@
 // SETTINGS SERVICE - API Ready Structure
 // ============================================
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://sentinelr-backend.onrender.com/api";
-const AUTH_BASE_URL = `${API_BASE_URL}/auth`;
 
 const getAuthToken = () => {
   if (typeof window === "undefined") return null;
@@ -25,11 +24,12 @@ const SettingsService = {
       throw new Error("Missing auth token");
     }
 
-    const response = await fetch(`${AUTH_BASE_URL}/user/update-profile`, {
+    const response = await fetch(`${API_BASE_URL}/user/update-profile`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`,
+        "x-access-token": token,
       },
       body: JSON.stringify(profileData),
     });
@@ -51,10 +51,11 @@ const SettingsService = {
     const formData = new FormData();
     formData.append("profilePicture", file);
 
-    const response = await fetch(`${AUTH_BASE_URL}/user/update-profile-picture`, {
+    const response = await fetch(`${API_BASE_URL}/user/update-profile-picture`, {
       method: "PUT",
       headers: {
         "Authorization": `Bearer ${token}`,
+        "x-access-token": token,
       },
       body: formData,
     });
@@ -122,21 +123,27 @@ const SettingsService = {
 
   // Delete Account
   async deleteAccount(password) {
-    // TODO: Replace with actual delete API
-    // return await fetch('/api/user/account', {
-    //   method: 'DELETE',
-    //   body: JSON.stringify({ password })
-    // }).then(res => res.json());
-    
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (password === 'Chidiebere2025') {
-          resolve({ success: true, message: 'Account deleted successfully' });
-        } else {
-          reject(new Error('Invalid password'));
-        }
-      }, 1000);
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error("Missing auth token");
+    }
+
+    const response = await fetch(`${API_BASE_URL}/user/soft-delete`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+        "x-access-token": token,
+      },
+      body: JSON.stringify({ password }),
     });
+
+    const data = await parseResponse(response);
+    if (!response.ok) {
+      throw new Error(data?.message || data || "Failed to delete account");
+    }
+
+    return data;
   }
 };
 

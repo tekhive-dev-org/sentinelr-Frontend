@@ -125,6 +125,13 @@ export default function DashboardLayout({ children }) {
       {user?.role === 'admin' ? <AdminBackground /> : <UserBackground />}
       
       <div className={styles.dashboardContainer}>
+        {isSidebarOpen && (
+          <div
+            className={styles.overlay}
+            onClick={() => setIsSidebarOpen(false)}
+            aria-hidden="true"
+          />
+        )}
         <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
         
         <div className={`${styles.mainContent} ${!isSidebarOpen ? styles.mainContentExpanded : ''}`}>

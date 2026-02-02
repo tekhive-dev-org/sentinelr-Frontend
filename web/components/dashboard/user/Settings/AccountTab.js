@@ -43,7 +43,7 @@ export default function AccountTab({ formik }) {
     };
     reader.readAsDataURL(file);
     setShowProfileModal(false);
-    setToast({ message: 'Profile picture updated', type: 'success' });
+    setToast({ message: 'Profile picture selected. Click Apply Changes to save.', type: 'info' });
   };
 
   const handleImageRemove = () => {

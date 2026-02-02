@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   LineChart,
   Line,
@@ -15,43 +15,123 @@ import {
   Cancel as CancelIcon,
 } from "@mui/icons-material";
 import styles from "./DashboardOverview.module.css";
+import adminService from "../../../services/adminService";
 
 export default function DashboardOverview() {
-  const [userData] = useState({
+  const [userData, setUserData] = useState({
     allUsers: 0,
     approvedAccounts: 0,
     blockedAccounts: 0,
     flaggedUsers: 0,
   });
 
-  const [users] = useState([
-    {
-      id: 1,
-      name: "Sharon Bliss",
-      email: "sharonbliss9@gmail.com",
-      phone: "08160032043",
-      lastActive: "07-08-2025",
-      status: "Flagged",
-    },
-    {
-      id: 2,
-      name: "Nneka Amadi",
-      email: "nnekaamadi45@gmail.com",
-      phone: "09058394839",
-      lastActive: "07-08-2025",
-      status: "Approved",
-    },
-    {
-      id: 3,
-      name: "Chidiebere British",
-      email: "chidieberebritish@gmail.com",
-      phone: "08160032043",
-      lastActive: "07-08-2025",
-      status: "Blocked",
-    },
-  ]);
-
+  const [users, setUsers] = useState([]);
   const [activeTab, setActiveTab] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+
+  const formatDate = (value) => {
+    if (!value) return "-";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "-";
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).replace(/\//g, "-");
+  };
+
+  const normalizeUser = (user) => {
+    const isBlocked = Boolean(user.blocked);
+    const isVerified = Boolean(user.verified);
+    return {
+      id: user.id,
+      name: user.userName || user.name || user.fullName || "Unknown",
+      email: user.email || "-",
+      phone: user.phone || user.phoneNumber || "-",
+      lastActive: formatDate(user.updatedAt || user.createdAt),
+      status: isBlocked ? "Blocked" : isVerified ? "Approved" : "Flagged",
+      raw: user,
+    };
+  };
+
+  const fetchStats = async () => {
+    try {
+      const [allRes, blockedRes, verifiedRes, unverifiedRes] = await Promise.all([
+        adminService.getAllUsers(),
+        adminService.getBlockedUsers(),
+        adminService.getVerifiedUsers(true),
+        adminService.getVerifiedUsers(false),
+      ]);
+
+      setUserData({
+        allUsers: allRes?.count ?? allRes?.users?.length ?? 0,
+        approvedAccounts: verifiedRes?.count ?? verifiedRes?.verifiedUsers?.length ?? 0,
+        blockedAccounts: blockedRes?.count ?? blockedRes?.blockedUsers?.length ?? 0,
+        flaggedUsers: unverifiedRes?.count ?? unverifiedRes?.verifiedUsers?.length ?? 0,
+      });
+    } catch (error) {
+      setUserData({
+        allUsers: 0,
+        approvedAccounts: 0,
+        blockedAccounts: 0,
+        flaggedUsers: 0,
+      });
+    }
+  };
+
+  const fetchUsers = async () => {
+    setIsLoadingUsers(true);
+    try {
+      if (activeTab === "All") {
+        const data = await adminService.getAllUsers();
+        setUsers((data?.users || []).map(normalizeUser));
+      } else if (activeTab === "Blocked") {
+        const data = await adminService.getBlockedUsers();
+        setUsers((data?.blockedUsers || []).map(normalizeUser));
+      } else if (activeTab === "Approved") {
+        const data = await adminService.getVerifiedUsers(true);
+        setUsers((data?.verifiedUsers || []).map(normalizeUser));
+      } else {
+        const data = await adminService.getVerifiedUsers(false);
+        const rawUsers = (data?.verifiedUsers || []).filter((user) => !user.blocked);
+        setUsers(rawUsers.map(normalizeUser));
+      }
+    } catch (error) {
+      setUsers([]);
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  };
+
+  const handleToggleBlock = async (user) => {
+    if (!user?.raw?.id) return;
+
+    const action = user.status === "Blocked" ? "unblock" : "block";
+    const confirmText = user.status === "Blocked"
+      ? "Unblock this user?"
+      : "Block this user?";
+
+    if (typeof window !== "undefined" && !window.confirm(confirmText)) {
+      return;
+    }
+
+    try {
+      await adminService.updateUserBlockStatus(user.raw.id, action);
+      await fetchStats();
+      await fetchUsers();
+    } catch (error) {
+      // Swallow error for now; can be wired to toast later.
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [activeTab]);
 
   const subscriptionData = [
     { name: "Mon", value: 500 },
@@ -68,6 +148,16 @@ export default function DashboardOverview() {
     { name: "July", value: 600 },
     { name: "Sep", value: 850 },
   ];
+
+  const filteredUsers = useMemo(() => {
+    if (!searchQuery.trim()) return users;
+    const query = searchQuery.toLowerCase();
+    return users.filter((user) =>
+      [user.name, user.email, user.phone].some((value) =>
+        value?.toLowerCase().includes(query)
+      )
+    );
+  }, [users, searchQuery]);
 
   return (
     <div className={styles.dashboardOverview}>
@@ -194,6 +284,8 @@ export default function DashboardOverview() {
               type="text"
               placeholder="Search..."
               className={styles.searchInput}
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
             />
           </div>
         </div>
@@ -211,7 +303,7 @@ export default function DashboardOverview() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {filteredUsers.map((user) => (
                 <tr key={user.id}>
                   <td>{user.name}</td>
                   <td>{user.email}</td>
@@ -230,12 +322,25 @@ export default function DashboardOverview() {
                     </span>
                   </td>
                   <td>
-                    <button className={styles.moreBtn}>
-                      <MoreVertIcon />
+                    <button
+                      className={`${styles.actionBtn} ${
+                        user.status === "Blocked" ? styles.unblockBtn : styles.blockBtn
+                      }`}
+                      onClick={() => handleToggleBlock(user)}
+                      disabled={isLoadingUsers}
+                    >
+                      {user.status === "Blocked" ? "Unblock" : "Block"}
                     </button>
                   </td>
                 </tr>
               ))}
+              {!isLoadingUsers && filteredUsers.length === 0 && (
+                <tr>
+                  <td colSpan={6} style={{ textAlign: "center", padding: "16px" }}>
+                    No users found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

@@ -246,6 +246,36 @@
   color: #1e293b;
 }
 
+.actionBtn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.blockBtn {
+  background: #fef2f2;
+  color: #ef4444;
+  border-color: #fecaca;
+}
+
+.blockBtn:hover {
+  background: #fee2e2;
+}
+
+.unblockBtn {
+  background: #ecfdf3;
+  color: #10b981;
+  border-color: #d1fae5;
+}
+
+.unblockBtn:hover {
+  background: #d1fae5;
+}
+
 @media (max-width: 1200px) {
   .statsGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -377,5 +407,10 @@
   .statusBadge {
     font-size: 11px;
     padding: 3px 10px;
+  }
+
+  .actionBtn {
+    padding: 6px 10px;
+    font-size: 11px;
   }
 }

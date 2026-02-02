@@ -1,6 +1,6 @@
 .container {
-  @apply !pt-0;
-  padding: 24px;
+  @apply !pt-0 md:!px-6;
+ 
 }
 
 /* Header Actions */
@@ -44,7 +44,8 @@
   border: 1px solid #F59E0B;
   border-radius: 8px;
   padding: 12px 16px;
-  margin-bottom: 24px;
+    margin-bottom: 24px;
+  gap: 12px;
 }
 
 .warningContent {
@@ -53,6 +54,9 @@
   gap: 12px;
   color: #92400E;
   font-size: 14px;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 .warningIcon {
@@ -73,6 +77,7 @@
   justify-content: center;
   border-radius: 4px;
   transition: background-color 0.2s;
+  flex-shrink: 0;
 }
 
 .warningClose:hover {
@@ -664,6 +669,31 @@
     padding: 16px;
   }
 
+  .headerActions {
+    justify-content: stretch;
+  }
+
+  .addDevicesBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .warningBanner {
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 10px 12px;
+  }
+
+  .warningContent {
+    font-size: 13px;
+    gap: 10px;
+  }
+
+  .warningIcon {
+    width: 18px;
+    height: 18px;
+  }
+
   .controlsRow {
     flex-direction: column;
     align-items: stretch;
@@ -672,11 +702,39 @@
   .tabs {
     order: 1;
     justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    flex: 1 1 140px;
+    text-align: center;
   }
 
   .searchWrapper {
     order: 2;
     min-width: unset;
+    width: 100%;
+  }
+
+  .devicesTableContainer {
+    overflow-x: auto;
+  }
+
+  .devicesTable {
+    min-width: 640px;
+  }
+
+  .devicesTable th,
+  .devicesTable td {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .devicesTable th:first-child,
+  .devicesTable td:first-child {
+    min-width: 140px;
+    white-space: nowrap;
   }
 
   .deviceGrid {
@@ -685,6 +743,54 @@
 
   .listCard {
     padding: 16px;
+  }
+
+  .modal,
+  .modalContent,
+  .userDetailModal {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 12px;
+  }
+
+  .modalHeader {
+    padding: 16px;
+  }
+
+  .modalBody {
+    padding: 16px;
+  }
+
+  .modalFooter {
+    flex-direction: column;
+    padding: 12px 16px;
+  }
+
+  .modalActions {
+    flex-direction: column;
+  }
+
+  .phoneInputGroup {
+    flex-direction: column;
+  }
+
+  .countryCodeSelect {
+    width: 100%;
+  }
+
+  .userDetailHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .userDetailActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pairDeviceBtn {
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -700,6 +806,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 0px !important;
 }
 
 .modalContent {

@@ -11,7 +11,7 @@ export default function DevicesList({ devices = [], onAddDevice }) {
         {/* Empty State Illustration */}
         <svg className={styles.emptyIllustration} viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Clock/Timer illustration */}
-          <circle cx="60" cy="60" r="45" stroke="#E5E7EB" strokeWidth="2" fill="#F9FAFB"/>
+          <circle cx="60" cy="60" r="45" stroke="#F6C102" strokeWidth="2" fill="#F9FAFB"/>
           <circle cx="60" cy="60" r="38" stroke="#D1D5DB" strokeWidth="1.5" strokeDasharray="4 4" fill="none"/>
           
           {/* Clock hands */}

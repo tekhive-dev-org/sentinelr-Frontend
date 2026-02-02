@@ -182,6 +182,10 @@ useEffect(() => {
   const handleMenuClick = (item) => {
     setActiveMenu(item.id);
     router.push(item.path);
+
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      setIsOpen(false);
+    }
   };
 
   const handleLogout = () => {
@@ -227,6 +231,9 @@ useEffect(() => {
                 <button className={styles.userMenuItem} onClick={() => {
                     setShowUserMenu(false);
                     router.push('/dashboard/settings');
+                    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+                      setIsOpen(false);
+                    }
                 }}>
                   <span className={styles.menuIcon}>
                     <img src="/assets/icons/settings.png" alt="Settings" width={20} height={20} style={{ opacity: 0.6 }} /> 
@@ -237,6 +244,9 @@ useEffect(() => {
                 <button className={`${styles.userMenuItem} ${styles.danger}`} onClick={() => {
                     setShowUserMenu(false);
                     setIsLogoutModalOpen(true);
+                    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+                      setIsOpen(false);
+                    }
                 }}>
                   <span className={styles.menuIcon}>
                     <LogoutOutlinedIcon style={{ fontSize: 20 }} />

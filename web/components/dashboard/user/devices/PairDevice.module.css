@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  padding: 40px 20px;
+  @apply mobile:!p-0;
 }
 
 /* Pairing Card */
@@ -694,6 +694,41 @@
 }
 
 /* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 24px 16px;
+  }
+
+  .pairingCard {
+    max-width: 100%;
+    padding: 24px;
+  }
+
+  .codeContainer {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .codeActions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .qrCodeContainer {
+    padding: 12px;
+  }
+
+  .qrCode {
+    width: 160px;
+    height: 160px;
+  }
+
+  .deviceIconRing {
+    width: 84px;
+    height: 84px;
+  }
+}
+
 @media (max-width: 480px) {
   .pairingCard {
     padding: 24px 16px;

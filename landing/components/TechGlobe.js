@@ -4,19 +4,14 @@ import dynamic from 'next/dynamic';
 
 const Globe = dynamic(() => import('react-globe.gl'), { ssr: false });
 
-// Skeleton loader component for the globe
+// Skeleton loader component for the globe - uses Tailwind responsive classes for SSR compatibility
 function GlobeSkeleton() {
   return (
-    <div className="absolute inset-0 flex items-center justify-center">
-      <div className="relative">
-        {/* Main globe skeleton circle */}
-        <div 
-          className="rounded-full bg-gradient-to-br from-gray-800/50 to-gray-900/50 animate-pulse"
-          style={{
-            width: typeof window !== 'undefined' && window.innerWidth < 1024 ? '320px' : '500px',
-            height: typeof window !== 'undefined' && window.innerWidth < 1024 ? '320px' : '500px',
-          }}
-        >
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      {/* Container matches globe dimensions - responsive with Tailwind */}
+      <div className="relative flex items-center justify-center w-full lg:w-[700px] h-[320px] lg:h-[800px]">
+        {/* Main globe skeleton circle - smaller on mobile */}
+        <div className="relative rounded-full bg-gradient-to-br from-gray-800/50 to-gray-900/50 animate-pulse w-[240px] h-[240px] lg:w-[500px] lg:h-[500px]">
           {/* Inner glow effect */}
           <div className="absolute inset-4 rounded-full bg-gradient-to-br from-gray-700/30 to-gray-800/30 animate-pulse" 
                style={{ animationDelay: '0.2s' }} />
@@ -41,17 +36,17 @@ function GlobeSkeleton() {
               animation: 'spin 2s linear infinite',
             }}
           />
+          
+          {/* Loading text inside the circle */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-sm text-gray-400 animate-pulse">Initializing...</span>
+          </div>
         </div>
         
         {/* Pulsing dots to simulate nodes */}
         <div className="absolute top-1/4 left-1/3 w-2 h-2 rounded-full bg-orange-500/50 animate-ping" />
         <div className="absolute top-1/2 right-1/4 w-2 h-2 rounded-full bg-orange-500/50 animate-ping" style={{ animationDelay: '0.5s' }} />
         <div className="absolute bottom-1/3 left-1/2 w-2 h-2 rounded-full bg-orange-500/50 animate-ping" style={{ animationDelay: '1s' }} />
-        
-        {/* Loading text */}
-        <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 text-center">
-          <span className="text-sm text-gray-400 animate-pulse">Initializing global network...</span>
-        </div>
       </div>
     </div>
   );
@@ -197,9 +192,13 @@ export default function TechGlobe() {
   return (
     <div className="relative w-full h-full flex items-center justify-center">
       {/* Skeleton loader - shown while globe is loading */}
-      {!isLoaded && <GlobeSkeleton />}
+      <div 
+        className={`absolute inset-0 transition-opacity duration-500 ${isLoaded ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+      >
+        <GlobeSkeleton />
+      </div>
       
-      {/* Globe container - hidden until loaded */}
+      {/* Globe container */}
       <div 
         className={`transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
       >

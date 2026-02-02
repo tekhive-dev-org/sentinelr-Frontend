@@ -1,11 +1,66 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
 const Globe = dynamic(() => import('react-globe.gl'), { ssr: false });
 
+// Skeleton loader component for the globe
+function GlobeSkeleton() {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="relative">
+        {/* Main globe skeleton circle */}
+        <div 
+          className="rounded-full bg-gradient-to-br from-gray-800/50 to-gray-900/50 animate-pulse"
+          style={{
+            width: typeof window !== 'undefined' && window.innerWidth < 1024 ? '320px' : '500px',
+            height: typeof window !== 'undefined' && window.innerWidth < 1024 ? '320px' : '500px',
+          }}
+        >
+          {/* Inner glow effect */}
+          <div className="absolute inset-4 rounded-full bg-gradient-to-br from-gray-700/30 to-gray-800/30 animate-pulse" 
+               style={{ animationDelay: '0.2s' }} />
+          
+          {/* Simulated grid lines */}
+          <div className="absolute inset-0 rounded-full overflow-hidden opacity-20">
+            {/* Horizontal lines */}
+            <div className="absolute top-1/4 left-0 right-0 h-px bg-gray-500" />
+            <div className="absolute top-1/2 left-0 right-0 h-px bg-gray-500" />
+            <div className="absolute top-3/4 left-0 right-0 h-px bg-gray-500" />
+            {/* Vertical lines */}
+            <div className="absolute left-1/4 top-0 bottom-0 w-px bg-gray-500" />
+            <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-500" />
+            <div className="absolute left-3/4 top-0 bottom-0 w-px bg-gray-500" />
+          </div>
+          
+          {/* Rotating ring effect */}
+          <div 
+            className="absolute inset-0 rounded-full border-2 border-transparent"
+            style={{
+              borderTopColor: 'rgba(224, 112, 48, 0.3)',
+              animation: 'spin 2s linear infinite',
+            }}
+          />
+        </div>
+        
+        {/* Pulsing dots to simulate nodes */}
+        <div className="absolute top-1/4 left-1/3 w-2 h-2 rounded-full bg-orange-500/50 animate-ping" />
+        <div className="absolute top-1/2 right-1/4 w-2 h-2 rounded-full bg-orange-500/50 animate-ping" style={{ animationDelay: '0.5s' }} />
+        <div className="absolute bottom-1/3 left-1/2 w-2 h-2 rounded-full bg-orange-500/50 animate-ping" style={{ animationDelay: '1s' }} />
+        
+        {/* Loading text */}
+        <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 text-center">
+          <span className="text-sm text-gray-400 animate-pulse">Initializing global network...</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function TechGlobe() {
   const globeRef = useRef(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [showRings, setShowRings] = useState(false);
 
   // Major cities as monitoring nodes
   const places = [
@@ -126,10 +181,31 @@ export default function TechGlobe() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Handle globe ready event
+  const handleGlobeReady = () => {
+    // Add delay to ensure globe textures and arc animations are fully rendered
+    // Arcs have arcDashAnimateTime of 1500ms, so we wait for them to be visible
+    setTimeout(() => {
+      setIsLoaded(true);
+      // Delay rings slightly after globe becomes visible to prevent multiple simultaneous ripples
+      setTimeout(() => {
+        setShowRings(true);
+      }, 500);
+    }, 1800);
+  };
+
   return (
     <div className="relative w-full h-full flex items-center justify-center">
-      <Globe
-        ref={globeRef}
+      {/* Skeleton loader - shown while globe is loading */}
+      {!isLoaded && <GlobeSkeleton />}
+      
+      {/* Globe container - hidden until loaded */}
+      <div 
+        className={`transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+      >
+        <Globe
+          ref={globeRef}
+          onGlobeReady={handleGlobeReady}
         // Clean digital globe
         globeImageUrl="https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-blue-marble.jpg"
         
@@ -171,8 +247,8 @@ export default function TechGlobe() {
         arcAltitude={0.1}
         arcAltitudeAutoScale={0.3}
         
-        // Subtle rings from nodes - brand color
-        ringsData={places}
+        // Subtle rings from nodes - brand color (delayed to prevent multiple ripples on load)
+        ringsData={showRings ? places : []}
         ringLat="lat"
         ringLng="lng"
         ringColor={() => () => '#fff'}
@@ -185,6 +261,7 @@ export default function TechGlobe() {
         height={typeof window !== 'undefined' && window.innerWidth < 1024 ? 420 : 800}
         backgroundColor="rgba(0,0,0,0)"
       />
+      </div>
     </div>
   );
 }

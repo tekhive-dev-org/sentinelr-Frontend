@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  @apply mobile:!p-0;
+  @apply mobile:!p-0 pb-8;
 }
 
 /* Pairing Card */

@@ -121,8 +121,15 @@ export default function DevicesAndUsers() {
   ]);
 
   // Handle add new member
-  const handleAddMember = (memberData) => {
-    setUsers([...users, memberData]);
+  const handleAddMember = (memberData, apiResponse) => {
+    console.log('Add member API response:', apiResponse);
+    
+    // Only add to local state if API call was successful
+    if (apiResponse && apiResponse.message === 'Member added successfully.') {
+      setUsers([...users, memberData]);
+    } else {
+      console.error('Failed to add member - API response:', apiResponse);
+    }
   };
 
   // Handle user click to open detail modal
@@ -257,6 +264,7 @@ export default function DevicesAndUsers() {
       onComplete={handlePairingComplete}
       onCancel={handleCancelPairing}
       onViewDevices={handleViewDevices}
+      familyMembers={users}
     />
   );
 

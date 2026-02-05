@@ -6,14 +6,29 @@ import PasswordTab from './PasswordTab';
 import NotificationsTab from './NotificationsTab';
 import styles from './Settings.module.css';
 import Toast from '../../../common/Toast';
-import SettingsService from './SettingsService';
+import SettingsService, { SettingsError } from './SettingsService';
+import { useAuth } from '../../../../context/AuthContext';
 
 export default function UserSettings({ user }) {
+  const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState('Account');
   const [toast, setToast] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Simulated correct password for validation (in real app, this would be server-side)
-  const CORRECT_OLD_PASSWORD = 'Chidiebere2025';
+  // Handle auth errors by logging out user
+  const handleError = (error) => {
+    if (error instanceof SettingsError) {
+      // Logout if session expired or unauthorized
+      if (error.code === 'UNAUTHORIZED' || error.code === 'MISSING_TOKEN' || error.statusCode === 401) {
+        setToast({ message: 'Your session has expired. Logging out...', type: 'error' });
+        setTimeout(() => {
+          logout();
+        }, 1500);
+        return;
+      }
+    }
+    setToast({ message: error.message || 'Failed to update settings', type: 'error' });
+  };
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -53,18 +68,7 @@ export default function UserSettings({ user }) {
       newPassword: Yup.string().min(8, 'Password must be at least 8 characters'),
     }),
     onSubmit: async (values, { resetForm }) => {
-      // Password Validation Logic
-      if (values.newPassword) {
-        if (!values.oldPassword) {
-          setToast({ message: 'Old password is required to set a new password', type: 'error' });
-          return;
-        }
-        if (values.oldPassword !== CORRECT_OLD_PASSWORD) {
-          setToast({ message: 'Provided old password is not correct', type: 'error' });
-          return;
-        }
-      }
-
+      setIsSubmitting(true);
       try {
         const profilePayload = {
           userName: values.username || values.fullName,
@@ -83,6 +87,11 @@ export default function UserSettings({ user }) {
           formik.setFieldValue('profilePicture', null);
         }
 
+        // Handle password change if provided
+        if (values.newPassword && values.oldPassword) {
+          await SettingsService.changePassword(values.oldPassword, values.newPassword);
+        }
+
         setToast({ message: 'All changes saved successfully!', type: 'success' });
 
         // Clear password fields after successful save
@@ -90,7 +99,9 @@ export default function UserSettings({ user }) {
           resetForm({ values: { ...values, oldPassword: '', newPassword: '' } });
         }
       } catch (error) {
-        setToast({ message: error.message || 'Failed to update settings', type: 'error' });
+        handleError(error);
+      } finally {
+        setIsSubmitting(false);
       }
     },
   });
@@ -131,8 +142,22 @@ export default function UserSettings({ user }) {
 
       {/* Global Actions */}
       <div className={styles.actions} style={{ marginTop: '20px', padding: '0 32px 52px' }}>
-        <button type="button" className={styles.secondaryButton} onClick={handleDiscard}>Discard</button>
-        <button type="button" className={styles.primaryButton} onClick={formik.handleSubmit}>Apply Changes</button>
+        <button 
+          type="button" 
+          className={styles.secondaryButton} 
+          onClick={handleDiscard}
+          disabled={isSubmitting}
+        >
+          Discard
+        </button>
+        <button 
+          type="button" 
+          className={`${styles.primaryButton} ${isSubmitting ? styles.buttonLoading : ''}`} 
+          onClick={formik.handleSubmit}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Saving...' : 'Apply Changes'}
+        </button>
       </div>
     </div>
   );

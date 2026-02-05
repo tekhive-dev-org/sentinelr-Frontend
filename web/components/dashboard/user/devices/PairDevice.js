@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import styles from './PairDevice.module.css';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -10,7 +10,7 @@ import WatchIcon from '@mui/icons-material/Watch';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import WifiOffIcon from '@mui/icons-material/WifiOff';
-import devicesService from '../../../../services/devicesService';
+import { devicesService } from '../../../../services/devicesService';
 
 // Pairing flow steps
 const STEPS = {
@@ -25,27 +25,25 @@ const STEPS = {
 
 // Device types
 const deviceTypes = [
-  { id: 'phone', label: 'Smartphone', icon: SmartphoneIcon },
-  { id: 'tablet', label: 'Tablet', icon: TabletIcon },
-  { id: 'laptop', label: 'Laptop', icon: LaptopIcon },
-  { id: 'watch', label: 'Smartwatch', icon: WatchIcon },
+  { id: 'Phone', label: 'Smartphone', icon: SmartphoneIcon },
+  { id: 'Tablet', label: 'Tablet', icon: TabletIcon },
+  { id: 'Laptop', label: 'Laptop', icon: LaptopIcon },
+  { id: 'Watch', label: 'Smartwatch', icon: WatchIcon },
 ];
 
-// Generate a random 6-digit pairing code
-const generateCode = () => {
-  return Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join('');
-};
-
-export default function PairDevice({ onComplete, onCancel, onViewDevices }) {
+export default function PairDevice({ onComplete, onCancel, onViewDevices, familyMembers = [] }) {
   const [step, setStep] = useState(STEPS.FORM);
-  const [pairingCode, setPairingCode] = useState(generateCode());
+  const [pairingCode, setPairingCode] = useState('');
+  const [qrCodeData, setQrCodeData] = useState('');
   const [timeRemaining, setTimeRemaining] = useState(240); // 4 minutes in seconds
   const [copied, setCopied] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [isGeneratingCode, setIsGeneratingCode] = useState(false);
+  const [error, setError] = useState(null);
   
   // Device form state
   const [deviceName, setDeviceName] = useState('');
-  const [deviceType, setDeviceType] = useState('phone');
+  const [deviceType, setDeviceType] = useState('Phone');
   const [assignedUser, setAssignedUser] = useState('');
 
   // Timer countdown
@@ -66,6 +64,31 @@ export default function PairDevice({ onComplete, onCancel, onViewDevices }) {
     return () => clearInterval(timer);
   }, [step]);
 
+  // Polling for pairing status
+  useEffect(() => {
+    if ((step !== STEPS.CODE && step !== STEPS.QR) || !pairingCode) return;
+    
+    const pollInterval = setInterval(async () => {
+      try {
+        const result = await devicesService.checkCodeStatus(pairingCode);
+        if (result.status === 'paired') {
+          clearInterval(pollInterval);
+          setStep(STEPS.SUCCESS);
+          if (onComplete) {
+            onComplete(result.device);
+          }
+        } else if (result.status === 'expired') {
+          clearInterval(pollInterval);
+          setStep(STEPS.EXPIRED);
+        }
+      } catch (err) {
+        console.error('Error checking pairing status:', err);
+      }
+    }, 3000); // Poll every 3 seconds
+
+    return () => clearInterval(pollInterval);
+  }, [step, pairingCode, onComplete]);
+
   // Format time as MM:SS
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -84,62 +107,68 @@ export default function PairDevice({ onComplete, onCancel, onViewDevices }) {
     }
   };
 
+  // Generate pairing code via API
+  const generatePairingCode = async () => {
+    setIsGeneratingCode(true);
+    setError(null);
+    
+    try {
+      const result = await devicesService.generatePairingCode({
+        childUserId: assignedUser ? parseInt(assignedUser) : null,
+        deviceName: deviceName,
+        deviceType: deviceType,
+      });
+      
+      setPairingCode(result.pairingCode);
+      setQrCodeData(result.qrCode || '');
+      setTimeRemaining(240);
+      setCopied(false);
+      return result;
+    } catch (err) {
+      console.error('Failed to generate pairing code:', err);
+      setError(err.message || 'Failed to generate pairing code. Please try again.');
+      throw err;
+    } finally {
+      setIsGeneratingCode(false);
+    }
+  };
+
   // Refresh/regenerate code
-  const handleRefreshCode = () => {
-    setPairingCode(generateCode());
-    setTimeRemaining(240);
-    setCopied(false);
+  const handleRefreshCode = async () => {
+    await generatePairingCode();
   };
 
   // Handle form submit - proceed to pairing code
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!deviceName.trim()) return;
-    handleRefreshCode();
-    setStep(STEPS.CODE);
+    
+    try {
+      await generatePairingCode();
+      setStep(STEPS.CODE);
+    } catch (err) {
+      // Error already handled in generatePairingCode
+    }
   };
 
-  // Start pairing simulation
-  const startPairing = useCallback(() => {
-    setStep(STEPS.CONNECTING);
-    setProgress(0);
-
-    // Simulate connection progress
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          // Simulate success (in real app, this would be based on actual pairing result)
-          setTimeout(() => {
-            // For demo: randomly succeed or timeout
-            const success = Math.random() > 0.3;
-            setStep(success ? STEPS.SUCCESS : STEPS.TIMEOUT);
-          }, 500);
-          return 100;
-        }
-        return prev + 2;
-      });
-    }, 200);
-
-    // Timeout after 30 seconds if not connected
-    setTimeout(() => {
-      if (progress < 100) {
-        clearInterval(progressInterval);
-        setStep(STEPS.TIMEOUT);
-      }
-    }, 30000);
-  }, [progress]);
-
   // Handle try again from timeout
-  const handleTryAgain = () => {
-    setStep(STEPS.CODE);
-    handleRefreshCode();
+  const handleTryAgain = async () => {
+    try {
+      await generatePairingCode();
+      setStep(STEPS.CODE);
+    } catch (err) {
+      // Error already handled
+    }
   };
 
   // Generate new code from expired
-  const handleGenerateNewCode = () => {
-    handleRefreshCode();
-    setStep(STEPS.CODE);
+  const handleGenerateNewCode = async () => {
+    try {
+      await generatePairingCode();
+      setStep(STEPS.CODE);
+    } catch (err) {
+      // Error already handled
+    }
   };
 
   // Render device form step
@@ -149,6 +178,12 @@ export default function PairDevice({ onComplete, onCancel, onViewDevices }) {
       <p className={styles.cardDescription}>
         Enter the device details to start the pairing process.
       </p>
+
+      {error && (
+        <div className={styles.errorMessage} style={{ color: '#EF4444', backgroundColor: '#FEE2E2', padding: '12px', borderRadius: '8px', marginBottom: '16px' }}>
+          {error}
+        </div>
+      )}
 
       <form onSubmit={handleFormSubmit}>
         {/* Device Name */}
@@ -161,6 +196,7 @@ export default function PairDevice({ onComplete, onCancel, onViewDevices }) {
             value={deviceName}
             onChange={(e) => setDeviceName(e.target.value)}
             required
+            disabled={isGeneratingCode}
           />
         </div>
 
@@ -171,13 +207,14 @@ export default function PairDevice({ onComplete, onCancel, onViewDevices }) {
             {deviceTypes.map((type) => {
               const Icon = type.icon;
               const isSelected = deviceType === type.id;
+              const isDisabled = type.id === "Tablet" || type.id === "Laptop" || type.id === "Watch";
               return (
                 <button
                   key={type.id}
                   type="button"
                   className={`${styles.deviceTypeBtn} ${isSelected ? styles.deviceTypeBtnActive : ''}`}
                   onClick={() => setDeviceType(type.id)}
-                  disabled={type.id === "tablet" || type.id === "laptop" || type.id === "watch"}
+                  disabled={isDisabled || isGeneratingCode}
                 >
                   <Icon style={{ fontSize: 24 }} />
                   <span>{type.label}</span>
@@ -194,20 +231,23 @@ export default function PairDevice({ onComplete, onCancel, onViewDevices }) {
             className={styles.formSelect}
             value={assignedUser}
             onChange={(e) => setAssignedUser(e.target.value)}
+            disabled={isGeneratingCode}
           >
             <option value="">Select a user...</option>
-            <option value="user1">John Doe</option>
-            <option value="user2">Jane Doe</option>
-            <option value="user3">Child 1</option>
+            {familyMembers.map((member) => (
+              <option key={member.id} value={member.id}>
+                {member.name} ({member.role || member.relationship})
+              </option>
+            ))}
           </select>
         </div>
 
         <div className={styles.formActions}>
-          <button type="button" className={styles.secondaryButton} onClick={onCancel}>
+          <button type="button" className={styles.secondaryButton} onClick={onCancel} disabled={isGeneratingCode}>
             Cancel
           </button>
-          <button type="submit" className={styles.primaryButton}>
-            + Pair device
+          <button type="submit" className={styles.primaryButton} disabled={isGeneratingCode}>
+            {isGeneratingCode ? 'Generating...' : '+ Pair device'}
           </button>
         </div>
       </form>
@@ -223,16 +263,16 @@ export default function PairDevice({ onComplete, onCancel, onViewDevices }) {
       </p>
 
       <div className={styles.codeContainer}>
-        {pairingCode.split('').map((digit, index) => (
+        {pairingCode.split('').map((char, index) => (
           <div key={index} className={styles.codeDigit}>
-            {digit}
+            {char}
           </div>
         ))}
       </div>
 
       <div className={styles.codeActions}>
-        <button className={styles.refreshLink} onClick={handleRefreshCode}>
-          Refresh code
+        <button className={styles.refreshLink} onClick={handleRefreshCode} disabled={isGeneratingCode}>
+          {isGeneratingCode ? 'Generating...' : 'Refresh code'}
         </button>
         <span className={styles.expiryText}>
           Code expires in <strong>{formatTime(timeRemaining)}</strong>
@@ -257,8 +297,8 @@ export default function PairDevice({ onComplete, onCancel, onViewDevices }) {
 
   // Render QR code step
   const renderQRStep = () => {
-    // Generate QR data URL that mobile app can scan
-    const qrData = `sentinelr://pair?code=${pairingCode}&name=${encodeURIComponent(deviceName || 'Device')}`;
+    // Use QR data from API or fallback to generated URL
+    const qrData = qrCodeData || `sentinelr://pair?code=${pairingCode}&name=${encodeURIComponent(deviceName || 'Device')}`;
     
     return (
       <div className={styles.pairingCard}>
@@ -268,14 +308,20 @@ export default function PairDevice({ onComplete, onCancel, onViewDevices }) {
         </p>
 
         <div className={styles.qrCodeContainer}>
-          <QRCodeSVG 
-            value={qrData}
-            size={200}
-            level="H"
-            includeMargin={true}
-            bgColor="#ffffff"
-            fgColor="#000000"
-          />
+          {qrCodeData && qrCodeData.startsWith('data:image') ? (
+            // If API returns a base64 image, display it directly
+            <img src={qrCodeData} alt="Pairing QR Code" style={{ width: 200, height: 200 }} />
+          ) : (
+            // Otherwise generate QR from code
+            <QRCodeSVG 
+              value={qrData}
+              size={200}
+              level="H"
+              includeMargin={true}
+              bgColor="#ffffff"
+              fgColor="#000000"
+            />
+          )}
         </div>
 
         <button 
@@ -532,7 +578,7 @@ export default function PairDevice({ onComplete, onCancel, onViewDevices }) {
 
   return (
     <div className={styles.container}>
-      {renderNav()}
+      {/* {renderNav()} */}
       {renderStep()}
     </div>
   );

@@ -1,11 +1,13 @@
-// API Configuration
-export const API_BASE_URL = 'https://sentinelr-backend.onrender.com/api';
+import Constants from 'expo-constants';
+
+// API Configuration - loaded from environment via app.config.js
+export const API_BASE_URL = Constants.expoConfig?.extra?.apiBaseUrl;
 
 // API Endpoints
 export const ENDPOINTS = {
-  PAIR_DEVICE: '/devices/pair',
-  UPLOAD_PING: '/devices/ping',
-  HEARTBEAT: '/devices/heartbeat',
+  PAIR_DEVICE: '/device/pair',
+  UPLOAD_PING: '/device/ping',
+  HEARTBEAT: '/device/heartbeat',
 };
 
 // App Constants

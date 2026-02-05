@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import styles from './DevicesAndUsers.module.css';
 import CloseIcon from '@mui/icons-material/Close';
+import { familyService } from '../../../../services/familyService';
 
-export default function AddMemberModal({ isOpen, onClose, onSubmit }) {
+export default function AddMemberModal({ isOpen, onClose, onSubmit, familyId }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -10,32 +11,65 @@ export default function AddMemberModal({ isOpen, onClose, onSubmit }) {
     countryCode: '+1',
     role: '',
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setError(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) return;
     
-    onSubmit({
-      ...formData,
-      id: `user_${Date.now()}`,
-      phone: `${formData.countryCode}${formData.phone}`,
-      status: 'offline',
-    });
+    // Require familyId for API call
+    if (!familyId) {
+      setError('No family selected. Please create or select a family first.');
+      return;
+    }
     
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      countryCode: '+1',
-      role: '',
-    });
-    onClose();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Call the API to add family member
+      const apiResponse = await familyService.addFamilyMember({
+        familyId,
+        userId: null, // New user will be created
+        relationship: formData.role,
+      });
+      
+      // Check API response for success
+      if (!apiResponse || apiResponse.error) {
+        throw new Error(apiResponse?.message || 'Failed to add family member');
+      }
+      
+      // Only call parent callback if API was successful
+      onSubmit({
+        ...formData,
+        id: apiResponse?.memberId || `user_${Date.now()}`,
+        phone: `${formData.countryCode}${formData.phone}`,
+        status: 'offline',
+      }, apiResponse);
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        countryCode: '+1',
+        role: '',
+      });
+      onClose();
+    } catch (err) {
+      console.error('Failed to add family member:', err);
+      setError(err.message || 'Failed to add family member. Please try again.');
+      // Don't call onSubmit - UI should not update on failure
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -123,11 +157,16 @@ export default function AddMemberModal({ isOpen, onClose, onSubmit }) {
 
           {/* Actions */}
           <div className={styles.modalActions}>
-            <button type="button" className={styles.cancelBtn} onClick={onClose}>
+            {error && (
+              <p className={styles.errorText} style={{ color: '#EF4444', fontSize: '14px', marginBottom: '12px', width: '100%' }}>
+                {error}
+              </p>
+            )}
+            <button type="button" className={styles.cancelBtn} onClick={onClose} disabled={isLoading}>
               Cancel
             </button>
-            <button type="submit" className={styles.submitBtn}>
-              Add Member
+            <button type="submit" className={styles.submitBtn} disabled={isLoading}>
+              {isLoading ? 'Adding...' : 'Add Member'}
             </button>
           </div>
         </form>

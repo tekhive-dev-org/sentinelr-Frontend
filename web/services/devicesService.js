@@ -4,8 +4,8 @@
  * Uses mock responses until backend is ready
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://sentinelr-backend.onrender.com/api';
-const USE_MOCK = true; // Toggle when backend is ready
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const USE_MOCK = false; // Set to false to use real API
 
 // Helper to get auth token
 const getAuthToken = () => {
@@ -104,32 +104,29 @@ async function apiRequest(endpoint, options = {}) {
 
 export const devicesService = {
   /**
-   * Generate a new pairing code
-   * @param {object} deviceInfo - { device_name, device_type, assigned_user_id }
-   * @returns {Promise<{ pairing_code, expires_at, qr_data }>}
+   * Generate a new pairing code for a child's device
+   * @param {object} deviceInfo - { childUserId, deviceName, deviceType }
+   * @returns {Promise<{ pairingCode: string, qrCode: string }>}
    */
-  async generatePairingCode(deviceInfo) {
+  async generatePairingCode({ childUserId, deviceName, deviceType }) {
     if (USE_MOCK) {
       await new Promise(resolve => setTimeout(resolve, 500));
       const code = generatePairingCode();
       return {
-        success: true,
-        pairing_code: code,
-        expires_at: new Date(Date.now() + 240000).toISOString(),
-        expires_in_seconds: 240,
-        qr_data: `sentinelr://pair?code=${code}&name=${encodeURIComponent(deviceInfo.device_name)}`,
+        pairingCode: code,
+        qrCode: `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==`,
       };
     }
 
-    return apiRequest('/devices/generate-code', {
+    return apiRequest('/device/generate/pair/code', {
       method: 'POST',
-      body: JSON.stringify(deviceInfo),
+      body: JSON.stringify({ childUserId, deviceName, deviceType }),
     });
   },
 
   /**
    * Check pairing code status
-   * @param {string} code - 6-digit pairing code
+   * @param {string} code - Pairing code (e.g., "UX5H-2RTM")
    * @returns {Promise<{ status: 'pending'|'paired'|'expired', device? }>}
    */
   async checkCodeStatus(code) {

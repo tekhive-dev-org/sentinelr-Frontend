@@ -246,8 +246,32 @@
   white-space: nowrap;
 }
 
-.primaryButton:hover {
+.primaryButton:hover:not(:disabled) {
   background-color: #0d3f5f;
+}
+
+.primaryButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.buttonLoading {
+  position: relative;
+  color: transparent;
+}
+
+.buttonLoading::after {
+  content: 'Saving...';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+}
+
+.secondaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .secondaryButton {
@@ -263,10 +287,15 @@
   white-space: nowrap;
 }
 
-.secondaryButton:hover {
+.secondaryButton:hover:not(:disabled) {
   background-color: #f9fafb;
   color: #374151;
   border-color: #d1d5db;
+}
+
+.switchLoading {
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .dangerButton {

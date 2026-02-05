@@ -6,7 +6,7 @@ import { storageService } from './storageService';
  * Uses mock responses until backend is ready
  */
 
-const USE_MOCK = true; // Toggle when backend is ready
+const USE_MOCK = false; // Set to false to use real API
 
 // Mock responses
 const mockResponses = {
@@ -55,7 +55,8 @@ async function apiRequest(endpoint, data = {}) {
 export const apiService = {
   /**
    * Pair device with pairing code
-   * @param {string} code - 6-digit pairing code
+   * @param {string} code - Pairing code (e.g., "UX5H-2RTM")
+   * @returns {Promise<{ success: boolean, message: string, deviceToken: string }>}
    */
   async pairDevice(code) {
     if (USE_MOCK) {
@@ -65,7 +66,29 @@ export const apiService = {
       }
       return mockResponses.pairDevice;
     }
-    return apiRequest('PAIR_DEVICE', { pairing_code: code });
+    
+    const response = await fetch(`${API_BASE_URL}${ENDPOINTS.PAIR_DEVICE}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || `Pairing failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Store the device token for future authenticated requests
+    if (data.deviceToken) {
+      await storageService.setUploadToken(data.deviceToken);
+      await storageService.setIsPaired(true);
+    }
+    
+    return data;
   },
 
   /**

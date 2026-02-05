@@ -24,10 +24,20 @@ export const storageService = {
     return await AsyncStorage.getItem(STORAGE_KEYS.UPLOAD_TOKEN);
   },
 
+  // Set upload token
+  async setUploadToken(token) {
+    await AsyncStorage.setItem(STORAGE_KEYS.UPLOAD_TOKEN, token);
+  },
+
   // Check if device is paired
   async isPaired() {
     const paired = await AsyncStorage.getItem(STORAGE_KEYS.IS_PAIRED);
     return paired === 'true';
+  },
+
+  // Set paired status
+  async setIsPaired(paired) {
+    await AsyncStorage.setItem(STORAGE_KEYS.IS_PAIRED, paired ? 'true' : 'false');
   },
 
   // Set tracking enabled state

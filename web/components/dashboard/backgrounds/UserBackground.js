@@ -213,17 +213,18 @@ const UserBackground = () => {
             <hemisphereLight intensity={0.5} groundColor="#ffaa00" />
 
             {/* Giant Bee */}
-            <Float 
+            
+            {/* <Float 
                 speed={5} 
                 rotationIntensity={0.2} 
                 floatIntensity={0.5} 
                 floatingRange={[-0.8, 0.8]}
             >
                 <Bee isGiant={true} scale={1.0} />
-            </Float>
+            </Float> */}
 
             {/* Cursor Swarm */}
-            <Swarm count={8} />
+            {/*<Swarm count={8} />*/}
         </Canvas>
     </Box>
   );

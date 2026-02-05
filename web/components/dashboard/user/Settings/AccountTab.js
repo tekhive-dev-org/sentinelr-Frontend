@@ -19,6 +19,7 @@ export default function AccountTab({ formik }) {
   
   // Loading states
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isToggling2FA, setIsToggling2FA] = useState(false);
   
   // Image state
   const [previewImage, setPreviewImage] = useState(
@@ -56,12 +57,15 @@ export default function AccountTab({ formik }) {
 
   const handle2FAToggle = async () => {
     const newValue = !formik.values.is2FAEnabled;
+    setIsToggling2FA(true);
     try {
       const result = await SettingsService.toggle2FA(newValue);
       formik.setFieldValue('is2FAEnabled', newValue);
       setToast({ message: result.message, type: newValue ? 'success' : 'info' });
     } catch (error) {
       setToast({ message: error.message, type: 'error' });
+    } finally {
+      setIsToggling2FA(false);
     }
   };
 
@@ -102,6 +106,7 @@ export default function AccountTab({ formik }) {
       <TwoFactorSection 
         isEnabled={formik.values.is2FAEnabled}
         onToggle={handle2FAToggle}
+        isLoading={isToggling2FA}
       />
       <hr className={styles.hr}/>
 

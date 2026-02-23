@@ -57,14 +57,12 @@
 }
 
 .mapPlaceholder {
-  height: 200px;
-  background-color: #eef2f6;
+  height: 280px;
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .mapImage {
@@ -310,4 +308,40 @@
   .mainContentGrid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ── Stat card dropdown menu ──────────────────────────────────────────────── */
+.menuWrapper {
+  position: relative;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 160px;
+  z-index: 50;
+  overflow: hidden;
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 13px;
+  color: #374151;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.dropdownItem:hover {
+  background: #f3f4f6;
+  color: #1a1a1a;
 }

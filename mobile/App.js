@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 import { DeviceProvider, useDevice } from './src/context/DeviceContext';
 import AnimatedSplash from './src/components/AnimatedSplash';
+import { locationService } from './src/services/locationService';
 
 // Screens
 import PairingScreen from './src/screens/PairingScreen';
@@ -62,6 +63,7 @@ function AppContent() {
   useEffect(() => {
     const prepare = async () => {
       if (!themeLoading && !deviceLoading) {
+        await locationService.ensureTrackingState();
         // Hide native splash screen
         await SplashScreen.hideAsync();
         setAppReady(true);

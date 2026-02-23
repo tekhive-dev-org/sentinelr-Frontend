@@ -1,52 +1,157 @@
-import React from 'react';
-import styles from './DevicesAndUsers.module.css';
-import AddIcon from '@mui/icons-material/Add';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import React from "react";
+import Image from "next/image";
+import styles from "./DevicesAndUsers.module.css";
+import AddIcon from "@mui/icons-material/Add";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import BlockIcon from "@mui/icons-material/Block";
 
-export default function DevicesList({ devices = [], onAddDevice }) {
-  if (devices.length === 0) {
+function formatRelativeTime(dateStr) {
+  if (!dateStr) return "Never";
+  const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000); // seconds
+  if (diff < 60) return "Just now";
+  if (diff < 3600) {
+    const m = Math.floor(diff / 60);
+    return `${m} minute${m !== 1 ? "s" : ""} ago`;
+  }
+  if (diff < 86400) {
+    const h = Math.floor(diff / 3600);
+    return `${h} hour${h !== 1 ? "s" : ""} ago`;
+  }
+  const d = Math.floor(diff / 86400);
+  return `${d} day${d !== 1 ? "s" : ""} ago`;
+}
+
+export default function DevicesList({
+  devices = [],
+  onAddDevice,
+  onDeviceClick,
+  loading = false,
+  isAtDeviceLimit = false,
+  maxDevices = null,
+}) {
+  if (loading) {
     return (
-      <div className={styles.emptyState}>
-        {/* Empty State Illustration */}
-        <svg className={styles.emptyIllustration} viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Clock/Timer illustration */}
-          <circle cx="60" cy="60" r="45" stroke="#F6C102" strokeWidth="2" fill="#F9FAFB"/>
-          <circle cx="60" cy="60" r="38" stroke="#D1D5DB" strokeWidth="1.5" strokeDasharray="4 4" fill="none"/>
-          
-          {/* Clock hands */}
-          <line x1="60" y1="60" x2="60" y2="35" stroke="#9CA3AF" strokeWidth="2.5" strokeLinecap="round"/>
-          <line x1="60" y1="60" x2="78" y2="60" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"/>
-          
-          {/* Center dot */}
-          <circle cx="60" cy="60" r="4" fill="#6B7280"/>
-          
-          {/* Bell/Alarm top */}
-          <ellipse cx="60" cy="18" rx="8" ry="4" fill="#D1D5DB"/>
-          <rect x="58" y="14" width="4" height="8" fill="#D1D5DB"/>
-          
-          {/* Sparkles */}
-          <path d="M95 25L97 30L102 32L97 34L95 39L93 34L88 32L93 30L95 25Z" fill="#D1D5DB"/>
-          <path d="M25 35L26.5 38.5L30 40L26.5 41.5L25 45L23.5 41.5L20 40L23.5 38.5L25 35Z" fill="#E5E7EB"/>
-          <path d="M100 70L101 73L104 74L101 75L100 78L99 75L96 74L99 73L100 70Z" fill="#E5E7EB"/>
-        </svg>
-
-        <h3 className={styles.emptyTitle}>No Devices Added Yet</h3>
-        <p className={styles.emptyDescription}>
-          To add new devices to track, please, click the add button.
-        </p>
-        
-        <button className={styles.addButton} onClick={onAddDevice}>
-          <AddIcon className={styles.addButtonIcon} />
-          Pair Device
-          <ChevronRightIcon className={styles.addButtonIcon} />
-        </button>
+      <div
+        className={styles.loadingContainer}
+        style={{ padding: "40px", display: "flex", justifyContent: "center" }}
+      >
+        <div
+          style={{
+            width: "30px",
+            height: "30px",
+            border: "3px solid #E5E7EB",
+            borderTopColor: "#1F2937",
+            borderRadius: "50%",
+            animation: "spin 1s linear infinite",
+          }}
+        ></div>
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        `,
+          }}
+        />
       </div>
     );
   }
 
+  if (devices.length === 0) {
+    return (
+      <div className={styles.emptyState}>
+        {/* Empty State Illustration */}
+        <Image
+          src="/assets/icons/device-empty.png"
+          alt="No Devices"
+          width={120}
+          height={120}
+          className={styles.emptyIllustration}
+        />
+
+        <h3 className={styles.emptyTitle}>No Devices Found</h3>
+        <p className={styles.emptyDescription}>
+          No devices match your current filters.
+        </p>
+
+        {isAtDeviceLimit ? (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "13px",
+              color: "#b45309",
+              backgroundColor: "#fffbeb",
+              border: "1px solid #fcd34d",
+              borderRadius: "8px",
+              padding: "8px 16px",
+            }}
+          >
+            <BlockIcon style={{ fontSize: 15 }} />
+            Device limit reached ({maxDevices})
+          </div>
+        ) : (
+          <button className={styles.addButton} onClick={onAddDevice}>
+            <AddIcon className={styles.addButtonIcon} />
+            Pair Device
+            <ChevronRightIcon className={styles.addButtonIcon} />
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  const [openMenuId, setOpenMenuId] = React.useState(null);
+
+  const toggleMenu = (id) => {
+    if (openMenuId === id) {
+      setOpenMenuId(null);
+    } else {
+      setOpenMenuId(id);
+    }
+  };
+
   return (
     <div className={styles.devicesTableContainer}>
+      {/* Header row with device count + limit badge */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "12px",
+          padding: "0 4px",
+        }}
+      >
+        <span style={{ fontSize: "13px", color: "#6b7280" }}>
+          {devices.length}
+          {maxDevices != null ? ` / ${maxDevices}` : ""} device
+          {devices.length !== 1 ? "s" : ""}
+        </span>
+
+        {isAtDeviceLimit && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "12px",
+              color: "#b45309",
+              backgroundColor: "#fffbeb",
+              border: "1px solid #fcd34d",
+              borderRadius: "8px",
+              padding: "6px 12px",
+            }}
+          >
+            <BlockIcon style={{ fontSize: 15 }} />
+            Device limit reached ({maxDevices})
+          </div>
+        )}
+      </div>
+
       {/* Devices Table */}
       <table className={styles.devicesTable}>
         <thead>
@@ -62,18 +167,39 @@ export default function DevicesList({ devices = [], onAddDevice }) {
         <tbody>
           {devices.map((device) => (
             <tr key={device.id}>
-              <td className={styles.deviceNameCell}>{device.name}</td>
-              <td>{device.type === 'phone' ? 'IOS' : device.type === 'android' ? 'Android' : device.deviceType || 'IOS'}</td>
-              <td>{device.battery || Math.floor(Math.random() * 50 + 40)}%</td>
-              <td>{device.lastSeen || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-')}</td>
-              <td>
-                <span className={`${styles.statusBadge} ${device.status === 'online' ? styles.statusOnlineBadge : styles.statusOfflineBadge}`}>
-                  <span className={styles.statusDotSmall}></span>
-                  {device.status === 'online' ? 'Online' : 'Offline'}
-                </span>
+              <td className={styles.deviceNameCell}>
+                {device.deviceName || device.name}
               </td>
               <td>
-                <button className={styles.tableActionBtn}>
+                {device.type === "Phone" && device.platform
+                  ? device.platform.toLowerCase() === "ios"
+                    ? "iOS"
+                    : "Android"
+                  : device.type || "—"}
+              </td>
+              <td>{device.batteryLevel}%</td>
+              <td>{formatRelativeTime(device.lastSeen)}</td>
+              <td>
+                <span
+                  className={`${styles.statusBadge} ${
+                    device.pairStatus === "Paired" ||
+                    device.pairStatus === "paired"
+                      ? styles.statusOnlineBadge
+                      : styles.statusOfflineBadge
+                  }`}
+                >
+                  <span className={styles.statusDotSmall}></span>
+                  {device.pairStatus === "Paired" ||
+                  device.pairStatus === "paired"
+                    ? "Paired"
+                    : "Unpaired"}
+                </span>
+              </td>
+              <td style={{ position: "relative" }}>
+                <button
+                  className={styles.tableActionBtn}
+                  onClick={() => onDeviceClick && onDeviceClick(device)}
+                >
                   <MoreVertIcon style={{ fontSize: 18 }} />
                 </button>
               </td>
@@ -84,4 +210,3 @@ export default function DevicesList({ devices = [], onAddDevice }) {
     </div>
   );
 }
-

@@ -3,13 +3,15 @@ import ReactDOM from 'react-dom';
 import CloseIcon from '@mui/icons-material/Close';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import styles from './Settings.module.css';
 
 export default function DeleteAccountModal({ 
   isOpen, 
   onClose, 
   onDelete,
-  isDeleting 
+  isDeleting,
+  deleteError 
 }) {
   const [confirmations, setConfirmations] = React.useState({
     cantLogin: false,
@@ -98,6 +100,12 @@ export default function DeleteAccountModal({
                 )}
               </button>
             </div>
+            {deleteError && (
+              <div className={styles.errorText}>
+                <ErrorOutlineIcon style={{ fontSize: '14px' }} />
+                {deleteError}
+              </div>
+            )}
           </div>
         </div>
         <div className={styles.modalActions}>

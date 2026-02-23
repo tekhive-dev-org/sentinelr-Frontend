@@ -1,6 +1,7 @@
 import React from 'react';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import styles from './Settings.module.css';
 
 export default function GeneralSection({ 
@@ -8,6 +9,9 @@ export default function GeneralSection({
   previewImage, 
   onProfileClick 
 }) {
+  // Check if profile picture has been changed
+  const profilePictureChanged = !!formik.values.profilePicture;
+
   return (
     <div className={styles.section}>
       <h3 className={styles.sectionTitle}>General</h3>
@@ -22,13 +26,37 @@ export default function GeneralSection({
             onClick={onProfileClick}
             style={{ cursor: 'pointer' }}
           />
-          <div className={styles.cameraIcon} onClick={onProfileClick}>
+          <div className={styles.cameraIcon} onClick={onProfileClick} style={{ cursor: 'pointer' }}>
             <CameraAltOutlinedIcon style={{ fontSize: '14px' }} />
           </div>
+          {profilePictureChanged && (
+            <div style={{
+              position: 'absolute',
+              top: '0',
+              right: '0',
+              backgroundColor: '#10b981',
+              color: 'white',
+              borderRadius: '50%',
+              width: '20px',
+              height: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '12px',
+              fontWeight: 'bold'
+            }}>
+              ✓
+            </div>
+          )}
         </div>
         <div className={styles.profileInfo}>
           <div className={styles.profileLabel}>Profile Photo</div>
           <div className={styles.profileSubtext}>PNG, JPEG, SVG (less than 5MB)</div>
+          {profilePictureChanged && (
+            <div style={{ fontSize: '12px', color: '#10b981', marginTop: '4px', fontWeight: '500' }}>
+              📷 New picture selected
+            </div>
+          )}
         </div>
       </div>
 
@@ -44,7 +72,10 @@ export default function GeneralSection({
             onBlur={formik.handleBlur}
           />
           {formik.touched.fullName && formik.errors.fullName && (
-            <div className={styles.errorText}>{formik.errors.fullName}</div>
+            <div className={styles.errorText}>
+              <ErrorOutlineIcon style={{ fontSize: '14px' }} />
+              {formik.errors.fullName}
+            </div>
           )}
         </div>
 
@@ -65,7 +96,10 @@ export default function GeneralSection({
             />
           </div>
           {formik.touched.phoneNumber && formik.errors.phoneNumber && (
-            <div className={styles.errorText}>{formik.errors.phoneNumber}</div>
+            <div className={styles.errorText}>
+              <ErrorOutlineIcon style={{ fontSize: '14px' }} />
+              {formik.errors.phoneNumber}
+            </div>
           )}
         </div>
 
@@ -80,7 +114,10 @@ export default function GeneralSection({
             onBlur={formik.handleBlur}
           />
           {formik.touched.username && formik.errors.username && (
-            <div className={styles.errorText}>{formik.errors.username}</div>
+            <div className={styles.errorText}>
+              <ErrorOutlineIcon style={{ fontSize: '14px' }} />
+              {formik.errors.username}
+            </div>
           )}
           <div className={styles.infoText}>
             <InfoOutlinedIcon style={{ fontSize: '14px' }} />
@@ -99,7 +136,10 @@ export default function GeneralSection({
             onBlur={formik.handleBlur}
           />
           {formik.touched.email && formik.errors.email && (
-            <div className={styles.errorText}>{formik.errors.email}</div>
+            <div className={styles.errorText}>
+              <ErrorOutlineIcon style={{ fontSize: '14px' }} />
+              {formik.errors.email}
+            </div>
           )}
           <div className={styles.infoText}>
             To change your email, please <a href="#" style={{ color: '#0f4c75', textDecoration: 'none' }}>contact us</a>

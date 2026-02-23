@@ -993,3 +993,58 @@ input:checked + .slider:before {
   max-width: 300px;
   justify-content: center;
 }
+
+/* Password Strength Styles */
+.passwordStrengthBars {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.strengthBar {
+  height: 4px;
+  flex: 1;
+  background-color: #e5e7eb;
+  border-radius: 2px;
+  transition: background-color 0.3s;
+}
+
+.strengthBarWeak {
+  background-color: #ef4444;
+}
+
+.strengthBarModerate {
+  background-color: #f59e0b;
+}
+
+.strengthBarStrong {
+  background-color: #10b981;
+}
+
+.passwordChecklist {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.checklistItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  transition: color 0.2s;
+}
+
+.checklistItemValid {
+  color: #10b981;
+}
+
+.checklistItemInvalid {
+  color: #9ca3af;
+}
+
+.checklistIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}

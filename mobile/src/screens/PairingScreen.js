@@ -15,14 +15,18 @@ export default function PairingScreen({ navigation }) {
   const inputRef = useRef(null);
 
   const handleCodeChange = (text) => {
-    // Only allow digits, max 6
-    const cleaned = text.replace(/[^0-9]/g, '').slice(0, PAIRING_CODE_LENGTH);
-    setCode(cleaned);
+    // Strip non-alphanumeric except hyphens, uppercase, limit to 9 chars
+    let cleaned = text.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    // Auto-insert hyphen after 4th character (format: UX5H-2RTM)
+    if (cleaned.length > 4) {
+      cleaned = cleaned.slice(0, 4) + '-' + cleaned.slice(4, 8);
+    }
+    setCode(cleaned.slice(0, PAIRING_CODE_LENGTH));
   };
 
   const handlePair = async () => {
     if (code.length !== PAIRING_CODE_LENGTH) {
-      Alert.alert('Invalid Code', 'Please enter a 6-digit pairing code');
+      Alert.alert('Invalid Code', 'Please enter the full pairing code (e.g. UX5H-2RTM)');
       return;
     }
 
@@ -32,7 +36,7 @@ export default function PairingScreen({ navigation }) {
       const response = await apiService.pairDevice(code);
       
       if (response.success) {
-        await completePairing(response.device_id, response.upload_token);
+        await completePairing(response.deviceId, response.deviceToken);
       } else {
         Alert.alert('Pairing Failed', response.message || 'Please try again');
       }
@@ -86,7 +90,8 @@ export default function PairingScreen({ navigation }) {
               ref={inputRef}
               value={code}
               onChangeText={handleCodeChange}
-              keyboardType="number-pad"
+              keyboardType="default"
+              autoCapitalize="characters"
               maxLength={PAIRING_CODE_LENGTH}
               caretHidden={true}
               style={{
@@ -103,30 +108,38 @@ export default function PairingScreen({ navigation }) {
               onStartShouldSetResponder={() => true}
               onResponderRelease={focusInput}
             >
-              {[0, 1, 2, 3, 4, 5].map((index) => (
-                <View 
-                  key={index}
-                  className="flex-1 mx-1.5 justify-center items-center"
-                  style={{ 
-                    backgroundColor: code[index] ? colors.surface : 'transparent',
-                    borderWidth: 2,
-                    borderColor: code[index] ? colors.warning : (index === code.length ? colors.danger : colors.border),
-                    borderRadius: 12,
-                    height: 60,
-                  }}
-                >
-                  <Text 
-                    style={{ color: colors.text }}
-                    className="text-2xl font-bold"
+              {Array.from({ length: PAIRING_CODE_LENGTH }, (_, index) => {
+                // Show a visual dash separator between position 4 and 5 (the hyphen at index 4)
+                if (index === 4) {
+                  return (
+                    <Text key={index} style={{ color: colors.textMuted }} className="text-2xl font-bold self-center mx-0.5">-</Text>
+                  );
+                }
+                return (
+                  <View 
+                    key={index}
+                    className="flex-1 mx-1 justify-center items-center"
+                    style={{ 
+                      backgroundColor: code[index] ? colors.surface : 'transparent',
+                      borderWidth: 2,
+                      borderColor: code[index] ? colors.warning : (index === code.length ? colors.danger : colors.border),
+                      borderRadius: 10,
+                      height: 52,
+                    }}
                   >
-                    {code[index] || ''}
-                  </Text>
-                </View>
-              ))}
+                    <Text 
+                      style={{ color: colors.text }}
+                      className="text-xl font-bold"
+                    >
+                      {code[index] || ''}
+                    </Text>
+                  </View>
+                );
+              })}
             </View>
             
             <Text style={{ color: colors.textMuted }} className="text-xs text-center mt-3">
-              {code.length}/{PAIRING_CODE_LENGTH} digits
+              {code.length}/{PAIRING_CODE_LENGTH} characters
             </Text>
           </View>
 

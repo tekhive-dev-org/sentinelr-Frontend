@@ -1,11 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import DevicesIcon from '@mui/icons-material/Devices';
 import SosIcon from '@mui/icons-material/Sos';
 import styles from './UserDashboardOverview.module.css';
+import { devicesService } from '../../../services/devicesService';
+
+// Google Maps requires the DOM — disable SSR for this component
+const LiveLocationMap = dynamic(
+  () => import('./LiveLocationMap'),
+  {
+    ssr: false,
+    loading: () => (
+      <div style={{ height: '200px', background: '#eef2f6', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '13px' }}>
+        Loading map…
+      </div>
+    ),
+  }
+);
 
 const usageData = [
   { name: 'Mon', value: 4, full: 8 },
@@ -25,6 +41,46 @@ const subscriptionData = [
 ];
 
 export default function UserDashboardOverview() {
+  const router = useRouter();
+  const [devices, setDevices] = useState([]);
+  const [deviceMenuOpen, setDeviceMenuOpen] = useState(false);
+  const deviceMenuRef = useRef(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (deviceMenuRef.current && !deviceMenuRef.current.contains(e.target)) {
+        setDeviceMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    devicesService
+      .getFamilyDevices({ pairStatus: 'Paired' })
+      .then((data) => setDevices(data.devices || []))
+      .catch((err) => console.error('[Overview] fetch devices:', err));
+  }, []);
+
+  // Devices whose status is 'online'
+  const activeDevices = devices.filter((d) => d.status === 'online');
+
+  // Build avatar list: up to 3 unique assigned-user initials, then a +N badge
+  const seen = new Set();
+  const avatarUsers = [];
+  for (const d of activeDevices) {
+    const name = d.assignedUser?.name || d.name || '?';
+    const key  = d.assignedUser?.id ?? name;
+    if (!seen.has(key)) {
+      seen.add(key);
+      avatarUsers.push(name);
+    }
+  }
+  const visibleAvatars = avatarUsers.slice(0, 3);
+  const extraCount     = avatarUsers.length > 3 ? avatarUsers.length - 3 : 0;
+
   return (
     <div className={styles.container}>
       {/* Live Location Map */}
@@ -34,9 +90,7 @@ export default function UserDashboardOverview() {
           <span className={styles.detailsLink}>Details &gt;</span>
         </div>
         <div className={styles.mapPlaceholder}>
-          {/* Placeholder for map image - using a colored div for now if image fails */}
-          <div style={{ width: '100%', height: '100%', background: '#e0e0e0' }}></div> 
-          <div className={styles.mapWarning}>Please add a device first</div>
+          <LiveLocationMap />
         </div>
       </div>
 
@@ -50,15 +104,41 @@ export default function UserDashboardOverview() {
               </div>
               <span className={styles.statTitle}>Active Devices</span>
             </div>
-            <MoreVertIcon style={{ color: '#999', cursor: 'pointer' }} />
+            <div ref={deviceMenuRef} className={styles.menuWrapper}>
+              <MoreVertIcon
+                style={{ color: '#999', cursor: 'pointer' }}
+                onClick={() => setDeviceMenuOpen((o) => !o)}
+              />
+              {deviceMenuOpen && (
+                <div className={styles.dropdownMenu}>
+                  <button
+                    className={styles.dropdownItem}
+                    onClick={() => { setDeviceMenuOpen(false); router.push('/dashboard/devices'); }}
+                  >
+                    View all devices
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
             <div className={styles.avatars}>
-              <div className={styles.avatar}>A</div>
-              <div className={styles.avatar}>B</div>
-              <div className={styles.avatar}>+2</div>
+              {visibleAvatars.length === 0 ? (
+                <span style={{ fontSize: '12px', color: '#9ca3af' }}>No active devices</span>
+              ) : (
+                <>
+                  {visibleAvatars.map((name, i) => (
+                    <div key={i} className={styles.avatar} title={name}>
+                      {name.charAt(0).toUpperCase()}
+                    </div>
+                  ))}
+                  {extraCount > 0 && (
+                    <div className={styles.avatar}>+{extraCount}</div>
+                  )}
+                </>
+              )}
             </div>
-            <div className={styles.statValue}>5</div>
+            <div className={styles.statValue}>{activeDevices.length}</div>
           </div>
         </div>
 

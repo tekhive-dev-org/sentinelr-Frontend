@@ -1,38 +1,48 @@
-import React from 'react';
-import styles from './DevicesAndUsers.module.css';
-import AddIcon from '@mui/icons-material/Add';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import React from "react";
+import Image from "next/image";
+import styles from "./DevicesAndUsers.module.css";
+import AddIcon from "@mui/icons-material/Add";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import BlockIcon from "@mui/icons-material/Block";
 
-export default function UsersList({ users = [], onAddUser, onUserClick }) {
+export default function UsersList({
+  devices = [],
+  users = [],
+  onAddUser,
+  onUserClick,
+  loading = false,
+  isAtMemberLimit = false,
+  maxMembers = null,
+}) {
   if (users.length === 0) {
     return (
       <div className={styles.emptyState}>
-        {/* Empty State Illustration - Clipboard with checklist */}
-        <svg className={styles.emptyIllustration} viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Clipboard body */}
-          <rect x="30" y="25" width="60" height="75" rx="4" fill="#F9FAFB" stroke="#E5E7EB" strokeWidth="2"/>
-          {/* Clipboard clip */}
-          <rect x="45" y="18" width="30" height="14" rx="2" fill="#E5E7EB"/>
-          <rect x="50" y="21" width="20" height="8" rx="1" fill="#D1D5DB"/>
-          {/* Checklist lines */}
-          <rect x="40" y="45" width="10" height="10" rx="2" stroke="#D1D5DB" strokeWidth="2" fill="none"/>
-          <line x1="55" y1="50" x2="80" y2="50" stroke="#E5E7EB" strokeWidth="2" strokeLinecap="round"/>
-          <rect x="40" y="62" width="10" height="10" rx="2" stroke="#D1D5DB" strokeWidth="2" fill="none"/>
-          <line x1="55" y1="67" x2="75" y2="67" stroke="#E5E7EB" strokeWidth="2" strokeLinecap="round"/>
-          <rect x="40" y="79" width="10" height="10" rx="2" stroke="#D1D5DB" strokeWidth="2" fill="none"/>
-          <line x1="55" y1="84" x2="70" y2="84" stroke="#E5E7EB" strokeWidth="2" strokeLinecap="round"/>
-          {/* Sparkles */}
-          <path d="M95 30L96.5 34L100.5 35.5L96.5 37L95 41L93.5 37L89.5 35.5L93.5 34L95 30Z" fill="#D1D5DB"/>
-          <path d="M20 45L21 48L24 49L21 50L20 53L19 50L16 49L19 48L20 45Z" fill="#E5E7EB"/>
-        </svg>
-
+        <Image
+          src="/assets/icons/user-empty.png"
+          alt="No Family Members"
+          width={120}
+          height={120}
+          className={styles.emptyIllustration}
+        />
         <h3 className={styles.emptyTitle}>No Family Member Added Yet</h3>
         <p className={styles.emptyDescription}>
           To add new member to pair, please, click the add button.
         </p>
-        
-        <button className={styles.addButton} onClick={onAddUser}>
+
+        <button
+          className={styles.addButton}
+          onClick={onAddUser}
+          disabled={isAtMemberLimit}
+          title={
+            isAtMemberLimit ? `Member limit reached (${maxMembers})` : undefined
+          }
+          style={
+            isAtMemberLimit
+              ? { opacity: 0.5, cursor: "not-allowed" }
+              : undefined
+          }
+        >
           <AddIcon className={styles.addButtonIcon} />
           Add Member
           <ChevronRightIcon className={styles.addButtonIcon} />
@@ -43,6 +53,42 @@ export default function UsersList({ users = [], onAddUser, onUserClick }) {
 
   return (
     <div className={styles.devicesTableContainer}>
+      {/* Header row with member count + Add button */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "12px",
+          padding: "0 4px",
+        }}
+      >
+        <span style={{ fontSize: "13px", color: "#6b7280" }}>
+          {users.length}
+          {maxMembers != null ? ` / ${maxMembers}` : ""} member
+          {users.length !== 1 ? "s" : ""}
+        </span>
+
+        {isAtMemberLimit && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "12px",
+              color: "#b45309",
+              backgroundColor: "#fffbeb",
+              border: "1px solid #fcd34d",
+              borderRadius: "8px",
+              padding: "6px 12px",
+            }}
+          >
+            <BlockIcon style={{ fontSize: 15 }} />
+            Member limit reached ({maxMembers})
+          </div>
+        )}
+      </div>
+
       {/* Users Table */}
       <table className={styles.devicesTable}>
         <thead>
@@ -63,13 +109,15 @@ export default function UsersList({ users = [], onAddUser, onUserClick }) {
               <td>{user.phone}</td>
               <td>{user.role}</td>
               <td>
-                <span className={`${styles.statusBadge} ${user.status === 'online' ? styles.statusOnlineBadge : styles.statusOfflineBadge}`}>
+                <span
+                  className={`${styles.statusBadge} ${devices?.find((d) => d.assignedUser?.id === user.id)?.status === "online" ? styles.statusOnlineBadge : styles.statusOfflineBadge}`}
+                >
                   <span className={styles.statusDotSmall}></span>
-                  {user.status === 'online' ? 'Online' : 'Offline'}
+                  {devices?.find((d) => d.assignedUser?.id === user.id)?.status === "online" ? "Online" : "Offline"}
                 </span>
               </td>
               <td>
-                <button 
+                <button
                   className={styles.tableActionBtn}
                   onClick={() => onUserClick && onUserClick(user)}
                 >
@@ -83,4 +131,3 @@ export default function UsersList({ users = [], onAddUser, onUserClick }) {
     </div>
   );
 }
-

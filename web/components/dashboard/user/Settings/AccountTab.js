@@ -12,7 +12,7 @@ import SettingsService from './SettingsService';
 
 const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80";
 
-export default function AccountTab({ formik }) {
+export default function AccountTab({ formik, isSubmitting, onSubmit, onDiscard }) {
   // Modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -20,6 +20,7 @@ export default function AccountTab({ formik }) {
   // Loading states
   const [isDeleting, setIsDeleting] = useState(false);
   const [isToggling2FA, setIsToggling2FA] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
   
   // Image state
   const [previewImage, setPreviewImage] = useState(
@@ -71,13 +72,14 @@ export default function AccountTab({ formik }) {
 
   const handleDeleteAccount = async (password) => {
     setIsDeleting(true);
+    setDeleteError('');
     try {
       await SettingsService.deleteAccount(password);
       setShowDeleteModal(false);
       setToast({ message: 'Account deletion initiated', type: 'info' });
       // TODO: Redirect to logout or goodbye page
     } catch (error) {
-      setToast({ message: error.message, type: 'error' });
+      setDeleteError(error.message || 'Failed to delete account. Please try again.');
     } finally {
       setIsDeleting(false);
     }
@@ -127,10 +129,34 @@ export default function AccountTab({ formik }) {
       {/* Delete Confirmation Modal */}
       <DeleteAccountModal
         isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setDeleteError('');
+        }}
         onDelete={handleDeleteAccount}
         isDeleting={isDeleting}
+        deleteError={deleteError}
       />
+
+      {/* Actions */}
+      <div className={styles.actions} style={{ marginTop: '20px' }}>
+        <button 
+          type="button" 
+          className={styles.secondaryButton} 
+          onClick={onDiscard}
+          disabled={isSubmitting}
+        >
+          Discard
+        </button>
+        <button 
+          type="button" 
+          className={`${styles.primaryButton} ${isSubmitting ? styles.buttonLoading : ''}`} 
+          onClick={onSubmit}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Saving...' : 'Apply Changes'}
+        </button>
+      </div>
     </div>
   );
 }

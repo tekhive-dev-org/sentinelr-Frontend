@@ -24,6 +24,8 @@ const ERROR_MESSAGES = {
   INCORRECT_PASSWORD: "The current password you entered is incorrect.",
   WEAK_PASSWORD: "Password must be at least 8 characters with numbers and letters.",
   PASSWORD_MISMATCH: "Passwords do not match.",
+  INVALID_OTP: "Invalid or expired OTP. Please try again.",
+  OTP_SEND_FAILED: "Failed to send OTP. Please try again.",
   
   // 2FA errors
   TWO_FA_FAILED: "Failed to update two-factor authentication. Please try again.",
@@ -55,7 +57,17 @@ const parseResponse = async (response) => {
   if (contentType && contentType.includes("application/json")) {
     return response.json();
   }
-  return response.text();
+  
+  // If it's HTML (error page), return a generic message instead of raw HTML
+  const text = await response.text();
+  if (text.includes("<!DOCTYPE") || text.includes("<html")) {
+    return { 
+      message: "This feature is not yet available. Please try again later.",
+      error: "Service unavailable"
+    };
+  }
+  
+  return text;
 };
 
 // Custom error class for API errors
@@ -201,6 +213,10 @@ const SettingsService = {
     const maxSize = 5 * 1024 * 1024; // 5MB
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
     
+    if (!file) {
+      throw new SettingsError("Please select an image file.", "VALIDATION_ERROR", 400);
+    }
+
     if (file.size > maxSize) {
       throw new SettingsError(ERROR_MESSAGES.FILE_TOO_LARGE, "FILE_TOO_LARGE", 400);
     }
@@ -217,7 +233,6 @@ const SettingsService = {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${token}`,
-          "x-access-token": token,
         },
         body: formData,
       });
@@ -225,6 +240,13 @@ const SettingsService = {
       const data = await parseResponse(response);
       
       if (!response.ok) {
+        // Provide more specific error messages based on HTTP status
+        if (response.status === 413) {
+          throw new SettingsError(ERROR_MESSAGES.FILE_TOO_LARGE, "FILE_TOO_LARGE", 413);
+        }
+        if (response.status === 415) {
+          throw new SettingsError(ERROR_MESSAGES.INVALID_FILE_TYPE, "INVALID_FILE_TYPE", 415);
+        }
         handleApiError(response, data, ERROR_MESSAGES.UPLOAD_FAILED);
       }
 
@@ -235,40 +257,87 @@ const SettingsService = {
   },
 
   // Password
-  async changePassword(oldPassword, newPassword) {
+  async sendPasswordResetOTP(email) {
     const token = getAuthToken();
     if (!token) {
       throw new SettingsError(ERROR_MESSAGES.MISSING_TOKEN, "MISSING_TOKEN", 401);
     }
 
     // Client-side validation
-    if (!oldPassword) {
-      throw new SettingsError("Please enter your current password.", "VALIDATION_ERROR", 400);
+    if (!email || !email.includes('@')) {
+      throw new SettingsError("Please enter a valid email address.", "VALIDATION_ERROR", 400);
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "x-access-token": token,
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await parseResponse(response);
+      
+      if (!response.ok) {
+        handleApiError(response, data, "Failed to send OTP. Please try again.");
+      }
+
+      return data;
+    } catch (error) {
+      handleNetworkError(error);
+    }
+  },
+
+  async changePassword(email, otp, newPassword, confirmPassword) {
+    const token = getAuthToken();
+    if (!token) {
+      throw new SettingsError(ERROR_MESSAGES.MISSING_TOKEN, "MISSING_TOKEN", 401);
+    }
+
+    // Client-side validation
+    if (!email || !email.includes('@')) {
+      throw new SettingsError("Please enter a valid email address.", "VALIDATION_ERROR", 400);
+    }
+
+    if (!otp) {
+      throw new SettingsError("Please enter the OTP sent to your email.", "VALIDATION_ERROR", 400);
     }
     
     if (!newPassword || newPassword.length < 8) {
       throw new SettingsError(ERROR_MESSAGES.WEAK_PASSWORD, "WEAK_PASSWORD", 400);
     }
 
+    if (newPassword !== confirmPassword) {
+      throw new SettingsError(ERROR_MESSAGES.PASSWORD_MISMATCH, "PASSWORD_MISMATCH", 400);
+    }
+
     try {
-      const response = await fetch(`${API_BASE_URL}/user/change-password`, {
-        method: "PUT",
+      const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
           "x-access-token": token,
         },
-        body: JSON.stringify({ oldPassword, newPassword }),
+        body: JSON.stringify({ 
+          email,
+          otp,
+          newPassword, 
+          confirmPassword 
+        }),
       });
 
       const data = await parseResponse(response);
       
       if (!response.ok) {
-        // Special handling for incorrect password
+        // Special handling for invalid OTP
         if (response.status === 400 || response.status === 401) {
           const msg = data?.message?.toLowerCase() || "";
-          if (msg.includes("incorrect") || msg.includes("wrong") || msg.includes("invalid")) {
-            throw new SettingsError(ERROR_MESSAGES.INCORRECT_PASSWORD, "INCORRECT_PASSWORD", 400);
+          if (msg.includes("invalid") || msg.includes("wrong") || msg.includes("otp") || msg.includes("code")) {
+            throw new SettingsError("Invalid or expired OTP. Please try again.", "INVALID_OTP", 400);
           }
         }
         handleApiError(response, data, "Failed to change password. Please try again.");

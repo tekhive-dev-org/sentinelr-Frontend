@@ -4,7 +4,7 @@ import logger from "../utils/logger";
 
 const AuthContext = createContext();
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const API_URL = `${API_BASE_URL}/auth`;
 const LOGGED_IN_USER_URL = `${API_URL}/logged-in-user`;
 
@@ -14,11 +14,15 @@ const parseErrorMessage = (data, status, statusText) => {
   if (data && typeof data === "object" && data.message) {
     return data.message;
   }
-  
+
   // If data is a string, check if it looks like HTML (error page)
   if (typeof data === "string") {
     // Check if it's an HTML response (error page)
-    if (data.includes("<!DOCTYPE") || data.includes("<html") || data.includes("<HTML")) {
+    if (
+      data.includes("<!DOCTYPE") ||
+      data.includes("<html") ||
+      data.includes("<HTML")
+    ) {
       // Return a user-friendly message based on status code
       switch (status) {
         case 400:
@@ -47,7 +51,7 @@ const parseErrorMessage = (data, status, statusText) => {
       return data;
     }
   }
-  
+
   // Fallback to status text or generic message
   return statusText || `Request failed with status ${status}`;
 };
@@ -58,7 +62,7 @@ const apiRequest = async (endpoint, method, body = null, token = null) => {
   const headers = {
     "Content-Type": "application/json",
   };
-  
+
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
@@ -87,7 +91,11 @@ const apiRequest = async (endpoint, method, body = null, token = null) => {
   logger.api.response(response.status, response.statusText, data);
 
   if (!response.ok) {
-    const errorMessage = parseErrorMessage(data, response.status, response.statusText);
+    const errorMessage = parseErrorMessage(
+      data,
+      response.status,
+      response.statusText,
+    );
     throw new Error(errorMessage);
   }
 
@@ -131,12 +139,16 @@ export const AuthProvider = ({ children }) => {
       // First attempt with Bearer token
       let { response, data } = await callLoggedInUser({
         ...baseHeaders,
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       });
 
       // Retry with raw token if backend expects it
       if (!response.ok) {
-        const errorMessage = parseErrorMessage(data, response.status, response.statusText);
+        const errorMessage = parseErrorMessage(
+          data,
+          response.status,
+          response.statusText,
+        );
         if (
           typeof errorMessage === "string" &&
           errorMessage.toLowerCase().includes("invalid")
@@ -144,13 +156,17 @@ export const AuthProvider = ({ children }) => {
           logger.auth.warn("Retrying logged-in user request with raw token");
           ({ response, data } = await callLoggedInUser({
             ...baseHeaders,
-            "Authorization": token,
+            Authorization: token,
           }));
         }
       }
 
       if (!response.ok) {
-        throw new Error(parseErrorMessage(data, response.status, response.statusText));
+        const status = response.status;
+        throw Object.assign(
+          new Error(parseErrorMessage(data, status, response.statusText)),
+          { status },
+        );
       }
 
       logger.auth.info("Logged-in user fetched successfully");
@@ -158,7 +174,7 @@ export const AuthProvider = ({ children }) => {
       return { success: true, user: data.user || data };
     } catch (error) {
       logger.auth.error("Failed to fetch logged-in user", error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message, status: error.status };
     }
   };
 
@@ -168,19 +184,24 @@ export const AuthProvider = ({ children }) => {
       if (typeof window !== "undefined") {
         const storedUser = localStorage.getItem("user");
         const token = localStorage.getItem("token");
-        
+
         if (token) {
           // Try to fetch fresh user data from API
           const result = await fetchLoggedInUser(token);
-          
+
           if (result.success) {
             setUser(result.user);
             localStorage.setItem("user", JSON.stringify(result.user));
+          } else if (result.status === 401) {
+            // Token is expired/invalid — force logout
+            logger.auth.warn("Token expired or invalid, logging out");
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            router.push("/login");
           } else if (storedUser) {
-            // Fall back to stored user if API fails
+            // Network or server error — fall back to stored user
             setUser(JSON.parse(storedUser));
           } else {
-            // Token is invalid, clear it
             localStorage.removeItem("token");
           }
         }
@@ -195,18 +216,18 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       logger.auth.debug(`Login attempt for: ${email}`);
-      
+
       const data = await apiRequest("login", "POST", { email, password });
-      
+
       logger.auth.info("Login successful");
-      
+
       const token = data.token;
-      
+
       // Store token first so fetchLoggedInUser can use it
       if (token) {
         localStorage.setItem("token", token);
       }
-      
+
       // Fetch complete user data from API
       if (token) {
         const userResult = await fetchLoggedInUser(token);
@@ -225,7 +246,7 @@ export const AuthProvider = ({ children }) => {
         setUser(userData);
         localStorage.setItem("user", JSON.stringify(userData));
       }
-      
+
       return { success: true, data };
     } catch (error) {
       logger.auth.error("Login failed", error);
@@ -235,25 +256,31 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const signup = async (userName, email, password, confirmPassword, role = "Parent") => {
+  const signup = async (
+    userName,
+    email,
+    password,
+    confirmPassword,
+    role = "Parent",
+  ) => {
     setLoading(true);
     try {
       logger.auth.debug(`Signup attempt for: ${email}`);
-      
+
       const data = await apiRequest("register", "POST", {
         userName,
         email,
         password,
         confirmPassword,
-        role
+        role,
       });
-      
+
       logger.auth.info("Signup successful, OTP sent");
-      
+
       // Store pending user details and token for verification step
       const pendingUser = { userName, email, role };
       localStorage.setItem("pending_user", JSON.stringify(pendingUser));
-      
+
       // Store registration token if provided (needed for verification)
       // API returns token as 'regToken' not 'token'
       const regToken = data.regToken || data.token;
@@ -275,25 +302,25 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       logger.auth.debug(`Verifying OTP for: ${email}`);
-      
+
       // Get the pending token from registration
       const pendingToken = localStorage.getItem("pending_token");
-      
+
       if (!pendingToken) {
         logger.auth.warn("No pending token found, verification may fail");
       }
-      
+
       // Call verify endpoint with auth token
       const url = `${API_URL}/verify/otp`;
       const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${pendingToken}`,
+          Authorization: `Bearer ${pendingToken}`,
         },
         body: JSON.stringify({ email, otp }),
       });
-      
+
       const contentType = response.headers.get("content-type");
       let data;
       if (contentType && contentType.includes("application/json")) {
@@ -301,18 +328,22 @@ export const AuthProvider = ({ children }) => {
       } else {
         data = await response.text();
       }
-      
+
       logger.api.response(response.status, response.statusText, data);
-      
+
       if (!response.ok) {
-        throw new Error(data?.message || data || `Verification failed with status ${response.status}`);
+        throw new Error(
+          data?.message ||
+            data ||
+            `Verification failed with status ${response.status}`,
+        );
       }
-      
+
       logger.auth.info("Verification successful");
-      
+
       // Get pending user data or use response data
       let userData = data.user || data;
-      
+
       if (typeof window !== "undefined") {
         const pendingStr = localStorage.getItem("pending_user");
         if (pendingStr) {
@@ -340,7 +371,7 @@ export const AuthProvider = ({ children }) => {
           localStorage.setItem("user", JSON.stringify(freshUserResult.user));
         }
       }
-      
+
       // Cleanup pending data
       localStorage.removeItem("pending_user");
       localStorage.removeItem("pending_token");
@@ -358,12 +389,15 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       logger.auth.debug(`Forgot password request for: ${email}`);
-      
+
       const data = await apiRequest("reset-password", "POST", { email });
-      
+
       logger.auth.info("Password reset email sent");
-      
-      return { success: true, message: data.message || "Password reset link sent" };
+
+      return {
+        success: true,
+        message: data.message || "Password reset link sent",
+      };
     } catch (error) {
       logger.auth.error("Forgot password failed", error);
       return { success: false, error: error.message };
@@ -385,10 +419,13 @@ export const AuthProvider = ({ children }) => {
       }
 
       const data = await apiRequest("reset-password", "POST", payload);
-      
+
       logger.auth.info("Password reset successful");
-      
-      return { success: true, message: data.message || "Password reset successful" };
+
+      return {
+        success: true,
+        message: data.message || "Password reset successful",
+      };
     } catch (error) {
       logger.auth.error("Reset password failed", error);
       return { success: false, error: error.message };
@@ -413,32 +450,32 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       logger.auth.debug("Updating profile picture");
-      
+
       const token = localStorage.getItem("token");
-      
+
       // For file uploads, we need to use FormData without JSON content-type
       const response = await fetch(`${API_URL}/user/update-profile-picture`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData, // FormData for file upload
       });
 
       const data = await response.json();
-      
+
       logger.api.response(response.status, response.statusText, data);
 
       if (!response.ok) {
         throw new Error(data.message || "Failed to update profile picture");
       }
-      
+
       logger.auth.info("Profile picture updated");
-      
+
       const updatedUser = { ...user, ...data.user };
       setUser(updatedUser);
       localStorage.setItem("user", JSON.stringify(updatedUser));
-      
+
       return { success: true, data };
     } catch (error) {
       logger.auth.error("Update profile picture failed", error);
@@ -455,13 +492,13 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       logger.auth.debug(`Resending OTP for: ${email}`);
-      
+
       // Get cached user data from localStorage
       const pendingUserStr = localStorage.getItem("pending_user");
       if (!pendingUserStr) {
         throw new Error("No pending registration found. Please sign up again.");
       }
-      
+
       const pendingUser = JSON.parse(pendingUserStr);
       if (pendingUser.email !== email) {
         throw new Error("Email mismatch. Please sign up again.");
@@ -478,10 +515,10 @@ export const AuthProvider = ({ children }) => {
 
       logger.auth.info("OTP resend request successful");
 
-      return { 
-        success: true, 
+      return {
+        success: true,
         message: data.message || "OTP sent successfully",
-        data
+        data,
       };
     } catch (error) {
       logger.auth.error("Resend OTP failed", error);
@@ -492,19 +529,21 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ 
-        user, 
-        loading, 
-        login, 
-        signup, 
-        logout, 
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        signup,
+        logout,
         verifyEmail,
         forgotPassword,
         resetPassword,
         updateProfilePicture,
         resendOTP,
-        loggedUser
-    }}>
+        loggedUser,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

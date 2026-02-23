@@ -5,7 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 
-export default function NotificationsTab({ formik }) {
+export default function NotificationsTab({ formik, isSubmitting, onSubmit, onDiscard }) {
   const [toast, setToast] = useState(null);
 
   const handleToggle = (key) => {
@@ -86,6 +86,26 @@ export default function NotificationsTab({ formik }) {
             <div className={styles.toggleDescription}>Keep track of your weekly activity and receive an informative weekly report.</div>
           </div>
         </div>
+      </div>
+
+      {/* Actions */}
+      <div className={styles.actions} style={{ marginTop: '20px' }}>
+        <button 
+          type="button" 
+          className={styles.secondaryButton} 
+          onClick={onDiscard}
+          disabled={isSubmitting}
+        >
+          Discard
+        </button>
+        <button 
+          type="button" 
+          className={`${styles.primaryButton} ${isSubmitting ? styles.buttonLoading : ''}`} 
+          onClick={onSubmit}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Saving...' : 'Apply Changes'}
+        </button>
       </div>
     </div>
   );

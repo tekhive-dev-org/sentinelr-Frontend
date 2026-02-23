@@ -3,51 +3,45 @@
  * Handles all family management API calls
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-const USE_MOCK = false; // Set to false to use real API
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // Helper to get auth token
 const getAuthToken = () => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('accessToken');
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("token");
   }
   return null;
-};
-
-// Mock data for development
-const mockFamily = {
-  id: 1,
-  familyName: 'Demo Family',
-  createdBy: 1,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  deletedAt: null,
-  members: [
-    { id: 1, userId: 1, relationship: 'Parent', name: 'John Doe' },
-    { id: 2, userId: 2, relationship: 'Child', name: 'Jane Doe' },
-  ],
 };
 
 // API request helper
 async function apiRequest(endpoint, options = {}) {
   const token = getAuthToken();
-  
+
   const config = {
     headers: {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),
+      "Content-Type": "application/json",
+      ...(token && {
+        Authorization: `Bearer ${token}`,
+        "x-access-token": token,
+      }),
       ...options.headers,
     },
     ...options,
   };
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-  
+
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
+    // Auto-logout on 401 (expired/invalid token)
+    if (response.status === 401 && typeof window !== "undefined") {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+    }
     throw new Error(error.message || `API Error: ${response.status}`);
   }
-  
+
   return response.json();
 }
 
@@ -58,23 +52,8 @@ export const familyService = {
    * @returns {Promise<{ success: boolean, message: string, family: object }>}
    */
   async createFamily(familyName) {
-    if (USE_MOCK) {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return {
-        success: true,
-        message: 'Family created successfully.',
-        family: {
-          ...mockFamily,
-          id: Date.now(),
-          familyName,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      };
-    }
-
-    return apiRequest('/family/create-family', {
-      method: 'POST',
+    return apiRequest("/family/create-family", {
+      method: "POST",
       body: JSON.stringify({ familyName }),
     });
   },
@@ -84,17 +63,40 @@ export const familyService = {
    * @param {object} memberData - { familyId, userId, relationship }
    * @returns {Promise<{ message: string }>}
    */
-  async addFamilyMember({ familyId, userId, relationship }) {
-    if (USE_MOCK) {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return {
-        message: 'Member added successfully.',
-      };
+  async addFamilyMember({
+    familyId,
+    userId,
+    email,
+    name,
+    relationship,
+    phone,
+  }) {
+    // Build payload: use userId if available, otherwise add new member details
+    const payload = { familyId, relationship, role: "Member" };
+    if (userId) {
+      payload.userId = userId;
+    } else {
+      payload.userId = null;
+      payload.email = email;
+      payload.name = name;
+      payload.phone = phone;
     }
 
-    return apiRequest('/family/add-member', {
-      method: 'POST',
-      body: JSON.stringify({ familyId, userId, relationship }),
+    return apiRequest("/family/add-member", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  /**
+   * Create a child user
+   * @param {object} data - { userName, email, phone }
+   * @returns {Promise<{ message: string, user: object }>}
+   */
+  async createChild({ userName, email, phone }) {
+    return apiRequest("/family/create-child", {
+      method: "POST",
+      body: JSON.stringify({ userName, email, phone }),
     });
   },
 
@@ -104,14 +106,6 @@ export const familyService = {
    * @returns {Promise<{ success: boolean, family: object }>}
    */
   async getFamily(familyId) {
-    if (USE_MOCK) {
-      await new Promise(resolve => setTimeout(resolve, 300));
-      return {
-        success: true,
-        family: mockFamily,
-      };
-    }
-
     return apiRequest(`/family/${familyId}`);
   },
 
@@ -120,32 +114,15 @@ export const familyService = {
    * @returns {Promise<{ success: boolean, families: array }>}
    */
   async getFamilies() {
-    if (USE_MOCK) {
-      await new Promise(resolve => setTimeout(resolve, 300));
-      return {
-        success: true,
-        families: [mockFamily],
-      };
-    }
-
-    return apiRequest('/family');
+    return apiRequest("/family");
   },
 
   /**
-   * Get family members
-   * @param {number} familyId - Family ID
-   * @returns {Promise<{ success: boolean, members: array }>}
+   * Get family members for the authenticated user's family
+   * @returns {Promise<{ success: boolean, family: object }>}
    */
-  async getFamilyMembers(familyId) {
-    if (USE_MOCK) {
-      await new Promise(resolve => setTimeout(resolve, 300));
-      return {
-        success: true,
-        members: mockFamily.members,
-      };
-    }
-
-    return apiRequest(`/family/${familyId}/members`);
+  async getFamilyMembers() {
+    return apiRequest("/family/my-family/members");
   },
 
   /**
@@ -155,15 +132,8 @@ export const familyService = {
    * @returns {Promise<{ message: string }>}
    */
   async removeFamilyMember(familyId, userId) {
-    if (USE_MOCK) {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return {
-        message: 'Member removed successfully.',
-      };
-    }
-
     return apiRequest(`/family/${familyId}/members/${userId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   },
 
@@ -174,16 +144,8 @@ export const familyService = {
    * @returns {Promise<{ success: boolean, family: object }>}
    */
   async updateFamily(familyId, updates) {
-    if (USE_MOCK) {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return {
-        success: true,
-        family: { ...mockFamily, ...updates },
-      };
-    }
-
     return apiRequest(`/family/${familyId}`, {
-      method: 'PATCH',
+      method: "PATCH",
       body: JSON.stringify(updates),
     });
   },
@@ -194,15 +156,8 @@ export const familyService = {
    * @returns {Promise<{ message: string }>}
    */
   async deleteFamily(familyId) {
-    if (USE_MOCK) {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return {
-        message: 'Family deleted successfully.',
-      };
-    }
-
     return apiRequest(`/family/${familyId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   },
 };

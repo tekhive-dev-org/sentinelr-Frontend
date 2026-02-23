@@ -14,6 +14,7 @@ export default function UserSettings({ user }) {
   const [activeTab, setActiveTab] = useState('Account');
   const [toast, setToast] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
 
   // Handle auth errors by logging out user
   const handleError = (error) => {
@@ -45,8 +46,9 @@ export default function UserSettings({ user }) {
       is2FAEnabled: Boolean(user?.is2FAEnabled),
 
       // Password
-      oldPassword: '',
+      otp: '',
       newPassword: '',
+      confirmPassword: '',
 
       // Notifications
       projectFeedback: true,
@@ -62,41 +64,74 @@ export default function UserSettings({ user }) {
       email: Yup.string().email('Invalid email').required('Email is required'),
 
       // Password Validation (only if fields are touched or filled)
-      oldPassword: Yup.string().test('required-if-new-password', 'Old password is required to change password', function(value) {
+      email: Yup.string().email('Invalid email').required('Email is required'),
+      otp: Yup.string().test('required-if-new-password', 'OTP is required to change password', function(value) {
         return this.parent.newPassword ? !!value : true;
       }),
-      newPassword: Yup.string().min(8, 'Password must be at least 8 characters'),
+      newPassword: Yup.string()
+        .min(8, 'At least 8 characters')
+        .matches(/[A-Z]/, 'At least 1 uppercase')
+        .matches(/[0-9]/, 'At least 1 number')
+        .matches(/[^A-Za-z0-9]/, 'At least 1 special character'),
+      confirmPassword: Yup.string()
+        .test('passwords-match', 'Passwords must match', function(value) {
+          return this.parent.newPassword ? value === this.parent.newPassword : true;
+        }),
     }),
     onSubmit: async (values, { resetForm }) => {
       setIsSubmitting(true);
       try {
+        // Prepare profile payload
         const profilePayload = {
           userName: values.username || values.fullName,
           email: values.email,
           phone: values.phoneNumber,
         };
 
+        // Update profile information
         await SettingsService.updateProfile(profilePayload);
 
+        // Upload profile picture if changed
         if (values.profilePicture) {
-          const uploadResult = await SettingsService.uploadProfilePicture(values.profilePicture);
-          const uploadedUrl = uploadResult?.profilePicture || uploadResult?.data?.profilePicture;
-          if (uploadedUrl) {
-            formik.setFieldValue('profilePictureUrl', uploadedUrl);
+          try {
+            const uploadResult = await SettingsService.uploadProfilePicture(values.profilePicture);
+            // Handle multiple response structures: direct URL, nested response, or data wrapper
+            const uploadedUrl = uploadResult?.profilePicture || uploadResult?.data?.profilePicture || uploadResult?.url;
+            if (uploadedUrl) {
+              formik.setFieldValue('profilePictureUrl', uploadedUrl);
+            }
+          } catch (uploadErr) {
+            // Profile was updated but image upload failed - show warning
+            console.warn('Profile picture upload failed:', uploadErr);
+            setToast({ message: 'Profile updated but picture upload failed. Please try again.', type: 'warning' });
+          } finally {
+            formik.setFieldValue('profilePicture', null);
           }
-          formik.setFieldValue('profilePicture', null);
         }
 
         // Handle password change if provided
-        if (values.newPassword && values.oldPassword) {
-          await SettingsService.changePassword(values.oldPassword, values.newPassword);
+        if (values.newPassword && values.otp && values.confirmPassword) {
+          try {
+            await SettingsService.changePassword(values.email, values.otp, values.newPassword, values.confirmPassword);
+          } catch (passwordErr) {
+            // Show password-specific errors inline
+            if (passwordErr.code === 'INVALID_OTP' || 
+                passwordErr.statusCode === 400 || 
+                passwordErr.statusCode === 401) {
+              setPasswordError(passwordErr.message || 'Invalid OTP or password change failed');
+              setActiveTab('Password');
+              throw passwordErr; // Re-throw to prevent success message
+            }
+            throw passwordErr;
+          }
         }
 
         setToast({ message: 'All changes saved successfully!', type: 'success' });
+        setPasswordError(''); // Clear password error on success
 
         // Clear password fields after successful save
         if (values.newPassword) {
-          resetForm({ values: { ...values, oldPassword: '', newPassword: '' } });
+          resetForm({ values: { ...values, otp: '', newPassword: '', confirmPassword: '' } });
         }
       } catch (error) {
         handleError(error);
@@ -135,29 +170,32 @@ export default function UserSettings({ user }) {
       </div>
 
       <div className={styles.content}>
-        {activeTab === 'Account' && <AccountTab formik={formik} />}
-        {activeTab === 'Password' && <PasswordTab formik={formik} />}
-        {activeTab === 'Notifications' && <NotificationsTab formik={formik} />}
-      </div>
-
-      {/* Global Actions */}
-      <div className={styles.actions} style={{ marginTop: '20px', padding: '0 32px 52px' }}>
-        <button 
-          type="button" 
-          className={styles.secondaryButton} 
-          onClick={handleDiscard}
-          disabled={isSubmitting}
-        >
-          Discard
-        </button>
-        <button 
-          type="button" 
-          className={`${styles.primaryButton} ${isSubmitting ? styles.buttonLoading : ''}`} 
-          onClick={formik.handleSubmit}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? 'Saving...' : 'Apply Changes'}
-        </button>
+        {activeTab === 'Account' && (
+          <AccountTab 
+            formik={formik}
+            isSubmitting={isSubmitting}
+            onSubmit={formik.handleSubmit}
+            onDiscard={handleDiscard}
+          />
+        )}
+        {activeTab === 'Password' && (
+          <PasswordTab 
+            formik={formik} 
+            apiError={passwordError}
+            onClearError={() => setPasswordError('')}
+            isSubmitting={isSubmitting}
+            onSubmit={formik.handleSubmit}
+            onDiscard={handleDiscard}
+          />
+        )}
+        {activeTab === 'Notifications' && (
+          <NotificationsTab 
+            formik={formik}
+            isSubmitting={isSubmitting}
+            onSubmit={formik.handleSubmit}
+            onDiscard={handleDiscard}
+          />
+        )}
       </div>
     </div>
   );

@@ -79,13 +79,13 @@ export default function UserDetailModal({
 
             <div className={styles.userDetailActionsRow}>
               <span
-                className={`${styles.statusBadge} ${device.status === "online" ? styles.statusOnlineBadge : styles.statusOfflineBadge}`}
+                className={`${styles.statusBadge} ${device?.status === "online" ? styles.statusOnlineBadge : styles.statusOfflineBadge}`}
               >
                 <span className={styles.statusDotSmall}></span>
-                {device.status === "online" ? "Online" : "Offline"}
+                {device?.status === "online" ? "Online" : "Offline"}
               </span>
 
-              {device && device.pairStatus !== "paired" && (
+              {device && device?.pairStatus !== "paired" && (
                 <button
                   className={styles.pairDeviceBtn}
                   onClick={() => onPairDevice && onPairDevice(user)}

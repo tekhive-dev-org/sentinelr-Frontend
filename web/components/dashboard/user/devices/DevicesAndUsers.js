@@ -622,7 +622,7 @@ export default function DevicesAndUsers() {
         device={selectedDevice}
         onUnpair={handleUnpairDevice}
         onRemove={handleRemoveDevice}
-        onRepair={handleRepairDevice}
+        onRepair={handleUnpairDevice}
         onUpdate={handleUpdateDevice}
         familyMembers={users}
       />

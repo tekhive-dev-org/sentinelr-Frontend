@@ -18,9 +18,7 @@ const DEFAULT_CENTER = { lat: 20, lng: 0 };
 // Map type options shown in the controls bar
 const MAP_TYPES = [
   { id: 'roadmap',  label: 'Map'       },
-  { id: 'satellite', label: 'Satellite' },
-  { id: 'hybrid',   label: 'Hybrid'    },
-  { id: 'terrain',  label: 'Terrain'   },
+  { id: 'hybrid',   label: 'Satellite'    },
 ];
 
 const MAP_CONTAINER_STYLE = { width: '100%', height: '100%' };
@@ -28,10 +26,10 @@ const MAP_CONTAINER_STYLE = { width: '100%', height: '100%' };
 const BASE_MAP_OPTIONS = {
   disableDefaultUI: false,
   mapTypeControl: false,   // we use our own toggle
-  streetViewControl: true,
+  streetViewControl: false,
   fullscreenControl: false,
   zoomControl: true,
-  scrollwheel: false,
+  scrollwheel: true,
   gestureHandling: 'cooperative',
   clickableIcons: false,
 };

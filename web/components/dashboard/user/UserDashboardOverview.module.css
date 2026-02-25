@@ -1,7 +1,8 @@
 .container {
+  @apply mobile:!px-4;
   padding: 24px;
   background-color: transparent;
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .header {

@@ -3,7 +3,7 @@
   left: 0;
   top: 0;
   width: 240px;
-  height: 100vh;
+  height: 100dvh;
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);

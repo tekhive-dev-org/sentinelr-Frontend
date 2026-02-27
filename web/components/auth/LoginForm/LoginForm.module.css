@@ -68,15 +68,15 @@
 }
 
 .rightSection {
-  @apply w-full md:w-1/2 sm:flex sm:flex-col sm:justify-center sm:items-center sm:px-6 sm:py-10 mobile:py-20 bg-white mobile:bg-[#0E4B68];
+  @apply w-full md:w-1/2 flex flex-col justify-center items-center sm:px-6 sm:py-10 mobile:pt-20 bg-white mobile:bg-[#0E4B68];
 }
 
 .formContainer {
-  @apply w-full max-w-[400px] mobile:bg-white mobile:h-full mobile:rounded-tl-[100px] mobile:rounded-lg  mobile:p-6 mobile:shadow-lg;
+  @apply w-full max-w-[400px] mobile:flex mobile:flex-col mobile:justify-evenly mobile:bg-white mobile:h-full mobile:rounded-tl-[100px] mobile:rounded-lg  mobile:p-6 mobile:shadow-lg;
 }
 
 .title {
-  @apply text-[24px] mobile:text-[18px] font-semibold text-center mb-8 text-black;
+  @apply text-[28px] mobile:text-[25px] mobile:mx-auto font-black text-center  text-black;
   font-family: 'Playfair Display', serif;
 }
 

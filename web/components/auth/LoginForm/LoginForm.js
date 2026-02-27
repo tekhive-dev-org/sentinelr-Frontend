@@ -1,43 +1,43 @@
-import React, { useState } from 'react';
-import { useRouter } from 'next/router';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useAuth } from '../../../context/AuthContext';
-import styles from './LoginForm.module.css';
+import React, { useState } from "react";
+import { useRouter } from "next/router";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import Link from "next/link";
+import Image from "next/image";
+import { useAuth } from "../../../context/AuthContext";
+import styles from "./LoginForm.module.css";
 
 const validationSchema = Yup.object({
   email: Yup.string()
-    .email('Invalid email address')
-    .required('Email is required'),
+    .email("Invalid email address")
+    .required("Email is required"),
   password: Yup.string()
-    .min(6, 'Password must be at least 6 characters')
-    .required('Password is required'),
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
 });
 
 export default function LoginForm() {
   const router = useRouter();
-  const { user, login, logout, loading } = useAuth();
+  const { user, login, logout, loading, loginWithGoogle } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [formError, setFormError] = useState('');
+  const [formError, setFormError] = useState("");
   const [loginSuccess, setLoginSuccess] = useState(false);
 
   const formik = useFormik({
-    initialValues: { email: '', password: '' },
+    initialValues: { email: "", password: "" },
     validationSchema,
     onSubmit: async (values) => {
-      setFormError(''); // Clear previous errors
+      setFormError(""); // Clear previous errors
       const result = await login(values.email, values.password);
       if (result.success) {
         setLoginSuccess(true);
         // Brief delay to show success state before redirect
         setTimeout(() => {
-          router.push('/dashboard');
+          router.push("/dashboard");
         }, 1500);
       } else {
         // Display API error as a form-level error
-        setFormError(result.error || 'Login failed. Please try again.');
+        setFormError(result.error || "Login failed. Please try again.");
       }
     },
   });
@@ -45,7 +45,7 @@ export default function LoginForm() {
   // Redirect to dashboard if already logged in
   React.useEffect(() => {
     if (user) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [user, router]);
 
@@ -57,7 +57,9 @@ export default function LoginForm() {
           <div className={styles.loadingContent}>
             <div className={styles.spinner}></div>
             <h2 className={styles.loadingTitle}>Welcome back!</h2>
-            <p className={styles.loadingSubtitle}>Preparing your dashboard...</p>
+            <p className={styles.loadingSubtitle}>
+              Preparing your dashboard...
+            </p>
           </div>
         </div>
       )}
@@ -68,11 +70,11 @@ export default function LoginForm() {
       {/* Left Section (Lock Image) */}
       <div className={styles.leftSection}>
         <div className={styles.lockImageWrapper}>
-          <Image 
-            src="/assets/images/lock.svg" 
-            alt="Security" 
+          <Image
+            src="/assets/images/lock.svg"
+            alt="Security"
             fill
-            style={{ objectFit: 'cover' }}
+            style={{ objectFit: "cover" }}
             priority
           />
         </div>
@@ -81,27 +83,19 @@ export default function LoginForm() {
       {/* Right Section */}
       <div className={styles.rightSection}>
         <div className={styles.formContainer}>
-         
-
-          <h2 className={styles.title}>
-            Welcome Back
-          </h2>
-
-       
+          <h2 className={styles.title}>Welcome Back</h2>
 
           {/* Form */}
           <form className={styles.form} onSubmit={formik.handleSubmit}>
             <div className={styles.formField}>
-              <label className={styles.label}>
-                Email Address
-              </label>
+              <label className={styles.label}>Email Address</label>
               <input
                 type="email"
                 name="email"
                 className={`${styles.input} ${
                   formik.touched.email && formik.errors.email
                     ? styles.inputError
-                    : ''
+                    : ""
                 }`}
                 placeholder="Enter your email"
                 value={formik.values.email}
@@ -109,24 +103,20 @@ export default function LoginForm() {
                 onBlur={formik.handleBlur}
               />
               {formik.touched.email && formik.errors.email && (
-                <div className={styles.errorText}>
-                  {formik.errors.email}
-                </div>
+                <div className={styles.errorText}>{formik.errors.email}</div>
               )}
             </div>
 
             <div className={styles.formField}>
-              <label className={styles.label}>
-                Password
-              </label>
+              <label className={styles.label}>Password</label>
               <div className={styles.passwordWrapper}>
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   className={`${styles.input} ${
                     formik.touched.password && formik.errors.password
                       ? styles.inputError
-                      : ''
+                      : ""
                   }`}
                   placeholder="Enter your password"
                   value={formik.values.password}
@@ -139,21 +129,44 @@ export default function LoginForm() {
                   className={styles.togglePasswordButton}
                 >
                   {showPassword ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                      />
                     </svg>
                   ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
                     </svg>
                   )}
                 </button>
               </div>
               {formik.touched.password && formik.errors.password && (
-                <div className={styles.errorText}>
-                  {formik.errors.password}
-                </div>
+                <div className={styles.errorText}>{formik.errors.password}</div>
               )}
               <div className={styles.forgotPasswordContainer}>
                 <Link
@@ -168,8 +181,18 @@ export default function LoginForm() {
             {/* Form-level error message */}
             {formError && (
               <div className={styles.formError}>
-                <svg className={styles.formErrorIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className={styles.formErrorIcon}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 {formError}
               </div>
@@ -184,26 +207,26 @@ export default function LoginForm() {
                   : styles.submitButtonEnabled
               }`}
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? "Logging in..." : "Login"}
             </button>
-{/* No account? */}
-            
-          <p className={styles.subtitle}>
-            Don&apos;t have an account?{' '}
-            <Link href="/signup" className={styles.signupLink}>
-              Sign up
-            </Link>
-          </p>
+            {/* No account? */}
 
-             {/* Divider */}
-          <div className={styles.divider}>
+            <p className={styles.subtitle}>
+              Don&apos;t have an account?{" "}
+              <Link href="/signup" className={styles.signupLink}>
+                Sign up
+              </Link>
+            </p>
+
+            {/* Divider */}
+            {/* <div className={styles.divider}>
             <div className={styles.dividerLine}></div>
             <span className={styles.dividerText}>OR</span>
             <div className={styles.dividerLine}></div>
-          </div>
+          </div> */}
 
-             {/* Continue with buttons */}
-          <button className={styles.socialButton} type="button">
+            {/* Continue with buttons */}
+            {/* <button className={styles.socialButton} type="button" onClick={loginWithGoogle}>
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
@@ -230,7 +253,7 @@ export default function LoginForm() {
               <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
             </svg>
             Continue with Apple
-          </button>
+          </button> */}
           </form>
         </div>
       </div>

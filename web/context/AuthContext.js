@@ -434,6 +434,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = () => {
+    logger.auth.info("Initiating Google OAuth");
+    const callbackUrl = `${window.location.origin}/auth/callback`;
+    window.location.href = `${API_BASE_URL}/auth/google?redirect_uri=${encodeURIComponent(callbackUrl)}`;
+  };
+
   const logout = () => {
     logger.auth.info("Logging out user");
     setUser(null);
@@ -534,6 +540,7 @@ export const AuthProvider = ({ children }) => {
         user,
         loading,
         login,
+        loginWithGoogle,
         signup,
         logout,
         verifyEmail,

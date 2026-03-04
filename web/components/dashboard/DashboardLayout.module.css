@@ -57,6 +57,10 @@
     overflow-x: hidden;
   }
 
+  .pageContent {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+
   .overlay {
     display: block;
     position: fixed;

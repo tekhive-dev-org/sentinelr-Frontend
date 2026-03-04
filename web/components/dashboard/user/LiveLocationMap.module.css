@@ -108,7 +108,7 @@
 /* ── Map container ────────────────────────────────────────────────────────── */
 .mapArea {
   flex: 1;
-  min-height: 255px;
+  min-height: 340px;
   border-radius: 8px;
   overflow: hidden;
   background: #eef2f6;

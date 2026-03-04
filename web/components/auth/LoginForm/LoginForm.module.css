@@ -1,6 +1,6 @@
 /* Login Form Component Styles */
 .container {
-  @apply min-h-screen flex overflow-auto relative;
+  @apply min-h-[100dvh] flex overflow-auto relative;
 }
 
 /* Login Success Loading Overlay */
@@ -72,7 +72,15 @@
 }
 
 .formContainer {
-  @apply w-full max-w-[400px] mobile:flex mobile:flex-col mobile:justify-evenly mobile:bg-white mobile:h-full mobile:rounded-tl-[100px] mobile:rounded-lg  mobile:p-6 mobile:shadow-lg;
+  @apply w-full max-w-[400px] mobile:flex mobile:flex-col mobile:justify-center mobile:bg-white mobile:h-full mobile:rounded-tl-[100px] mobile:rounded-lg  mobile:p-6 mobile:shadow-lg;
+}
+
+.logoWrapper {
+  @apply flex justify-center mb-16;
+}
+
+.logo {
+  @apply w-[150px]  object-contain;
 }
 
 .title {

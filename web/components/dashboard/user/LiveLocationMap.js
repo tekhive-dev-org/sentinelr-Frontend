@@ -11,7 +11,7 @@ import { useJsApiLoader, GoogleMap, Marker, InfoWindow } from '@react-google-map
 import { devicesService } from '../../../services/devicesService';
 import styles from './LiveLocationMap.module.css';
 
-const POLL_MS        = 30_000;
+const POLL_MS        = 300_000; // 5 minutes
 const DEFAULT_ZOOM   = 15;
 const DEFAULT_CENTER = { lat: 20, lng: 0 };
 

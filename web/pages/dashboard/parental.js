@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
 import { DashboardLayout } from '../../components/dashboard';
+import ComingSoon from '../../components/common/ComingSoon';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 export default function Parental() {
   const router = useRouter();
@@ -27,16 +29,11 @@ export default function Parental() {
 
   return (
     <DashboardLayout>
-      <div style={{ padding: '0 32px 32px' }} className="dashboard-content">
-        <style jsx>{`
-          @media (max-width: 768px) {
-            .dashboard-content {
-              padding: 0 16px 16px !important;
-            }
-          }
-        `}</style>
-        <p>Parental Control content will go here</p>
-      </div>
+      <ComingSoon
+        title="Parental Control"
+        description="Set screen time limits, content filters, and app restrictions to keep your family safe online."
+        icon={AdminPanelSettingsIcon}
+      />
     </DashboardLayout>
   );
 }

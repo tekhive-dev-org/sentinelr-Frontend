@@ -1,6 +1,6 @@
 /* Verification Code Component Styles */
 .container {
-  @apply min-h-screen flex overflow-auto;
+  @apply min-h-[100dvh] flex overflow-auto;
 }
 
 .leftSection {

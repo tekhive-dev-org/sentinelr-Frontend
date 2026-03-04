@@ -1,6 +1,6 @@
 /* Login Form Component Styles */
 .container {
-  @apply min-h-screen flex overflow-auto relative;
+  @apply min-h-[100dvh] flex overflow-auto relative;
 }
 
 /* Login Success Loading Overlay */

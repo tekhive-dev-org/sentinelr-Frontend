@@ -205,6 +205,7 @@
     inset 0 0 0 1px rgba(255, 255, 255, 0.5); 
   border-radius: 12px;
   padding: 20px;
+  height: 100%;
 }
 
 .activityItem {
@@ -345,4 +346,35 @@
 .dropdownItem:hover {
   background: #f3f4f6;
   color: #1a1a1a;
+}
+
+/* Coming Soon placeholder */
+.comingSoonWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 130px;
+  gap: 10px;
+}
+
+.comingSoonBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #ede9fe 0%, #e0e7ff 100%);
+  color: #6366f1;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 999px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.comingSoonLabel {
+  font-size: 13px;
+  color: #9ca3af;
+  text-align: center;
 }

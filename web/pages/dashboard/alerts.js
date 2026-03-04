@@ -2,6 +2,9 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
 import { DashboardLayout } from '../../components/dashboard';
+import ComingSoon from '../../components/common/ComingSoon';
+import SosIcon from '@mui/icons-material/Sos';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
 export default function Alerts() {
   const router = useRouter();
@@ -25,21 +28,19 @@ export default function Alerts() {
     return null;
   }
 
-  const title = user.role === 'admin' ? 'Alert & Report Handling' : 'Sos Alert';
+  const isAdmin = user.role === 'admin';
 
   return (
     <DashboardLayout>
-      <div style={{ padding: '0 32px 32px' }} className="dashboard-content">
-        <style jsx>{`
-          @media (max-width: 768px) {
-            .dashboard-content {
-              padding: 0 16px 16px !important;
-            }
-          }
-        `}</style>
-        <h1>{title}</h1>
-        <p>{title} content will go here</p>
-      </div>
+      <ComingSoon
+        title={isAdmin ? 'Alert & Report Handling' : 'SOS Alert'}
+        description={
+          isAdmin
+            ? 'Review and manage user-generated alerts, incidents, and reports from one central hub.'
+            : 'Trigger emergency SOS alerts and notify your trusted contacts instantly when you need help.'
+        }
+        icon={isAdmin ? ReportProblemIcon : SosIcon}
+      />
     </DashboardLayout>
   );
 }

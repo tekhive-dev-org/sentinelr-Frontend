@@ -1,0 +1,773 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   History & Reports – CSS Module
+   Matches the glassmorphic card style used across the Sentinelr dashboard.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Container ────────────────────────────────────────────────────────────── */
+.container {
+  @apply mobile:!px-4;
+  padding: 24px;
+  background-color: transparent;
+  min-height: 100dvh;
+}
+
+/* ── Search bar ───────────────────────────────────────────────────────────── */
+.searchBar {
+  position: relative;
+  margin-bottom: 24px;
+  max-width: 500px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 20px !important;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 16px 12px 44px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #374151;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+}
+
+.searchInput:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+}
+
+/* ── Main two-column layout: left content + right timeline ────────────────── */
+.mainGrid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+/* ── Stat cards grid ──────────────────────────────────────────────────────── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  align-content: start;
+}
+
+/* ── Individual stat card ─────────────────────────────────────────────────── */
+.glassCard {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.statHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statIconWrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statIconWrap svg {
+  font-size: 18px !important;
+}
+
+.iconGreen {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.iconBlue {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.iconRed {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.iconOrange {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+.statTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.menuBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  padding: 2px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+
+.menuBtn:hover {
+  color: #374151;
+}
+
+.statValue {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1;
+}
+
+/* ── Map section ──────────────────────────────────────────────────────────── */
+.mapSection {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.detailsLink {
+  color: #6b7280;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.15s;
+}
+
+.detailsLink:hover {
+  color: #2563eb;
+}
+
+.mapPlaceholder {
+  height: 260px;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Bottom row: charts + reports ─────────────────────────────────────────── */
+.bottomRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  
+}
+
+/* ── Activity trend card ──────────────────────────────────────────────────── */
+.chartCard {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  padding: 20px;
+ 
+}
+
+.chartHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.chartDuration {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.chartPlaceholder {
+  height: 220px;
+  width: 100%;
+}
+
+/* ── Reports card ─────────────────────────────────────────────────────────── */
+.reportsCard {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.reportsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.seeAllBtn {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.seeAllBtn:hover {
+  color: #2563eb;
+}
+
+.reportPreview {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+  margin-bottom: 16px;
+}
+
+.previewArc {
+  width: 160px;
+  height: 120px;
+}
+
+.reportsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reportRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.reportRow:last-child {
+  border-bottom: none;
+}
+
+.reportMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reportDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dotOrange  { background: #f97316; }
+.dotGreen   { background: #22c55e; }
+.dotRed     { background: #ef4444; }
+
+.reportDate {
+  font-size: 13px;
+  color: #374151;
+}
+
+.reportCategory {
+  font-size: 12px;
+  color: #6b7280;
+  margin-left: 4px;
+}
+
+.reportBadge {
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badgeTransit {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+.badgeWork {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.badgeHome {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* ── Timeline sidebar ─────────────────────────────────────────────────────── */
+.timelineCard {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  padding: 20px;
+  position: sticky;
+  top: 24px;
+  max-height: calc(100dvh - 48px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.timelineTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 20px;
+}
+
+.timelineScroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-gutter: stable;
+}
+
+/* Modern scrollbar (Firefox) */
+.timelineScroll {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.timelineScroll:hover {
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+/* Webkit scrollbar (Chrome, Safari, Edge) */
+.timelineScroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.timelineScroll::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 6px;
+  margin: 4px 0;
+}
+
+.timelineScroll::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.timelineScroll:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.timelineScroll:hover::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.timelineScroll:hover::-webkit-scrollbar-thumb:active {
+  background: rgba(0, 0, 0, 0.32);
+}
+
+/* ── Timeline items ───────────────────────────────────────────────────────── */
+.timelineItem {
+  position: relative;
+  padding-left: 32px;
+  padding-bottom: 20px;
+}
+
+.timelineItem:last-child {
+  padding-bottom: 0;
+}
+
+/* Vertical line connector */
+.timelineItem::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 28px;
+  bottom: 0;
+  width: 2px;
+  background: #e5e7eb;
+}
+
+.timelineItem:last-child::before {
+  display: none;
+}
+
+/* Node dot */
+.timelineNode {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nodeGray {
+  background: #e5e7eb;
+}
+
+.nodeBlue {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.nodeRed {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.nodeOrange {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+.timelineNode svg {
+  font-size: 12px !important;
+}
+
+/* Start of day marker */
+.timelineStartMarker {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+
+.timelineStartLocation {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Event card inside timeline */
+.timelineEvent {
+  border: 1px solid #f3f4f6;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fff;
+}
+
+.timelineEventHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+.eventTypeRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.eventIcon {
+  color: #6b7280;
+  font-size: 16px !important;
+}
+
+.eventType {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.eventSpeed {
+  font-size: 11px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.eventDistance {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.eventLocation {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 2px;
+}
+
+.eventAddress {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 8px;
+}
+
+.eventTimestamp {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.eventTimeRange {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Alert event (geofence exit, etc.) */
+.timelineAlert {
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fff7ed;
+}
+
+.alertType {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ea580c;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.alertMessage {
+  font-size: 12px;
+  color: #78716c;
+}
+
+.alertDate {
+  font-size: 11px;
+  color: #a8a29e;
+  margin-top: 6px;
+  text-align: right;
+}
+
+/* End of records marker */
+.timelineEnd {
+  font-size: 12px;
+  color: #9ca3af;
+  text-align: center;
+  padding-top: 4px;
+}
+
+/* ── Dropdown menu (stat card) ────────────────────────────────────────────── */
+.menuWrapper {
+  position: relative;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
+  z-index: 50;
+  overflow: hidden;
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 13px;
+  color: #374151;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.dropdownItem:hover {
+  background: #f3f4f6;
+  color: #1a1a1a;
+}
+
+/* ── Date filter bar ──────────────────────────────────────────────────────── */
+.dateFilterBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.dateChip {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  background: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.dateChip:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.dateChipActive {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+.dateInput {
+  padding: 6px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #374151;
+  background: rgba(255, 255, 255, 0.6);
+  outline: none;
+}
+
+.dateInput:focus {
+  border-color: #818cf8;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .mainGrid {
+    grid-template-columns: 1fr 300px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .timelineCard {
+    position: static;
+    max-height: 500px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bottomRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 16px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bottomRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
+     grid-template-columns: repeat(2, 1fr);
+  }
+}

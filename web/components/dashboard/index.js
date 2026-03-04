@@ -7,4 +7,4 @@ export { default as PageHeader } from './PageHeader';
 export { DashboardOverview, SubscriptionManagement, AnalyticsManagement } from './admin';
 
 // User Components
-export { UserDashboardOverview, UserSubscription, UserSettings } from './user';
+export { UserDashboardOverview, UserSubscription, UserSettings, HistoryReports } from './user';

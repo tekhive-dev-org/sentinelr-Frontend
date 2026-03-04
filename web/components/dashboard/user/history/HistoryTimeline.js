@@ -137,12 +137,20 @@ const RENDERERS = {
   alert: TimelineAlertItem,
 };
 
-export default function HistoryTimeline({ events = [] }) {
+export default function HistoryTimeline({ events = [], loading = false, error = null }) {
   return (
     <div className={styles.timelineCard}>
       <h3 className={styles.timelineTitle}>Timeline</h3>
       <div className={styles.timelineScroll}>
-        {events.length === 0 ? (
+        {loading ? (
+          <p style={{ fontSize: 13, color: '#9ca3af', textAlign: 'center', marginTop: 24 }}>
+            Loading location history…
+          </p>
+        ) : error ? (
+          <p style={{ fontSize: 13, color: '#dc2626', textAlign: 'center', marginTop: 24 }}>
+            {error}
+          </p>
+        ) : events.length === 0 ? (
           <p style={{ fontSize: 13, color: '#9ca3af', textAlign: 'center', marginTop: 24 }}>
             No timeline events for the selected period.
           </p>

@@ -11,9 +11,11 @@
  *  └─────────────────────────────────┴──────────────┘
  */
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import SearchIcon from '@mui/icons-material/Search';
+import { format } from 'date-fns';
+import { devicesService } from '../../../../services/devicesService';
 import styles from './HistoryReports.module.css';
 import HistoryStatCards from './HistoryStatCards';
 import HistoryTimeline from './HistoryTimeline';
@@ -44,57 +46,106 @@ const LiveLocationMap = dynamic(
   }
 );
 
-// ── Mock data (replace with API calls) ──────────────────────────────────────
+// ── Helpers ─────────────────────────────────────────────────────────────────
 
-const MOCK_STATS = {
-  distance: 850,
-  stops: 150,
-  alerts: 10,
-  notifications: 10,
-};
+/**
+ * Transform raw location-history entries into timeline events.
+ * Each location point becomes a "stop" event.
+ * When two consecutive points are far enough apart, a "driving" segment is
+ * inserted between them (Haversine distance > 50 m).
+ */
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Earth radius in km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
 
-const MOCK_TIMELINE_EVENTS = [
-  {
-    id: 't1',
+function buildTimelineEvents(historyEntries = []) {
+  if (!historyEntries.length) return [];
+
+  // Sort oldest → newest so the timeline reads chronologically
+  const sorted = [...historyEntries].sort(
+    (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+  );
+
+  const events = [];
+  let idCounter = 1;
+
+  // First entry → "start" marker
+  const first = sorted[0];
+  events.push({
+    id: `te_${idCounter++}`,
     type: 'start',
-    time: '08:00 AM',
-    label: 'Home Base',
-  },
-  {
-    id: 't2',
-    type: 'driving',
-    distance: '5.2 miles',
-    speed: 'Avg Speed: 35mph',
-    timeRange: '07:00 - 07:30',
-    date: new Date('2025-11-16'),
-  },
-  {
-    id: 't3',
-    type: 'stop',
-    duration: 'STOP 1H 15M',
-    location: 'Ikeja - City Mall',
-    address: '123 Ikeja drive, Lagos',
-    timeRange: '08:15 - 09:30 AM',
-    date: new Date('2025-11-16'),
-  },
-  {
-    id: 't4',
-    type: 'driving',
-    distance: '12.4 miles',
-    speed: 'Avg Speed: 45mph',
-    location: 'Tech Park Office',
-    address: 'No 28 Odenke Avenue, Lagos',
-    timeRange: '10:30 - 11:00AM',
-    date: new Date('2025-11-16'),
-  },
-  {
-    id: 't5',
-    type: 'alert',
-    alertTitle: 'GEOFENCE EXIT',
-    alertMessage: 'User left unauthorized zone before business hours.',
-    date: new Date('2025-11-16'),
-  },
-];
+    time: format(new Date(first.timestamp), 'hh:mm a'),
+    label: first.address || `${first.latitude.toFixed(4)}, ${first.longitude.toFixed(4)}`,
+  });
+
+  for (let i = 1; i < sorted.length; i++) {
+    const prev = sorted[i - 1];
+    const curr = sorted[i];
+    const dist = haversineKm(prev.latitude, prev.longitude, curr.latitude, curr.longitude);
+
+    // Insert a "driving" segment between non-trivial moves (> 50 m)
+    if (dist > 0.05) {
+      const prevTime = format(new Date(prev.timestamp), 'hh:mm a');
+      const currTime = format(new Date(curr.timestamp), 'hh:mm a');
+      events.push({
+        id: `te_${idCounter++}`,
+        type: 'driving',
+        distance: dist >= 1 ? `${dist.toFixed(1)} km` : `${Math.round(dist * 1000)} m`,
+        speed: '',
+        timeRange: `${prevTime} - ${currTime}`,
+        date: new Date(curr.timestamp),
+      });
+    }
+
+    // Each location point → "stop" event
+    events.push({
+      id: `te_${idCounter++}`,
+      type: 'stop',
+      location: curr.address || `${curr.latitude.toFixed(4)}, ${curr.longitude.toFixed(4)}`,
+      address: curr.address || '',
+      timeRange: format(new Date(curr.timestamp), 'hh:mm a'),
+      date: new Date(curr.timestamp),
+    });
+  }
+
+  return events;
+}
+
+/**
+ * Derive simple stats from the location history entries.
+ */
+function deriveStats(historyEntries = []) {
+  if (!historyEntries.length) return { distance: 0, stops: 0, alerts: 0, notifications: 0 };
+
+  const sorted = [...historyEntries].sort(
+    (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+  );
+
+  let totalDistKm = 0;
+  for (let i = 1; i < sorted.length; i++) {
+    totalDistKm += haversineKm(
+      sorted[i - 1].latitude, sorted[i - 1].longitude,
+      sorted[i].latitude, sorted[i].longitude
+    );
+  }
+
+  return {
+    distance: Math.round(totalDistKm),
+    stops: sorted.length,
+    alerts: 0,         // populated from alerts API later
+    notifications: 0,  // populated from alerts API later
+  };
+}
+
+// ── Fallback mock data (used when API returns nothing) ──────────────────────
 
 const MOCK_ACTIVITY_DATA = [
   { name: 'Mon', value: 3 },
@@ -113,10 +164,57 @@ const MOCK_REPORTS = [
 
 export default function HistoryReports() {
   const [search, setSearch] = useState('');
+  const [devices, setDevices] = useState([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState('');
+  const [historyEntries, setHistoryEntries] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // In production, these would come from API calls based on search.
-  const stats = MOCK_STATS;
-  const timelineEvents = MOCK_TIMELINE_EVENTS;
+  // ── Fetch family devices on mount ─────────────────────────────────────────
+  useEffect(() => {
+    devicesService
+      .getFamilyDevices()
+      .then((data) => {
+        const list = data.devices || [];
+        setDevices(list);
+        if (list.length > 0) setSelectedDeviceId(String(list[0].id));
+      })
+      .catch((err) => console.error('[HistoryReports] fetch devices:', err));
+  }, []);
+
+  // ── Fetch location history when device changes ────────────────────────────
+  useEffect(() => {
+    if (!selectedDeviceId) return;
+    let cancelled = false;
+
+    const fetchHistory = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await devicesService.getLocationHistory({
+          deviceId: selectedDeviceId,
+        });
+        if (!cancelled) {
+          setHistoryEntries(data.history || []);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          console.error('[HistoryReports] fetch history:', err);
+          setError(err.message);
+          setHistoryEntries([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    fetchHistory();
+    return () => { cancelled = true; };
+  }, [selectedDeviceId]);
+
+  // ── Derived data ──────────────────────────────────────────────────────────
+  const stats = useMemo(() => deriveStats(historyEntries), [historyEntries]);
+  const timelineEvents = useMemo(() => buildTimelineEvents(historyEntries), [historyEntries]);
   const activityData = MOCK_ACTIVITY_DATA;
   const reports = MOCK_REPORTS;
 
@@ -153,16 +251,31 @@ export default function HistoryReports() {
 
   return (
     <div className={styles.container}>
-      {/* Search */}
+      {/* Search + Device selector */}
       <div className={styles.searchBar}>
-        <SearchIcon className={styles.searchIcon} />
-        <input
-          className={styles.searchInput}
-          type="text"
-          placeholder="Search..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className={styles.searchInputWrapper}>
+          <SearchIcon className={styles.searchIcon} />
+          <input
+            className={styles.searchInput}
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        {devices.length > 0 && (
+          <select
+            className={styles.deviceSelect}
+            value={selectedDeviceId}
+            onChange={(e) => setSelectedDeviceId(e.target.value)}
+          >
+            {devices.map((d) => (
+              <option key={d.id} value={String(d.id)}>
+                {d.deviceName || d.name || `Device ${d.id}`}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
       {/* Main grid: left content + right timeline */}
@@ -190,8 +303,10 @@ export default function HistoryReports() {
           </div>
         </div>
 
-        {/* Right column: Timeline */}
-        <HistoryTimeline events={filteredTimeline} />
+        {/* Right column: Timeline (wrapper caps height to left column) */}
+        <div className={styles.timelineColumn}>
+          <HistoryTimeline events={filteredTimeline} loading={loading} error={error} />
+        </div>
       </div>
     </div>
   );

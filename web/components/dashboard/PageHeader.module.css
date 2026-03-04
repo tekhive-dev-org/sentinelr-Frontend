@@ -25,7 +25,7 @@
     inset 0 0 0 1px rgba(255, 255, 255, 0.5); /* Inner shine */
     
   position: relative;
-  overflow: hidden; /* For the accent bar */
+  overflow: visible; /* Allow profile dropdown to render outside */
 }
 
 /* Brand Accent Bar */
@@ -108,17 +108,6 @@
   font-weight: 500;
 }
 
-.userAvatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  position: relative;
-  flex-shrink: 0;
-  padding: 2px;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
 .avatarImage {
   width: 100%;
   height: 100%;
@@ -186,6 +175,117 @@
   border: 1px solid #fff;
 }
 
+/* ── Avatar wrapper + Profile dropdown ────────────────────────────────────── */
+.avatarWrapper {
+  position: relative;
+}
+
+.userAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+  padding: 2px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+
+.userAvatar:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.profileDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 220px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 8px;
+  z-index: 200;
+  animation: dropdownFadeIn 0.15s ease;
+}
+
+.profileDropdownUser {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profileDropdownName {
+  font-family: 'Lato', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profileDropdownEmail {
+  font-family: 'Lato', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profileDropdownDivider {
+  height: 1px;
+  background: #f3f4f6;
+  margin: 4px 0;
+}
+
+.profileDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-family: 'Lato', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.profileDropdownItem:hover {
+  background: #f9fafb;
+}
+
+.profileDropdownDanger {
+  color: #dc2626;
+}
+
+.profileDropdownDanger:hover {
+  background: #fef2f2;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 768px) {
   .header {
     padding: 16px;
@@ -222,6 +322,11 @@
 
   .menuBtn {
     display: flex;
+  }
+
+  /* Hide hamburger for user accounts on mobile (bottom app bar handles nav) */
+  .menuBtnUserMobile {
+    display: none;
   }
 
   .title {

@@ -20,6 +20,14 @@
   @apply w-full max-w-[400px] mobile:flex mobile:flex-col mobile:justify-center mobile:bg-white mobile:h-full mobile:rounded-tl-[100px] mobile:rounded-lg  mobile:p-6 mobile:shadow-lg;
 }
 
+.logoWrapper {
+  @apply flex justify-center mb-16;
+}
+
+.logo {
+  @apply w-[150px] object-contain;
+}
+
 .title {
   @apply text-[28px] mobile:text-[25px] mobile:max-w-[250px] mobile:mx-auto font-black text-center mb-8 text-black;
   font-family: 'Playfair Display', serif;

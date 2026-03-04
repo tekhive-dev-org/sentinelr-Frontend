@@ -8,14 +8,17 @@
   @apply mobile:!px-4;
   padding: 24px;
   background-color: transparent;
-  min-height: 100dvh;
+
 }
 
 /* ── Search bar ───────────────────────────────────────────────────────────── */
 .searchBar {
   position: relative;
   margin-bottom: 24px;
-  max-width: 500px;
+  max-width: 100%;
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .searchIcon {
@@ -27,6 +30,12 @@
   font-size: 20px !important;
   pointer-events: none;
   z-index: 1;
+}
+
+.searchInputWrapper {
+  position: relative;
+  flex: 1;
+  max-width: 500px;
 }
 
 .searchInput {
@@ -52,12 +61,35 @@
   box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
 }
 
+/* ── Device selector dropdown ────────────────────────────────────────────── */
+.deviceSelect {
+  flex-shrink: 0;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 13px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 500;
+  color: #374151;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  outline: none;
+  cursor: pointer;
+  max-width: 220px;
+}
+
+.deviceSelect:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+}
+
 /* ── Main two-column layout: left content + right timeline ────────────────── */
 .mainGrid {
   display: grid;
   grid-template-columns: 1fr 340px;
   gap: 24px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .leftColumn {
@@ -386,8 +418,16 @@
   color: #dc2626;
 }
 
+/* ── Timeline column wrapper (caps timeline to left column height) ────────── */
+.timelineColumn {
+  position: relative;
+  min-height: 0;
+}
+
 /* ── Timeline sidebar ─────────────────────────────────────────────────────── */
 .timelineCard {
+  position: absolute;
+  inset: 0;
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -397,9 +437,6 @@
     inset 0 0 0 1px rgba(255, 255, 255, 0.5);
   border-radius: 12px;
   padding: 20px;
-  position: sticky;
-  top: 24px;
-  max-height: calc(100dvh - 48px);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -736,6 +773,11 @@
 @media (max-width: 1024px) {
   .mainGrid {
     grid-template-columns: 1fr;
+  }
+
+  .timelineColumn {
+    position: static;
+    min-height: auto;
   }
 
   .timelineCard {

@@ -165,6 +165,24 @@ export const devicesService = {
     const query = params.toString();
     return apiRequest(`/location/live${query ? `?${query}` : ""}`);
   },
+
+  /**
+   * Get location history for a device.
+   * @param {object} filters - { deviceId (required), startDate?, endDate?, limit? }
+   * @returns {Promise<{ success: boolean, history: HistoryEntry[], total: number }>}
+   *
+   * HistoryEntry shape:
+   *   { latitude: number, longitude: number, timestamp: string, address: string|null }
+   */
+  async getLocationHistory(filters = {}) {
+    const params = new URLSearchParams();
+    if (filters.deviceId != null) params.append("deviceId", filters.deviceId);
+    if (filters.startDate) params.append("startDate", filters.startDate);
+    if (filters.endDate) params.append("endDate", filters.endDate);
+    if (filters.limit != null) params.append("limit", filters.limit);
+    const query = params.toString();
+    return apiRequest(`/location/history${query ? `?${query}` : ""}`);
+  },
 };
 
 export default devicesService;

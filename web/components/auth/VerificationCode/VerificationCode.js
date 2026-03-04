@@ -188,6 +188,9 @@ export default function VerificationCode({ email = '' }) {
       {/* Right Section */}
       <div className={styles.rightSection}>
         <div className={styles.formContainer}>
+          <div className={styles.logoWrapper}>
+            <Image src="/logo.png" alt="Sentinelr" width={80} height={80} className={styles.logo} />
+          </div>
           {/* Input State */}
           {verificationState === 'input' && (
             <>

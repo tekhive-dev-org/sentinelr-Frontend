@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
 import { DashboardLayout } from '../../components/dashboard';
+import ComingSoon from '../../components/common/ComingSoon';
+import GroupIcon from '@mui/icons-material/Group';
 
 export default function Users() {
   const router = useRouter();
@@ -27,16 +29,11 @@ export default function Users() {
 
   return (
     <DashboardLayout>
-      <div style={{ padding: '0 32px 32px' }} className="dashboard-content">
-        <style jsx>{`
-          @media (max-width: 768px) {
-            .dashboard-content {
-              padding: 0 16px 16px !important;
-            }
-          }
-        `}</style>
-        <p>Users & Family Management content will go here</p>
-      </div>
+      <ComingSoon
+        title="Users & Family Management"
+        description="View, manage, and organize all registered users and family groups in one place."
+        icon={GroupIcon}
+      />
     </DashboardLayout>
   );
 }

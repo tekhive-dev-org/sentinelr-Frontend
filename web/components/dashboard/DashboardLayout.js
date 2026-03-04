@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
 import Sidebar from './Sidebar';
+import BottomAppBar from './BottomAppBar';
 import PageHeader from './PageHeader';
 import styles from './DashboardLayout.module.css';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
@@ -72,9 +73,19 @@ const pageConfig = {
 };
 
 export default function DashboardLayout({ children }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    if (typeof window !== 'undefined') return window.innerWidth > 768;
+    return true;               // SSR fallback (desktop)
+  });
   const router = useRouter();
-  const { user, loggedUser } = useAuth();
+  const { user, loggedUser, logout } = useAuth();
+  const isAdmin = user?.role === 'admin';
+  // On mobile, user-role accounts use the BottomAppBar – never show the sidebar
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window !== 'undefined') return window.innerWidth <= 768;
+    return false;
+  });
+  const showSidebar = isAdmin || !isMobile;
   
   let currentPage = pageConfig[router.pathname] || pageConfig['/dashboard'];
 
@@ -98,7 +109,9 @@ export default function DashboardLayout({ children }) {
   // Close sidebar on mobile by default
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth <= 768) {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (mobile) {
         setIsSidebarOpen(false);
       } else {
         setIsSidebarOpen(true);
@@ -125,22 +138,24 @@ export default function DashboardLayout({ children }) {
       {user?.role === 'admin' ? <AdminBackground /> : <UserBackground />}
       
       <div className={styles.dashboardContainer}>
-        {isSidebarOpen && (
+        {showSidebar && isSidebarOpen && (
           <div
             className={styles.overlay}
             onClick={() => setIsSidebarOpen(false)}
             aria-hidden="true"
           />
         )}
-        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+        {showSidebar && <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />}
         
-        <div className={`${styles.mainContent} ${!isSidebarOpen ? styles.mainContentExpanded : ''}`}>
+        <div className={`${styles.mainContent} ${!isSidebarOpen || !showSidebar ? styles.mainContentExpanded : ''}`}>
           <PageHeader 
             title={currentPage?.title} 
             subtitle={currentPage?.subtitle}
             icon={currentPage?.icon}
             user={loggedUser || user}
             onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            isAdmin={isAdmin}
+            onLogout={() => { logout(); router.push('/login'); }}
           />
           
           <main className={styles.pageContent}>
@@ -148,6 +163,9 @@ export default function DashboardLayout({ children }) {
           </main>
         </div>
       </div>
+
+      {/* Mobile bottom navigation – users only */}
+      {!isAdmin && <BottomAppBar />}
     </div>
   );
 }

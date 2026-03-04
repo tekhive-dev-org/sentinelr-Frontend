@@ -106,6 +106,9 @@ export default function SignUpForm() {
       {/* Right Section */}
       <div className={styles.rightSection}>
         <div className={styles.formContainer}>
+          <div className={styles.logoWrapper}>
+            <Image src="/logo.png" alt="Sentinelr" width={80} height={80} className={styles.logo} />
+          </div>
           <h1 className={styles.title}>Sign up to Sentinelr Security App</h1>
 
           {/* Form */}

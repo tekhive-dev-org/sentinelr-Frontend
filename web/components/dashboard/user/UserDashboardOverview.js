@@ -152,7 +152,7 @@ export default function UserDashboardOverview() {
             </div>
             <MoreVertIcon style={{ color: '#999', cursor: 'pointer' }} />
           </div>
-          <div className={styles.statValue} style={{ marginTop: '24px' }}>2</div>
+          <div className={styles.statValue} style={{ marginTop: '24px' }}>0</div>
         </div>
 
         <div className={styles.statCard}>
@@ -176,32 +176,20 @@ export default function UserDashboardOverview() {
             <div className={styles.chartCard}>
               <h3 className={styles.sectionTitle} style={{ marginBottom: '16px' }}>Usage Insight</h3>
               <div style={{ height: '200px' }}>
-                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-                  <BarChart data={usageData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} fontSize={12} />
-                    <YAxis axisLine={false} tickLine={false} fontSize={12} />
-                    <Tooltip />
-                    <Bar dataKey="full" stackId="a" fill="#f3f4f6" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="value" stackId="a" fill="#818cf8" radius={[4, 4, 0, 0]} style={{ transform: 'translateY(-100%)' }} /> 
-                    {/* Note: Recharts stacking can be tricky to get exact overlay look, using simple stack for now */}
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className={styles.comingSoonWrapper}>
+                  <span className={styles.comingSoonBadge}>Coming Soon</span>
+                  <p className={styles.comingSoonLabel}>Usage analytics will appear here</p>
+                </div>
               </div>
             </div>
 
             <div className={styles.chartCard}>
               <h3 className={styles.sectionTitle} style={{ marginBottom: '16px' }}>Subscription</h3>
               <div style={{ height: '200px' }}>
-                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-                  <LineChart data={subscriptionData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} fontSize={10} />
-                    <YAxis hide />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="value" stroke="#4ade80" strokeWidth={2} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
+                <div className={styles.comingSoonWrapper}>
+                  <span className={styles.comingSoonBadge}>Coming Soon</span>
+                  <p className={styles.comingSoonLabel}>Subscription trends will appear here</p>
+                </div>
               </div>
             </div>
           </div>
@@ -209,35 +197,11 @@ export default function UserDashboardOverview() {
           {/* Screen Time */}
           <div className={styles.screenTimeCard}>
             <div className={styles.sectionHeader}>
-              <div>
-                <h3 className={styles.sectionTitle}>Screen Time</h3>
-                <p className={styles.subtitle}>Total screen time consumed today is <strong>3h 45m</strong></p>
-              </div>
-              <MoreVertIcon style={{ color: '#999', cursor: 'pointer' }} />
+              <h3 className={styles.sectionTitle}>Screen Time</h3>
             </div>
-            
-            <div className={styles.appItem}>
-              <div className={styles.appInfo}>
-                <span className={styles.appName}>Videos Viewed</span>
-                <span style={{ fontSize: '12px', color: '#666' }}>365</span>
-              </div>
-              <div className={styles.appInfo}>
-                <span style={{ fontSize: '12px', color: '#666' }}>Time Spent</span>
-                <span className={styles.appTime}>3h 45m</span>
-              </div>
-              <div style={{ width: '40px', height: '40px', background: 'red', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>YT</div>
-            </div>
-
-            <div className={styles.appItem} style={{ borderBottom: 'none' }}>
-              <div className={styles.appInfo}>
-                <span className={styles.appName}>Videos Viewed</span>
-                <span style={{ fontSize: '12px', color: '#666' }}>265</span>
-              </div>
-              <div className={styles.appInfo}>
-                <span style={{ fontSize: '12px', color: '#666' }}>Time Spent</span>
-                <span className={styles.appTime}>2h 15m</span>
-              </div>
-              <div style={{ width: '40px', height: '40px', background: 'black', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>TT</div>
+            <div className={styles.comingSoonWrapper}>
+              <span className={styles.comingSoonBadge}>Coming Soon</span>
+              <p className={styles.comingSoonLabel}>Per-app screen time tracking is on its way</p>
             </div>
           </div>
         </div>
@@ -246,66 +210,12 @@ export default function UserDashboardOverview() {
           {/* Recent Activity */}
           <div className={styles.activityCard}>
             <div className={styles.sectionHeader}>
-              <h3 className={styles.sectionTitle}>Recent Activity/Alert feeds</h3>
-              <MoreVertIcon style={{ color: '#999', cursor: 'pointer' }} />
+              <h3 className={styles.sectionTitle}>Recent Activity / Alert Feeds</h3>
             </div>
-
-            <div className={styles.activityItem}>
-              <div className={styles.activityHeader}>
-                <span className={styles.activityTitle}>Intruder Alert - Today</span>
-                <span className={styles.activityTime}>9:00 AM</span>
-              </div>
-              <div className={styles.activityStatus}>
-                <span className={`${styles.statusBadge} ${styles.cancelled}`}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'red' }}></span>
-                  Cancelled
-                </span>
-                <span>Nov 16, 2025</span>
-              </div>
+            <div className={styles.comingSoonWrapper}>
+              <span className={styles.comingSoonBadge}>Coming Soon</span>
+              <p className={styles.comingSoonLabel}>Live activity and alert feeds will appear here</p>
             </div>
-
-            <div className={styles.activityItem}>
-              <div className={styles.activityHeader}>
-                <span className={styles.activityTitle}>Geofence Exit- John, school</span>
-              </div>
-              <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>2:30 PM - 4:00 PM</div>
-              <div className={styles.activityStatus}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#666' }}></span>
-                  3 days late
-                </span>
-                <span>Nov 24, 2025</span>
-              </div>
-            </div>
-
-            <div className={styles.activityItem}>
-              <div className={styles.activityHeader}>
-                <span className={styles.activityTitle}>Geofence Exit- John, school</span>
-              </div>
-              <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>2:30 PM - 4:00 PM</div>
-              <div className={styles.activityStatus}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#666' }}></span>
-                  3 days late
-                </span>
-                <span>Nov 24, 2025</span>
-              </div>
-            </div>
-            
-            <div className={styles.activityItem}>
-              <div className={styles.activityHeader}>
-                <span className={styles.activityTitle}>Geofence Exit- John, school</span>
-              </div>
-              <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>2:30 PM - 4:00 PM</div>
-              <div className={styles.activityStatus}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#666' }}></span>
-                  3 days late
-                </span>
-                <span>Nov 24, 2025</span>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>

@@ -13,7 +13,7 @@
 }
 
 .rightSection {
-  @apply w-full md:w-1/2 flex flex-col justify-center items-center sm:px-6 sm:py-10  bg-white sm:max-h-[100dvh] overflow-y-auto mobile:bg-[#0E4B68];
+  @apply w-full md:w-1/2 flex flex-col justify-center items-center sm:px-6 sm:py-10 sm:justify-start  bg-white sm:max-h-[100dvh] overflow-y-auto mobile:bg-[#0E4B68];
 }
 
 .formContainer {
@@ -21,7 +21,7 @@
 }
 
 .logoWrapper {
-  @apply flex justify-center mb-16;
+  @apply flex justify-center mb-10;
 }
 
 .logo {

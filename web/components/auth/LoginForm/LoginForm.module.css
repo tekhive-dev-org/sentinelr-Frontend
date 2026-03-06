@@ -84,7 +84,7 @@
 }
 
 .title {
-  @apply text-[28px] mobile:text-[25px] mobile:mx-auto font-black text-center  text-black;
+  @apply text-[28px] mobile:text-[25px] mobile:mx-auto font-black text-center  text-black mb-10;
   font-family: 'Playfair Display', serif;
 }
 

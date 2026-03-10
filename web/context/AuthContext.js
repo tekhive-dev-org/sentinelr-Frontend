@@ -440,6 +440,38 @@ export const AuthProvider = ({ children }) => {
     window.location.href = `${API_BASE_URL}/auth/google?redirect_uri=${encodeURIComponent(callbackUrl)}`;
   };
 
+  const loginWithGoogleCallback = async (token) => {
+    setLoading(true);
+    try {
+      logger.auth.info("Processing Google OAuth callback token");
+      localStorage.setItem("token", token);
+
+      const result = await fetchLoggedInUser(token);
+
+      if (result.success) {
+        setUser(result.user);
+        localStorage.setItem("user", JSON.stringify(result.user));
+        return { success: true };
+      } else if (result.status === 401) {
+        localStorage.removeItem("token");
+        return { success: false, error: "Invalid or expired token" };
+      } else {
+        // Network/server error — if we have a user from the response fallback, still proceed
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+          return { success: true };
+        }
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      logger.auth.error("Google callback processing failed", error);
+      return { success: false, error: error.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = () => {
     logger.auth.info("Logging out user");
     setUser(null);
@@ -541,6 +573,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         loginWithGoogle,
+        loginWithGoogleCallback,
         signup,
         logout,
         verifyEmail,

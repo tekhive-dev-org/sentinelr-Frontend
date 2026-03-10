@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AuthCallback() {
   const router = useRouter();
+  const { loginWithGoogleCallback } = useAuth();
   const [status, setStatus] = useState('Processing your login...');
 
   useEffect(() => {
@@ -23,37 +25,19 @@ export default function AuthCallback() {
         return;
       }
 
-      try {
-        // Store the token
-        localStorage.setItem('token', token);
+      const result = await loginWithGoogleCallback(token);
 
-        // Fetch the full user profile using the token
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-        const response = await fetch(`${API_BASE_URL}/auth/logged-in-user`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          const user = data.user || data;
-          localStorage.setItem('user', JSON.stringify(user));
-        }
-
+      if (result.success) {
         setStatus('Login successful! Redirecting to dashboard...');
         router.push('/dashboard');
-      } catch (err) {
-        // Token stored but user fetch failed — still proceed
-        setStatus('Login successful! Redirecting to dashboard...');
-        router.push('/dashboard');
+      } else {
+        setStatus('Authentication failed. Redirecting to login...');
+        setTimeout(() => router.push('/login?error=google_auth_failed'), 2000);
       }
     };
 
     handleCallback();
-  }, [router.isReady]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [router.isReady, loginWithGoogleCallback]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div

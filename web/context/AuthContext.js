@@ -434,6 +434,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshUser = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return { success: false };
+    const result = await fetchLoggedInUser(token);
+    if (result.success) {
+      setUser(result.user);
+      localStorage.setItem("user", JSON.stringify(result.user));
+    }
+    return result;
+  };
+
   const loginWithGoogle = () => {
     logger.auth.info("Initiating Google OAuth");
     const callbackUrl = `${window.location.origin}/auth/callback`;
@@ -574,6 +585,7 @@ export const AuthProvider = ({ children }) => {
         login,
         loginWithGoogle,
         loginWithGoogleCallback,
+        refreshUser,
         signup,
         logout,
         verifyEmail,

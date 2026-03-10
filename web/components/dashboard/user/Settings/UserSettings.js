@@ -10,7 +10,7 @@ import SettingsService, { SettingsError } from './SettingsService';
 import { useAuth } from '../../../../context/AuthContext';
 
 export default function UserSettings({ user }) {
-  const { logout } = useAuth();
+  const { logout, refreshUser } = useAuth();
   const [activeTab, setActiveTab] = useState('Account');
   const [toast, setToast] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -128,6 +128,9 @@ export default function UserSettings({ user }) {
 
         setToast({ message: 'All changes saved successfully!', type: 'success' });
         setPasswordError(''); // Clear password error on success
+
+        // Sync the latest user data from the server into AuthContext
+        await refreshUser();
 
         // Clear password fields after successful save
         if (values.newPassword) {

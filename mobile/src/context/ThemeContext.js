@@ -6,32 +6,42 @@ const ThemeContext = createContext(null);
 
 const THEME_STORAGE_KEY = '@sentinelr/theme';
 
-// Theme color definitions
+// Theme color definitions — Neumorphism
 export const themes = {
   dark: {
     name: 'dark',
     colors: {
       // Backgrounds
-      background: '#000000',
-      surface: 'rgba(62, 13, 16, 0.35)',
-      surfaceSolid: '#1a0a0b',
-      card: 'rgba(62, 13, 16, 0.4)',
-      
+      background: '#1e1e2e',
+      surface: '#1e1e2e',
+      surfaceSolid: '#1e1e2e',
+      card: '#1e1e2e',
+
+      // Neumorphic shadows
+      neuLight: '#2a2a3e',
+      neuDark: '#121220',
+      neuInset: 'rgba(0,0,0,0.35)',
+
       // Text
-      text: '#ffffff',
-      textSecondary: '#9ca3af',
-      textMuted: '#6b7280',
-      
-      // Brand colors (consistent across themes)
+      text: '#e4e4ef',
+      textSecondary: '#9090a7',
+      textMuted: '#5a5a70',
+
+      // Brand colors
       primary: '#3e0d10',
       danger: '#db323f',
+      dangerSoft: 'rgba(219, 50, 63, 0.18)',
       warning: '#e6ad13',
+      warningSoft: 'rgba(230, 173, 19, 0.15)',
       success: '#22c55e',
-      
+      successSoft: 'rgba(34, 197, 94, 0.15)',
+      accent: '#3b82f6',
+      accentSoft: 'rgba(59, 130, 246, 0.15)',
+
       // Borders
-      border: 'rgba(62, 13, 16, 0.6)',
-      borderLight: 'rgba(255, 255, 255, 0.1)',
-      
+      border: 'rgba(255, 255, 255, 0.06)',
+      borderLight: 'rgba(255, 255, 255, 0.04)',
+
       // Status bar
       statusBar: 'light',
     },
@@ -40,26 +50,36 @@ export const themes = {
     name: 'light',
     colors: {
       // Backgrounds
-      background: '#f8f9fa',
-      surface: 'rgba(62, 13, 16, 0.08)',
-      surfaceSolid: '#ffffff',
-      card: 'rgba(62, 13, 16, 0.06)',
-      
+      background: '#e0e5ec',
+      surface: '#e0e5ec',
+      surfaceSolid: '#e0e5ec',
+      card: '#e0e5ec',
+
+      // Neumorphic shadows
+      neuLight: '#ffffff',
+      neuDark: '#a3b1c6',
+      neuInset: 'rgba(0,0,0,0.08)',
+
       // Text
-      text: '#1f2937',
-      textSecondary: '#4b5563',
-      textMuted: '#9ca3af',
-      
-      // Brand colors (consistent across themes)
+      text: '#2d3748',
+      textSecondary: '#5a6578',
+      textMuted: '#8f9bb3',
+
+      // Brand colors
       primary: '#3e0d10',
       danger: '#db323f',
+      dangerSoft: 'rgba(219, 50, 63, 0.12)',
       warning: '#c9960f',
+      warningSoft: 'rgba(201, 150, 15, 0.12)',
       success: '#16a34a',
-      
+      successSoft: 'rgba(22, 163, 74, 0.12)',
+      accent: '#2563eb',
+      accentSoft: 'rgba(37, 99, 235, 0.10)',
+
       // Borders
-      border: 'rgba(62, 13, 16, 0.15)',
-      borderLight: 'rgba(0, 0, 0, 0.08)',
-      
+      border: 'rgba(0, 0, 0, 0.06)',
+      borderLight: 'rgba(0, 0, 0, 0.04)',
+
       // Status bar
       statusBar: 'dark',
     },

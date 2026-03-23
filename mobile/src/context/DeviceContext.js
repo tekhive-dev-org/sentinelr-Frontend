@@ -1,5 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
+import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { apiService } from "../services/api";
+import { getSupabase } from "../services/supabaseClient";
 
 const DeviceContext = createContext(null);
 
@@ -20,6 +23,85 @@ export function DeviceProvider({ children }) {
   const [batteryLevel, setBatteryLevel] = useState(null);
   const [lastPingTime, setLastPingTime] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState("offline");
+  const hasRegisteredAuthHandler = useRef(false);
+
+  // Clear all local pairing state, stop services, and optionally notify the user
+  const forceUnpair = useCallback(async (showAlert = true) => {
+    // Stop background services
+    try {
+      const { locationService } = await import("../services/locationService");
+      const { heartbeatService } = await import("../services/heartbeatService");
+      await locationService.stop();
+      heartbeatService.stop();
+    } catch {}
+
+    await Promise.all([
+      AsyncStorage.removeItem(STORAGE_KEYS.DEVICE_ID),
+      AsyncStorage.removeItem(STORAGE_KEYS.UPLOAD_TOKEN),
+      AsyncStorage.removeItem(STORAGE_KEYS.IS_PAIRED),
+      AsyncStorage.removeItem(STORAGE_KEYS.TRACKING_ENABLED),
+    ]);
+    setDeviceId(null);
+    setUploadToken(null);
+    setIsPaired(false);
+    setIsTracking(false);
+    setCurrentLocation(null);
+    setBatteryLevel(null);
+    setLastPingTime(null);
+    setConnectionStatus("offline");
+
+    if (showAlert) {
+      Alert.alert(
+        "Device Unpaired",
+        "This device has been unpaired from the dashboard. You can re-pair it by entering a new pairing code.",
+        [{ text: "OK" }],
+      );
+    }
+  }, []);
+
+  // Register global 401/404 handler once
+  useEffect(() => {
+    if (!hasRegisteredAuthHandler.current) {
+      apiService.onAuthFailure(() => {
+        forceUnpair();
+      });
+      hasRegisteredAuthHandler.current = true;
+    }
+  }, [forceUnpair]);
+
+  // Real-time subscription — listen for device row changes via Supabase
+  useEffect(() => {
+    if (!isPaired || !deviceId) return;
+
+    const supabase = getSupabase();
+    if (!supabase) return;
+
+    const channel = supabase
+      .channel(`device-${deviceId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "Devices",
+          filter: `id=eq.${deviceId}`,
+        },
+        (payload) => {
+          const newStatus = payload.new?.pairStatus;
+          if (
+            newStatus === "Unpaired" ||
+            newStatus === "unpaired"
+          ) {
+            forceUnpair(true);
+          }
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [isPaired, deviceId, forceUnpair]);
 
   // Load saved state on mount
   useEffect(() => {
@@ -37,10 +119,20 @@ export function DeviceProvider({ children }) {
 
       if (savedDeviceId) setDeviceId(savedDeviceId);
       if (savedToken) setUploadToken(savedToken);
-      if (savedPaired === "true") setIsPaired(true);
+      if (savedPaired === "true") {
+        setIsPaired(true);
+
+        // Validate the stored token with the backend
+        const isValid = await apiService.validateToken();
+        if (!isValid) {
+          // Token expired or revoked — clear local state to show pairing screen
+          await forceUnpair(true);
+          return;
+        }
+      }
       if (savedTracking === "true") setIsTracking(true);
     } catch (error) {
-      console.error("Error loading saved state:", error);
+      // Silent failure
     } finally {
       setIsLoading(false);
     }
@@ -48,9 +140,6 @@ export function DeviceProvider({ children }) {
 
   const completePairing = async (newDeviceId, newToken) => {
     if (!newDeviceId) {
-      console.error(
-        "[DeviceContext] completePairing called with null/undefined deviceId",
-      );
       throw new Error("Device ID is required for pairing");
     }
 
@@ -65,10 +154,7 @@ export function DeviceProvider({ children }) {
       setDeviceId(newDeviceId);
       setUploadToken(newToken);
       setIsPaired(true);
-
-      console.log("[DeviceContext] Pairing completed:", newDeviceId);
     } catch (error) {
-      console.error("Error saving pairing data:", error);
       throw error;
     }
   };
@@ -78,37 +164,14 @@ export function DeviceProvider({ children }) {
       // Notify backend first so the web dashboard reflects "Unpaired" status
       if (deviceId) {
         try {
-          const { apiService } = await import("../services/api");
           await apiService.unpairDevice(deviceId);
-          console.log("[DeviceContext] Backend notified of unpair");
-        } catch (apiErr) {
+        } catch {
           // Non-fatal: still clear local state even if backend call fails
-          console.warn(
-            "[DeviceContext] Backend unpair call failed (continuing):",
-            apiErr.message,
-          );
         }
       }
 
-      await Promise.all([
-        AsyncStorage.removeItem(STORAGE_KEYS.DEVICE_ID),
-        AsyncStorage.removeItem(STORAGE_KEYS.UPLOAD_TOKEN),
-        AsyncStorage.removeItem(STORAGE_KEYS.IS_PAIRED),
-        AsyncStorage.removeItem(STORAGE_KEYS.TRACKING_ENABLED),
-      ]);
-
-      setDeviceId(null);
-      setUploadToken(null);
-      setIsPaired(false);
-      setIsTracking(false);
-      setCurrentLocation(null);
-      setBatteryLevel(null);
-      setLastPingTime(null);
-      setConnectionStatus("offline");
-
-      console.log("[DeviceContext] Device unpaired");
+      await forceUnpair(false);
     } catch (error) {
-      console.error("Error unpairing device:", error);
       throw error;
     }
   };
@@ -122,36 +185,14 @@ export function DeviceProvider({ children }) {
       // Call backend to hide device from dashboard
       if (deviceId) {
         try {
-          const { apiService } = await import("../services/api");
           await apiService.removeDevice(deviceId);
-          console.log("[DeviceContext] Backend notified of device removal");
-        } catch (apiErr) {
-          console.warn(
-            "[DeviceContext] Backend remove call failed (continuing):",
-            apiErr.message,
-          );
+        } catch {
+          // Non-fatal
         }
       }
 
-      await Promise.all([
-        AsyncStorage.removeItem(STORAGE_KEYS.DEVICE_ID),
-        AsyncStorage.removeItem(STORAGE_KEYS.UPLOAD_TOKEN),
-        AsyncStorage.removeItem(STORAGE_KEYS.IS_PAIRED),
-        AsyncStorage.removeItem(STORAGE_KEYS.TRACKING_ENABLED),
-      ]);
-
-      setDeviceId(null);
-      setUploadToken(null);
-      setIsPaired(false);
-      setIsTracking(false);
-      setCurrentLocation(null);
-      setBatteryLevel(null);
-      setLastPingTime(null);
-      setConnectionStatus("offline");
-
-      console.log("[DeviceContext] Device removed from dashboard");
+      await forceUnpair(false);
     } catch (error) {
-      console.error("Error removing device:", error);
       throw error;
     }
   };
@@ -162,9 +203,7 @@ export function DeviceProvider({ children }) {
     AsyncStorage.setItem(
       STORAGE_KEYS.TRACKING_ENABLED,
       nextValue ? "true" : "false",
-    ).catch((error) =>
-      console.error("Error persisting tracking state:", error),
-    );
+    ).catch(() => {});
   };
 
   const updateLocation = (location) => {

@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Image, Keyboard } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Image, Keyboard, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useDevice } from '../context/DeviceContext';
 import { useTheme } from '../context/ThemeContext';
 import { apiService } from '../services/api';
 import { APP_NAME, PAIRING_CODE_LENGTH } from '../utils/constants';
+import GlassCard from '../components/GlassCard';
 
 export default function PairingScreen({ navigation }) {
   const [code, setCode] = useState('');
@@ -62,138 +63,258 @@ export default function PairingScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
-      >
-        <View className="flex-1 px-6 pt-12">
-          {/* Brand Header with Logo */}
-          <View className="items-center mb-10">
-            <Image 
-              source={require('../../assets/icon.png')}
-              className="w-24 h-24 mb-4"
-              resizeMode="contain"
-            />
-            <Text style={{ color: colors.text }} className="text-3xl font-bold mb-2 tracking-wide">
-              {APP_NAME}
-            </Text>
-            <Text style={{ color: colors.textSecondary }} className="text-base text-center leading-6">
-              Enter the pairing code from your dashboard
-            </Text>
-          </View>
-
-          {/* Code Input Boxes */}
-          <View className="mb-6">
-            {/* Hidden TextInput that captures all input */}
-            <TextInput
-              ref={inputRef}
-              value={code}
-              onChangeText={handleCodeChange}
-              keyboardType="default"
-              autoCapitalize="characters"
-              maxLength={PAIRING_CODE_LENGTH}
-              caretHidden={true}
-              style={{
-                position: 'absolute',
-                left: -1000,
-                width: 1,
-                height: 1,
-              }}
-            />
-            
-            {/* Visual boxes - tap anywhere to focus */}
-            <View 
-              className="flex-row justify-center px-2"
-              onStartShouldSetResponder={() => true}
-              onResponderRelease={focusInput}
-            >
-              {Array.from({ length: PAIRING_CODE_LENGTH }, (_, index) => {
-                // Show a visual dash separator between position 4 and 5 (the hyphen at index 4)
-                if (index === 4) {
-                  return (
-                    <Text key={index} style={{ color: colors.textMuted }} className="text-2xl font-bold self-center mx-0.5">-</Text>
-                  );
-                }
-                return (
-                  <View 
-                    key={index}
-                    className="flex-1 mx-1 justify-center items-center"
-                    style={{ 
-                      backgroundColor: code[index] ? colors.surface : 'transparent',
-                      borderWidth: 2,
-                      borderColor: code[index] ? colors.warning : (index === code.length ? colors.danger : colors.border),
-                      borderRadius: 10,
-                      height: 52,
-                    }}
-                  >
-                    <Text 
-                      style={{ color: colors.text }}
-                      className="text-xl font-bold"
-                    >
-                      {code[index] || ''}
-                    </Text>
-                  </View>
-                );
-              })}
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+        >
+          <View style={pairStyles.content}>
+            {/* Brand Header with Logo */}
+            <View style={pairStyles.brandWrap}>
+              <View
+                style={[
+                  pairStyles.logoWrap,
+                  { backgroundColor: colors.neuInset, borderColor: colors.border },
+                ]}
+              >
+                <Image
+                  source={require('../../assets/icon.png')}
+                  style={{ width: 72, height: 72 }}
+                  resizeMode="contain"
+                />
+              </View>
+              <Text style={[pairStyles.brandTitle, { color: colors.text }]}>
+                {APP_NAME}
+              </Text>
+              <Text style={[pairStyles.brandSub, { color: colors.textSecondary }]}>
+                Enter the pairing code from your dashboard
+              </Text>
             </View>
-            
-            <Text style={{ color: colors.textMuted }} className="text-xs text-center mt-3">
-              {code.length}/{PAIRING_CODE_LENGTH} characters
-            </Text>
+
+            {/* Code Input Boxes */}
+            <GlassCard style={{ marginBottom: 24 }}>
+              {/* Hidden TextInput that captures all input */}
+              <TextInput
+                ref={inputRef}
+                value={code}
+                onChangeText={handleCodeChange}
+                keyboardType="default"
+                autoCapitalize="characters"
+                maxLength={PAIRING_CODE_LENGTH}
+                caretHidden={true}
+                style={{ position: 'absolute', left: -1000, width: 1, height: 1 }}
+              />
+
+              {/* Visual boxes - tap anywhere to focus */}
+              <View
+                style={pairStyles.boxRow}
+                onStartShouldSetResponder={() => true}
+                onResponderRelease={focusInput}
+              >
+                {Array.from({ length: PAIRING_CODE_LENGTH }, (_, index) => {
+                  if (index === 4) {
+                    return (
+                      <Text
+                        key={index}
+                        style={[pairStyles.dash, { color: colors.textMuted }]}
+                      >
+                        -
+                      </Text>
+                    );
+                  }
+                  const filled = !!code[index];
+                  const isCursor = index === code.length;
+                  return (
+                    <View
+                      key={index}
+                      style={[
+                        pairStyles.codeBox,
+                        {
+                          backgroundColor: filled ? colors.neuInset : 'transparent',
+                          borderColor: filled
+                            ? colors.warning
+                            : isCursor
+                              ? colors.danger
+                              : colors.border,
+                        },
+                      ]}
+                    >
+                      <Text style={[pairStyles.codeChar, { color: colors.text }]}>
+                        {code[index] || ''}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </View>
+              <Text style={[pairStyles.charCount, { color: colors.textMuted }]}>
+                {code.length}/{PAIRING_CODE_LENGTH} characters
+              </Text>
+            </GlassCard>
+
+            {/* Pair Button */}
+            <TouchableOpacity
+              style={[
+                pairStyles.pairBtn,
+                {
+                  backgroundColor: isCodeComplete && !isLoading ? colors.danger : colors.textMuted,
+                  opacity: isLoading ? 0.7 : 1,
+                },
+              ]}
+              onPress={handlePair}
+              disabled={isLoading || !isCodeComplete}
+              activeOpacity={0.8}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <>
+                  <Ionicons name="link" size={20} color="#ffffff" />
+                  <Text style={pairStyles.pairBtnText}>Pair Device</Text>
+                </>
+              )}
+            </TouchableOpacity>
+
+            {/* Divider */}
+            <View style={pairStyles.dividerRow}>
+              <View style={[pairStyles.dividerLine, { backgroundColor: colors.border }]} />
+              <Text style={[pairStyles.dividerOr, { color: colors.textMuted }]}>or</Text>
+              <View style={[pairStyles.dividerLine, { backgroundColor: colors.border }]} />
+            </View>
+
+            {/* QR Scan Button */}
+            <TouchableOpacity
+              style={[pairStyles.qrBtn, { borderColor: colors.warning }]}
+              onPress={handleScanQR}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="qr-code" size={22} color={colors.warning} />
+              <Text style={[pairStyles.qrBtnText, { color: colors.warning }]}>
+                Scan QR Code
+              </Text>
+            </TouchableOpacity>
           </View>
 
-          {/* Pair Button */}
-          <TouchableOpacity
-            className={`rounded-xl py-[18px] items-center mb-4 flex-row justify-center ${isLoading ? 'opacity-70' : 'opacity-100'}`}
-            style={{ backgroundColor: isCodeComplete && !isLoading ? colors.danger : colors.textMuted }}
-            onPress={handlePair}
-            disabled={isLoading || !isCodeComplete}
-            activeOpacity={0.8}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#ffffff" />
-            ) : (
-              <>
-                <Ionicons name="link" size={20} color="#ffffff" />
-                <Text className="text-light text-lg font-bold ml-2">
-                  Pair Device
-                </Text>
-              </>
-            )}
-          </TouchableOpacity>
-
-          {/* Divider */}
-          <View className="flex-row items-center my-6">
-            <View className="flex-1 h-[1px]" style={{ backgroundColor: colors.border }} />
-            <Text style={{ color: colors.textMuted }} className="px-4">or</Text>
-            <View className="flex-1 h-[1px]" style={{ backgroundColor: colors.border }} />
-          </View>
-
-          {/* QR Scan Button */}
-          <TouchableOpacity
-            className="border-2 rounded-xl py-[18px] items-center flex-row justify-center"
-            style={{ borderColor: colors.warning }}
-            onPress={handleScanQR}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="qr-code" size={22} color={colors.warning} />
-            <Text style={{ color: colors.warning }} className="text-lg font-bold ml-2">
-              Scan QR Code
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Footer */}
-        <View className="p-6 items-center">
-          <View className="flex-row items-center">
+          {/* Footer */}
+          <View style={pairStyles.footer}>
             <Ionicons name="information-circle" size={16} color={colors.warning} />
-            <Text style={{ color: colors.textMuted }} className="text-xs ml-2">
+            <Text style={[pairStyles.footerText, { color: colors.textMuted }]}>
               Get the pairing code from your Sentinelr dashboard
             </Text>
           </View>
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </View>
   );
 }
+
+const pairStyles = StyleSheet.create({
+  content: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 48,
+  },
+  brandWrap: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  logoWrap: {
+    width: 100,
+    height: 100,
+    borderRadius: 28,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  brandTitle: {
+    fontSize: 30,
+    fontWeight: '700',
+    marginBottom: 8,
+    letterSpacing: 1,
+  },
+  brandSub: {
+    fontSize: 15,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  boxRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  dash: {
+    fontSize: 22,
+    fontWeight: '700',
+    alignSelf: 'center',
+    marginHorizontal: 2,
+  },
+  codeBox: {
+    flex: 1,
+    marginHorizontal: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderRadius: 10,
+    height: 52,
+  },
+  codeChar: {
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  charCount: {
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: 12,
+  },
+  pairBtn: {
+    borderRadius: 14,
+    paddingVertical: 18,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  pairBtnText: {
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
+    marginLeft: 8,
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 24,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+  },
+  dividerOr: {
+    paddingHorizontal: 16,
+    fontSize: 14,
+  },
+  qrBtn: {
+    borderWidth: 2,
+    borderRadius: 14,
+    paddingVertical: 18,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  qrBtnText: {
+    fontSize: 17,
+    fontWeight: '700',
+    marginLeft: 8,
+  },
+  footer: {
+    padding: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  footerText: {
+    fontSize: 12,
+    marginLeft: 8,
+  },
+});

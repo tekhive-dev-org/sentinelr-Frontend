@@ -153,24 +153,32 @@ export default function LiveLocationMap() {
       </div>
 
       {/* ── Map area ──────────────────────────────────────────────────────── */}
-      <div className={styles.mapArea}>
-        {loadError ? (
-          <div className={`${styles.emptyState} ${styles.emptyStateError}`}>
-            Failed to load Google Maps. Check your API key.
-          </div>
-        ) : !isLoaded ? (
-          <div className={styles.emptyState} style={{ color: '#6b7280' }}>Loading map…</div>
-        ) : devices.length === 0 ? (
-          <div className={styles.emptyState}>Please add a device first</div>
-        ) : (
-          <>
-            <GoogleMap
-              mapContainerStyle={MAP_CONTAINER_STYLE}
-              center={center}
-              zoom={hasLocation ? DEFAULT_ZOOM : 2}
-              mapTypeId={mapTypeId}
-              options={BASE_MAP_OPTIONS}
-              onLoad={(map) => { mapRef.current = map; }}
+        <div className={styles.mapArea}>
+          {loadError ? (
+            <div className={`${styles.emptyState} ${styles.emptyStateError}`}>
+          Failed to load Google Maps. Check your API key.
+            </div>
+          ) : !isLoaded ? (
+            <div className={styles.emptyState} style={{ color: '#6b7280' }}>Loading map…</div>
+          ) : devices.length === 0 ? (
+            <div className={styles.emptyState}>
+          <p>Please add a device first</p>
+          <button
+            className={styles.primaryBtn}
+            onClick={() => window.location.href = '/devices'}
+          >
+            Go to Devices
+          </button>
+            </div>
+          ) : (
+            <>
+          <GoogleMap
+            mapContainerStyle={MAP_CONTAINER_STYLE}
+            center={center}
+            zoom={hasLocation ? DEFAULT_ZOOM : 2}
+            mapTypeId={mapTypeId}
+            options={BASE_MAP_OPTIONS}
+            onLoad={(map) => { mapRef.current = map;}}
               onUnmount={() => { mapRef.current = null; }}
             >
               {hasLocation && (

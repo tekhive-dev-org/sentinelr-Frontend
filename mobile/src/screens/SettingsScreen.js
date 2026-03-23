@@ -7,12 +7,14 @@ import {
   ScrollView,
   Switch,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useDevice } from "../context/DeviceContext";
 import { useTheme } from "../context/ThemeContext";
 import NavigationHeader from "../components/NavigationHeader";
+import GlassCard from "../components/GlassCard";
 import { APP_NAME } from "../utils/constants";
 
 export default function SettingsScreen({ navigation }) {
@@ -79,13 +81,13 @@ export default function SettingsScreen({ navigation }) {
 
   const SettingsRow = ({ title, value, isLast = false }) => (
     <View
-      className={`flex-row justify-between items-center py-4 px-[18px] ${!isLast ? "border-b" : ""}`}
-      style={{ borderColor: colors.border }}
+      style={[
+        setStyles.row,
+        !isLast && { borderBottomWidth: 1, borderColor: colors.borderLight },
+      ]}
     >
-      <Text style={{ color: colors.text }} className="text-[15px] font-medium">
-        {title}
-      </Text>
-      <Text style={{ color: colors.textSecondary }} className="text-sm">
+      <Text style={[setStyles.rowTitle, { color: colors.text }]}>{title}</Text>
+      <Text style={[setStyles.rowValue, { color: colors.textSecondary }]}>
         {value}
       </Text>
     </View>
@@ -93,173 +95,215 @@ export default function SettingsScreen({ navigation }) {
 
   const LinkRow = ({ title, icon, isLast = false }) => (
     <TouchableOpacity
-      className={`flex-row justify-between items-center py-4 px-[18px] ${!isLast ? "border-b" : ""}`}
-      style={{ borderColor: colors.border }}
+      style={[
+        setStyles.row,
+        !isLast && { borderBottomWidth: 1, borderColor: colors.borderLight },
+      ]}
     >
-      <View className="flex-row items-center">
+      <View style={setStyles.linkInner}>
         <Ionicons name={icon} size={18} color={colors.textSecondary} />
         <Text
-          style={{ color: colors.text }}
-          className="text-[15px] font-medium ml-3"
+          style={[setStyles.rowTitle, { color: colors.text, marginLeft: 12 }]}
         >
           {title}
         </Text>
       </View>
-      <Ionicons name="chevron-forward" size={18} color={colors.warning} />
+      <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
     </TouchableOpacity>
   );
 
-  const SettingsSection = ({ title, children }) => (
-    <View className="mt-6 mx-5">
-      <Text
-        style={{ color: colors.textSecondary }}
-        className="text-xs font-bold px-1 mb-2.5 uppercase tracking-wider"
-      >
-        {title}
-      </Text>
-      <View
-        className="rounded-2xl overflow-hidden border"
-        style={{ backgroundColor: colors.surface, borderColor: colors.border }}
-      >
-        {children}
-      </View>
-    </View>
+  const SectionLabel = ({ label }) => (
+    <Text style={[setStyles.sectionLabel, { color: colors.textMuted }]}>
+      {label}
+    </Text>
   );
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: colors.background }}
-      edges={["bottom"]}
-    >
-      <NavigationHeader
-        title="Settings"
-        subtitle="Device configuration"
-        showMenu={true}
-        navigation={navigation}
-        currentScreen="Settings"
-      />
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+        <NavigationHeader
+          title="Settings"
+          subtitle="Device configuration"
+          showMenu={false}
+        />
 
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Appearance Section */}
-        <SettingsSection title="Appearance">
-          <View className="flex-row justify-between items-center py-4 px-[18px]">
-            <View className="flex-row items-center">
-              <Ionicons
-                name={isDark ? "moon" : "sunny"}
-                size={18}
-                color={colors.warning}
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Appearance */}
+          <SectionLabel label="APPEARANCE" />
+          <GlassCard noPadding>
+            <View style={setStyles.row}>
+              <View style={setStyles.linkInner}>
+                <Ionicons
+                  name={isDark ? "moon" : "sunny"}
+                  size={18}
+                  color={colors.warning}
+                />
+                <Text
+                  style={[
+                    setStyles.rowTitle,
+                    { color: colors.text, marginLeft: 12 },
+                  ]}
+                >
+                  Dark Mode
+                </Text>
+              </View>
+              <Switch
+                value={isDark}
+                onValueChange={toggleTheme}
+                trackColor={{
+                  false: colors.neuInset,
+                  true: "rgba(219, 50, 63, 0.35)",
+                }}
+                thumbColor={isDark ? colors.danger : colors.textMuted}
+                ios_backgroundColor={colors.neuInset}
               />
-              <Text
-                style={{ color: colors.text }}
-                className="text-[15px] font-medium ml-3"
-              >
-                Dark Mode
-              </Text>
             </View>
-            <Switch
-              value={isDark}
-              onValueChange={toggleTheme}
-              trackColor={{ false: "#e5e7eb", true: "rgba(219, 50, 63, 0.4)" }}
-              thumbColor={isDark ? "#db323f" : "#9ca3af"}
-              ios_backgroundColor="#e5e7eb"
+          </GlassCard>
+
+          {/* Device Information */}
+          <SectionLabel label="DEVICE INFORMATION" />
+          <GlassCard noPadding>
+            <SettingsRow
+              title="Device ID"
+              value={deviceId ? `...${deviceId.slice(-8)}` : "Unknown"}
             />
-          </View>
-        </SettingsSection>
+            <SettingsRow title="App Version" value="1.0.0" />
+            <SettingsRow title="Status" value="Paired" isLast />
+          </GlassCard>
 
-        {/* Device Info Section */}
-        <SettingsSection title="Device Information">
-          <SettingsRow
-            title="Device ID"
-            value={deviceId ? `...${deviceId.slice(-8)}` : "Unknown"}
-          />
-          <SettingsRow title="App Version" value="1.0.0" />
-          <SettingsRow title="Status" value="Paired" isLast />
-        </SettingsSection>
+          {/* About */}
+          <SectionLabel label="ABOUT" />
+          <GlassCard noPadding>
+            <SettingsRow title="App Name" value={APP_NAME} />
+            <SettingsRow title="Build" value="Phase 1" isLast />
+          </GlassCard>
 
-        {/* About Section */}
-        <SettingsSection title="About">
-          <SettingsRow title="App Name" value={APP_NAME} />
-          <SettingsRow title="Build" value="Phase 1" isLast />
-        </SettingsSection>
+          {/* Support */}
+          <SectionLabel label="SUPPORT" />
+          <GlassCard noPadding>
+            <LinkRow title="Help Center" icon="help-circle-outline" />
+            <LinkRow title="Privacy Policy" icon="shield-outline" />
+            <LinkRow
+              title="Terms of Service"
+              icon="document-text-outline"
+              isLast
+            />
+          </GlassCard>
 
-        {/* Support Section */}
-        <SettingsSection title="Support">
-          <LinkRow title="Help Center" icon="help-circle-outline" />
-          <LinkRow title="Privacy Policy" icon="shield-outline" />
-          <LinkRow
-            title="Terms of Service"
-            icon="document-text-outline"
-            isLast
-          />
-        </SettingsSection>
+          {/* Danger Zone */}
+          <SectionLabel label="DANGER ZONE" />
 
-        {/* Danger Zone */}
-        <View className="mt-10 mx-5">
-          <Text
-            style={{ color: colors.textSecondary }}
-            className="text-xs font-bold px-1 mb-2.5 uppercase tracking-wider"
-          >
-            Danger Zone
-          </Text>
-
-          {/* Unpair Device */}
           <TouchableOpacity
-            className="w-full py-[18px] rounded-[14px] items-center flex-row justify-center mb-3"
-            style={{
-              backgroundColor: "#92400e",
-              opacity: isUnpairing ? 0.7 : 1,
-            }}
+            style={[
+              setStyles.dangerBtn,
+              {
+                backgroundColor: 'rgba(146, 64, 14, 0.2)',
+                borderColor: 'rgba(146, 64, 14, 0.4)',
+                opacity: isUnpairing ? 0.7 : 1,
+              },
+            ]}
             onPress={handleUnpair}
             activeOpacity={0.8}
             disabled={isUnpairing || isRemoving}
           >
             {isUnpairing ? (
-              <ActivityIndicator size="small" color="#ffffff" />
+              <ActivityIndicator size="small" color="#92400e" />
             ) : (
-              <Ionicons name="unlink" size={20} color="#ffffff" />
+              <Ionicons name="unlink" size={20} color="#d97706" />
             )}
-            <Text className="text-white text-base font-bold ml-2">
+            <Text style={[setStyles.dangerText, { color: '#d97706' }]}>
               {isUnpairing ? "Unpairing..." : "Unpair Device"}
             </Text>
           </TouchableOpacity>
-          <Text
-            style={{ color: colors.textMuted }}
-            className="text-xs text-center mb-4"
-          >
+          <Text style={[setStyles.dangerHint, { color: colors.textMuted }]}>
             Device stays on dashboard with "Unpaired" status
           </Text>
 
-          {/* Remove from Dashboard */}
           <TouchableOpacity
-            className="w-full py-[18px] rounded-[14px] items-center flex-row justify-center"
-            style={{
-              backgroundColor: colors.danger,
-              opacity: isRemoving ? 0.7 : 1,
-            }}
+            style={[
+              setStyles.dangerBtn,
+              {
+                backgroundColor: colors.dangerSoft,
+                borderColor: 'rgba(219, 50, 63, 0.3)',
+                opacity: isRemoving ? 0.7 : 1,
+                marginTop: 12,
+              },
+            ]}
             onPress={handleRemoveFromDashboard}
             activeOpacity={0.8}
             disabled={isUnpairing || isRemoving}
           >
             {isRemoving ? (
-              <ActivityIndicator size="small" color="#ffffff" />
+              <ActivityIndicator size="small" color={colors.danger} />
             ) : (
-              <Ionicons name="trash-outline" size={20} color="#ffffff" />
+              <Ionicons name="trash-outline" size={20} color={colors.danger} />
             )}
-            <Text className="text-white text-base font-bold ml-2">
+            <Text style={[setStyles.dangerText, { color: colors.danger }]}>
               {isRemoving ? "Removing..." : "Remove from Dashboard"}
             </Text>
           </TouchableOpacity>
           <Text
-            style={{ color: colors.textMuted }}
-            className="text-xs text-center mt-3"
+            style={[
+              setStyles.dangerHint,
+              { color: colors.textMuted, marginBottom: 0 },
+            ]}
           >
             Hides this device from the web dashboard view
           </Text>
-        </View>
-
-        {/* Footer spacing */}
-        <View className="h-10" />
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
+
+const setStyles = StyleSheet.create({
+  sectionLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    marginTop: 24,
+    marginBottom: 8,
+    paddingLeft: 4,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  rowTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  rowValue: {
+    fontSize: 14,
+  },
+  linkInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  dangerBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  dangerText: {
+    fontSize: 15,
+    fontWeight: '700',
+    marginLeft: 8,
+  },
+  dangerHint: {
+    fontSize: 11,
+    textAlign: 'center',
+    marginTop: 6,
+    marginBottom: 4,
+  },
+});

@@ -8,6 +8,8 @@ import {
   Dimensions,
   Pressable,
   Image,
+  StyleSheet,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -88,60 +90,65 @@ export default function NavigationHeader({
 
   return (
     <>
-      <View 
-        className="flex-row items-center px-4 pb-4 border-b"
-        style={{ 
-          paddingTop: insets.top + 12,
-          backgroundColor: colors.background,
-          borderColor: colors.borderLight
-        }}
+      <View
+        style={[
+          navStyles.header,
+          {
+            paddingTop: insets.top + 12,
+            backgroundColor: colors.background,
+            shadowColor: colors.neuDark,
+            ...(Platform.OS === 'ios'
+              ? { shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 6 }
+              : { elevation: 4 }),
+          },
+        ]}
       >
         {/* Left Section - Back or Menu */}
-        <View className="w-20 items-start">
+        <View style={navStyles.side}>
           {onBack ? (
             <TouchableOpacity
               onPress={onBack}
-              className="flex-row items-center py-2 pr-3"
+              style={navStyles.backBtn}
               activeOpacity={0.7}
             >
-              <View 
-                className="w-7 h-7 rounded-full justify-center items-center mr-1.5"
-                style={{ backgroundColor: colors.primary }}
+              <View
+                style={[
+                  navStyles.backCircle,
+                  { backgroundColor: colors.neuInset },
+                ]}
               >
                 <Ionicons name="chevron-back" size={18} color={colors.warning} />
               </View>
-              <Text style={{ color: colors.warning }} className="text-sm font-semibold">{backLabel}</Text>
+              <Text style={[navStyles.backLabel, { color: colors.warning }]}>
+                {backLabel}
+              </Text>
             </TouchableOpacity>
           ) : showMenu ? (
-            <TouchableOpacity
-              onPress={openMenu}
-              className="p-2"
-              activeOpacity={0.7}
-            >
+            <TouchableOpacity onPress={openMenu} style={{ padding: 8 }} activeOpacity={0.7}>
               <Ionicons name="menu" size={26} color={colors.warning} />
             </TouchableOpacity>
           ) : (
-            <View className="w-10" />
+            <View style={{ width: 40 }} />
           )}
         </View>
 
         {/* Center Section - Title */}
-        <View className="flex-1 items-center">
-          <Text style={{ color: colors.text }} className="text-lg font-bold tracking-wide" numberOfLines={1}>
+        <View style={navStyles.center}>
+          <Text style={[navStyles.title, { color: colors.text }]} numberOfLines={1}>
             {title}
           </Text>
           {subtitle && (
-            <Text style={{ color: colors.textSecondary }} className="text-xs mt-0.5" numberOfLines={1}>
+            <Text style={[navStyles.subtitle, { color: colors.textSecondary }]} numberOfLines={1}>
               {subtitle}
             </Text>
           )}
         </View>
 
         {/* Right Section - Logo */}
-        <View className="w-20 items-end">
-          <Image 
+        <View style={[navStyles.side, { alignItems: 'flex-end' }]}>
+          <Image
             source={require('../../assets/icon.png')}
-            className="w-9 h-9"
+            style={navStyles.logo}
             resizeMode="contain"
           />
         </View>
@@ -154,82 +161,102 @@ export default function NavigationHeader({
         animationType="none"
         onRequestClose={closeMenu}
       >
-        <View className="flex-1 flex-row">
+        <View style={{ flex: 1, flexDirection: 'row' }}>
           {/* Overlay */}
           <Animated.View
-            className="absolute inset-0 bg-black"
-            style={{
-              opacity: overlayAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 0.6],
-              }),
-            }}
+            style={[
+              StyleSheet.absoluteFill,
+              {
+                backgroundColor: '#000',
+                opacity: overlayAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 0.6],
+                }),
+              },
+            ]}
           >
-            <Pressable className="flex-1" onPress={closeMenu} />
+            <Pressable style={{ flex: 1 }} onPress={closeMenu} />
           </Animated.View>
 
           {/* Sliding Menu Panel */}
           <Animated.View
-            className="absolute left-0 top-0 bottom-0 border-r"
             style={[
-              { 
-                width: MENU_WIDTH, 
+              navStyles.menuPanel,
+              {
+                width: MENU_WIDTH,
                 paddingTop: insets.top + 20,
                 backgroundColor: colors.background,
-                borderColor: colors.border
+                borderRightColor: colors.border,
+                transform: [{ translateX: slideAnim }],
               },
-              { transform: [{ translateX: slideAnim }] },
             ]}
           >
             {/* Menu Header */}
-            <View className="items-center py-6 px-5">
-              <Image 
-                source={require('../../assets/icon.png')}
-                className="w-16 h-16 mb-3"
-                resizeMode="contain"
-              />
-              <Text style={{ color: colors.text }} className="text-[22px] font-extrabold tracking-wider">{APP_NAME}</Text>
-              <Text style={{ color: colors.textSecondary }} className="text-xs mt-1 tracking-wide">Security Companion</Text>
+            <View style={navStyles.menuHeader}>
+              <View
+                style={[
+                  navStyles.menuLogoWrap,
+                  { backgroundColor: colors.neuInset, borderColor: colors.border },
+                ]}
+              >
+                <Image
+                  source={require('../../assets/icon.png')}
+                  style={{ width: 48, height: 48 }}
+                  resizeMode="contain"
+                />
+              </View>
+              <Text style={[navStyles.menuTitle, { color: colors.text }]}>
+                {APP_NAME}
+              </Text>
+              <Text style={[navStyles.menuSubtitle, { color: colors.textSecondary }]}>
+                Security Companion
+              </Text>
             </View>
 
             {/* Divider */}
-            <View className="h-[1px] mx-5 mb-3" style={{ backgroundColor: colors.border }} />
+            <View style={[navStyles.divider, { backgroundColor: colors.border }]} />
 
             {/* Menu Items */}
-            <View className="flex-1 px-3">
-              {finalMenuItems.map((item) => (
-                <TouchableOpacity
-                  key={item.id}
-                  className="flex-row items-center py-4 px-4 my-1 rounded-xl"
-                  style={{ backgroundColor: currentScreen === item.screen ? colors.primary : 'transparent' }}
-                  onPress={() => handleMenuItemPress(item)}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons 
-                    name={item.icon} 
-                    size={22} 
-                    color={currentScreen === item.screen ? colors.warning : colors.textSecondary} 
-                  />
-                  <Text
-                    style={{ color: currentScreen === item.screen ? colors.warning : colors.textSecondary }}
-                    className="text-base font-semibold flex-1 ml-4"
+            <View style={navStyles.menuItems}>
+              {finalMenuItems.map((item) => {
+                const isActive = currentScreen === item.screen;
+                return (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={[
+                      navStyles.menuItem,
+                      isActive && { backgroundColor: colors.neuInset },
+                    ]}
+                    onPress={() => handleMenuItemPress(item)}
+                    activeOpacity={0.7}
                   >
-                    {item.label}
-                  </Text>
-                  {currentScreen === item.screen && (
-                    <View 
-                      className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: colors.danger }}
+                    <Ionicons
+                      name={item.icon}
+                      size={22}
+                      color={isActive ? colors.warning : colors.textSecondary}
                     />
-                  )}
-                </TouchableOpacity>
-              ))}
+                    <Text
+                      style={[
+                        navStyles.menuItemLabel,
+                        { color: isActive ? colors.warning : colors.textSecondary },
+                      ]}
+                    >
+                      {item.label}
+                    </Text>
+                    {isActive && (
+                      <View style={[navStyles.activeDot, { backgroundColor: colors.danger }]} />
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
             </View>
 
             {/* Menu Footer */}
-            <View className="px-5 pb-6">
-              <View className="h-[1px] mb-4" style={{ backgroundColor: colors.borderLight }} />
-              <Text style={{ color: colors.textMuted }} className="text-[11px] text-center">Version 1.0.0</Text>
+            <View style={navStyles.menuFooter}>
+              <View style={[navStyles.divider, { backgroundColor: colors.border }]} />
+              <Text style={[navStyles.versionText, { color: colors.textMuted }]}>
+                Version 1.0.0
+              </Text>
             </View>
           </Animated.View>
         </View>
@@ -237,3 +264,119 @@ export default function NavigationHeader({
     </>
   );
 }
+
+const navStyles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 14,
+  },
+  side: {
+    width: 80,
+    alignItems: 'flex-start',
+  },
+  center: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  subtitle: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  logo: {
+    width: 36,
+    height: 36,
+  },
+  backBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingRight: 12,
+  },
+  backCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 6,
+  },
+  backLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  menuPanel: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    borderRightWidth: 1,
+  },
+  menuHeader: {
+    alignItems: 'center',
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+  },
+  menuLogoWrap: {
+    width: 72,
+    height: 72,
+    borderRadius: 20,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  menuTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    letterSpacing: 1,
+  },
+  menuSubtitle: {
+    fontSize: 12,
+    marginTop: 4,
+    letterSpacing: 0.5,
+  },
+  divider: {
+    height: 1,
+    marginHorizontal: 20,
+    marginBottom: 12,
+  },
+  menuItems: {
+    flex: 1,
+    paddingHorizontal: 12,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginVertical: 4,
+    borderRadius: 12,
+  },
+  menuItemLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    flex: 1,
+    marginLeft: 16,
+  },
+  activeDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  menuFooter: {
+    paddingHorizontal: 20,
+    paddingBottom: 24,
+  },
+  versionText: {
+    fontSize: 11,
+    textAlign: 'center',
+    marginTop: 12,
+  },
+});

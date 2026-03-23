@@ -26,8 +26,8 @@ const pageConfig = {
     icon: '/assets/icons/line-chart.png'
   },
   '/dashboard/alerts': {
-    title: 'Alert & Report Handling',
-    subtitle: 'Manage all users available on Sentinelr',
+    title: 'Sos Alert',
+    subtitle: 'Personal sentinelr overview dashboard',
     icon: '/assets/icons/megaphone.png'
   },
   '/dashboard/content': {
@@ -62,8 +62,8 @@ const pageConfig = {
   },
   '/dashboard/geofencing': {
     title: 'Geofencing',
-    subtitle: 'Manage geofencing zones',
-    icon: '/assets/icons/layout-grid.png' // Using layout-grid as placeholder
+    subtitle: 'Personal sentinelr overview dashboard',
+    icon: '/assets/icons/layout-grid.png'
   },
   '/dashboard/insights': {
     title: 'Usage Insights',
@@ -102,6 +102,15 @@ export default function DashboardLayout({ children }) {
     currentPage = {
       ...currentPage,
       title: 'Subscription Management',
+      subtitle: 'Manage all users available on Sentinelr'
+    };
+  }
+
+  // Override title/subtitle for admin alerts page
+  if (router.pathname === '/dashboard/alerts' && user?.role === 'admin') {
+    currentPage = {
+      ...currentPage,
+      title: 'Alert & Report Handling',
       subtitle: 'Manage all users available on Sentinelr'
     };
   }

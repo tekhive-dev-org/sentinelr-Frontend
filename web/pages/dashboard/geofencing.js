@@ -1,9 +1,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
-import { DashboardLayout } from '../../components/dashboard';
-import ComingSoon from '../../components/common/ComingSoon';
-import FenceIcon from '@mui/icons-material/Fence';
+import { DashboardLayout, GeofencingDashboard } from '../../components/dashboard';
 
 export default function Geofencing() {
   const router = useRouter();
@@ -29,11 +27,7 @@ export default function Geofencing() {
 
   return (
     <DashboardLayout>
-      <ComingSoon
-        title="Geofencing"
-        description="Create virtual boundaries and receive instant alerts when devices enter or leave designated zones."
-        icon={FenceIcon}
-      />
+      <GeofencingDashboard />
     </DashboardLayout>
   );
 }

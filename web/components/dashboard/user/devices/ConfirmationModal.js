@@ -34,8 +34,8 @@ export default function ConfirmationModal({
           </button>
           <button
             className={`${styles.btnConfirm} ${isDanger ? styles.btnDanger : ""}`}
-            onClick={() => {
-              onConfirm();
+            onClick={async () => {
+              await onConfirm();
               onClose();
             }}
           >

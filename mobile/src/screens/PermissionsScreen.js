@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Alert, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Linking, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
-import { useDevice } from '../context/DeviceContext';
 import { useTheme } from '../context/ThemeContext';
 import NavigationHeader from '../components/NavigationHeader';
+import GlassCard from '../components/GlassCard';
 import { APP_NAME } from '../utils/constants';
 
 export default function PermissionsScreen({ navigation }) {
-  const { unpairDevice } = useDevice();
   const { colors } = useTheme();
   const [locationStatus, setLocationStatus] = useState('pending');
   const [notificationStatus, setNotificationStatus] = useState('pending');
@@ -130,155 +129,209 @@ export default function PermissionsScreen({ navigation }) {
     );
   };
 
-  const handleGoBack = () => {
-    Alert.alert(
-      'Return to Pairing',
-      'This will unpair your device and return you to the pairing screen. Continue?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Unpair & Go Back',
-          style: 'destructive',
-          onPress: async () => {
-            await unpairDevice();
-          },
-        },
-      ]
-    );
-  };
 
-  const canProceed = locationStatus === 'granted' && backgroundStatus === 'granted';
 
-  const handleContinue = () => {
-    if (canProceed) {
-      navigation.replace('Tracking');
-    } else {
-      Alert.alert(
-        'Permissions Required',
-        'Location permissions are required for tracking. Please enable them to continue.',
-        [{ text: 'OK' }]
-      );
-    }
-  };
+
 
   const getStatusIcon = (status) => {
-    if (status === 'granted') return 'checkmark';
-    if (status === 'denied') return 'alert';
-    return 'ellipse';
+    if (status === 'granted') return 'checkmark-circle';
+    if (status === 'denied') return 'alert-circle';
+    return 'ellipse-outline';
   };
 
   const PermissionItem = ({ title, description, status, onEnable, onDisable }) => (
-    <View 
-      className="flex-row items-center rounded-2xl p-4 mb-3 border"
-      style={{ backgroundColor: colors.surface, borderColor: colors.border }}
-    >
-      <View 
-        className="w-10 h-10 rounded-full justify-center items-center mr-4"
-        style={{ backgroundColor: colors.primary }}
-      >
-        <Ionicons 
-          name={getStatusIcon(status)} 
-          size={20} 
-          color={colors.warning} 
-        />
+    <GlassCard style={{ marginBottom: 12 }}>
+      <View style={permStyles.permRow}>
+        <View
+          style={[
+            permStyles.permIcon,
+            {
+              backgroundColor:
+                status === 'granted' ? colors.successSoft : colors.dangerSoft,
+            },
+          ]}
+        >
+          <Ionicons
+            name={getStatusIcon(status)}
+            size={22}
+            color={status === 'granted' ? colors.success : colors.danger}
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={[permStyles.permTitle, { color: colors.text }]}>
+            {title}
+          </Text>
+          <Text style={[permStyles.permDesc, { color: colors.textSecondary }]}>
+            {description}
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={[
+            permStyles.permBtn,
+            {
+              backgroundColor:
+                status === 'granted' ? colors.successSoft : colors.dangerSoft,
+            },
+          ]}
+          onPress={status === 'granted' ? onDisable : onEnable}
+          activeOpacity={0.7}
+        >
+          <Text
+            style={[
+              permStyles.permBtnText,
+              {
+                color: status === 'granted' ? colors.success : colors.danger,
+              },
+            ]}
+          >
+            {status === 'granted' ? 'Granted' : 'Enable'}
+          </Text>
+        </TouchableOpacity>
       </View>
-      <View className="flex-1">
-        <Text style={{ color: colors.text }} className="text-base font-semibold mb-1">{title}</Text>
-        <Text style={{ color: colors.textSecondary }} className="text-xs">{description}</Text>
-      </View>
-      <TouchableOpacity
-        className="px-4 py-2.5 rounded-xl min-w-[80px] items-center"
-        style={{ backgroundColor: status === 'granted' ? colors.success : colors.danger }}
-        onPress={status === 'granted' ? onDisable : onEnable}
-        activeOpacity={0.7}
-      >
-        <Text className="text-light font-semibold text-sm">
-          {status === 'granted' ? 'Disable' : 'Enable'}
-        </Text>
-      </TouchableOpacity>
-    </View>
+    </GlassCard>
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['bottom']}>
-      <NavigationHeader
-        title="Permissions"
-        subtitle="Required access for tracking"
-        // onBack={handleGoBack}
-        // backLabel="Pairing"
-        showMenu={true}
-        navigation={navigation}
-        currentScreen="Permissions"
-      />
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
+        <NavigationHeader
+          title="Permissions"
+          subtitle="Required access for tracking"
+          showMenu={false}
+        />
 
-      <View className="flex-1 px-5">
-        {/* Hero Section */}
-        <View className="items-center py-6">
-          <View 
-            className="w-[72px] h-[72px] rounded-full justify-center items-center mb-4 border-2"
-            style={{ backgroundColor: colors.primary, borderColor: colors.danger }}
-          >
-            <Ionicons name="shield-checkmark" size={36} color={colors.warning} />
+        <View style={permStyles.body}>
+          {/* Hero */}
+          <View style={permStyles.heroArea}>
+            <View
+              style={[
+                permStyles.heroIcon,
+                {
+                  backgroundColor: colors.neuInset,
+                  borderColor: colors.border,
+                },
+              ]}
+            >
+              <Ionicons name="shield-checkmark" size={36} color={colors.warning} />
+            </View>
+            <Text style={[permStyles.heroTitle, { color: colors.text }]}>
+              Grant Access
+            </Text>
+            <Text style={[permStyles.heroSub, { color: colors.textSecondary }]}>
+              {APP_NAME} needs these permissions to keep your device tracked and
+              secure
+            </Text>
           </View>
-          <Text style={{ color: colors.text }} className="text-2xl font-bold mb-2">Grant Access</Text>
-          <Text style={{ color: colors.textSecondary }} className="text-sm text-center leading-5 px-5">
-            {APP_NAME} needs these permissions to keep your device tracked and secure
-          </Text>
+
+          {/* Permissions List */}
+          <View style={{ marginTop: 8 }}>
+            <PermissionItem
+              title="Location Access"
+              description="Required to track device location"
+              status={locationStatus}
+              onEnable={requestLocationPermission}
+              onDisable={() => openSettingsToDisable('Location Access')}
+            />
+            <PermissionItem
+              title="Background Location"
+              description="Track location when app is closed"
+              status={backgroundStatus}
+              onEnable={requestBackgroundLocationPermission}
+              onDisable={() => openSettingsToDisable('Background Location')}
+            />
+            <PermissionItem
+              title="Notifications"
+              description="Receive alerts and updates"
+              status={notificationStatus}
+              onEnable={requestNotificationPermission}
+              onDisable={() => openSettingsToDisable('Notifications')}
+            />
+          </View>
+
+          {/* Settings Link */}
+          <TouchableOpacity
+            style={permStyles.settingsLink}
+            onPress={() => Linking.openSettings()}
+          >
+            <Ionicons name="settings-outline" size={18} color={colors.warning} />
+            <Text style={[permStyles.settingsText, { color: colors.warning }]}>
+              Open Device Settings
+            </Text>
+          </TouchableOpacity>
         </View>
-
-        {/* Permissions List */}
-        <View className="mt-2">
-          <PermissionItem
-            title="Location Access"
-            description="Required to track device location"
-            status={locationStatus}
-            onEnable={requestLocationPermission}
-            onDisable={() => openSettingsToDisable('Location Access')}
-          />
-
-          <PermissionItem
-            title="Background Location"
-            description="Track location when app is closed"
-            status={backgroundStatus}
-            onEnable={requestBackgroundLocationPermission}
-            onDisable={() => openSettingsToDisable('Background Location')}
-          />
-
-          <PermissionItem
-            title="Notifications"
-            description="Receive alerts and updates"
-            status={notificationStatus}
-            onEnable={requestNotificationPermission}
-            onDisable={() => openSettingsToDisable('Notifications')}
-          />
-        </View>
-
-        {/* Settings Link */}
-        <TouchableOpacity 
-          className="flex-row items-center justify-center py-4"
-          onPress={() => Linking.openSettings()}
-        >
-          <Ionicons name="settings-outline" size={18} color={colors.warning} />
-          <Text style={{ color: colors.warning }} className="text-sm font-medium ml-2">Open Device Settings</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Footer CTA */}
-      <View className="p-5 pb-2">
-        <TouchableOpacity
-          className="flex-row rounded-xl py-[18px] px-6 items-center justify-center"
-          style={{ backgroundColor: canProceed ? colors.danger : colors.textMuted }}
-          onPress={handleContinue}
-          activeOpacity={0.8}
-        >
-          <Text className="text-light text-base font-bold">
-            {canProceed ? 'Start Tracking' : 'Enable Permissions to Continue'}
-          </Text>
-          {canProceed && (
-            <Ionicons name="arrow-forward" size={20} color="#ffffff" style={{ marginLeft: 10 }} />
-          )}
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
+
+const permStyles = StyleSheet.create({
+  body: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  heroArea: {
+    alignItems: 'center',
+    paddingVertical: 24,
+  },
+  heroIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    borderWidth: 1,
+  },
+  heroTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    marginBottom: 8,
+  },
+  heroSub: {
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
+    paddingHorizontal: 20,
+  },
+  permRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  permIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 14,
+  },
+  permTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  permDesc: {
+    fontSize: 12,
+  },
+  permBtn: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 12,
+    marginLeft: 12,
+  },
+  permBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  settingsLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+  },
+  settingsText: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+});

@@ -10,6 +10,9 @@ export const ENDPOINTS = {
   HEARTBEAT: "/device/heartbeat",
   UNPAIR_DEVICE: "/device/:id/unpair", // PATCH — changes pairStatus to Unpaired
   REMOVE_DEVICE: "/device/:id", // DELETE — hides device from dashboard
+  SOS_TRIGGER: "/sos/trigger", // POST — sends SOS emergency alert
+  GEOFENCES: "/geofences", // GET — fetch all geofences for this device
+  GEOFENCE_EVENT: "/geofences/event", // POST — report a geofence entry/exit event
 };
 
 // App Constants

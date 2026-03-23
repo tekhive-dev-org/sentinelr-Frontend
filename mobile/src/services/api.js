@@ -5,6 +5,9 @@ import { storageService } from "./storageService";
  * API service for backend communication
  */
 
+// Global callback invoked on 401/404 auth failures
+let authFailureCallback = null;
+
 // Helper for authenticated API calls
 async function apiRequest(endpoint, data = {}) {
   const token = await storageService.getUploadToken();
@@ -26,6 +29,12 @@ async function apiRequest(endpoint, data = {}) {
     );
     error.status = response.status;
     error.code = errorBody.code;
+
+    // Trigger auth failure callback on 401/404
+    if ((response.status === 401 || response.status === 404) && authFailureCallback) {
+      authFailureCallback(error);
+    }
+
     throw error;
   }
 
@@ -166,5 +175,85 @@ export const apiService = {
     }
 
     return response.json();
+  },
+
+  /**
+   * Trigger an SOS emergency alert.
+   * Sends the device's current location to notify all family members.
+   * @param {object} data - { latitude, longitude, accuracy, timestamp }
+   * @returns {Promise<{ success: boolean }>}
+   */
+  async triggerSOS(data) {
+    return apiRequest("SOS_TRIGGER", data);
+  },
+
+  /**
+   * Fetch all geofences assigned to this device.
+   * @returns {Promise<{ success: boolean, geofences: Array }>}
+   */
+  async getGeofences() {
+    const token = await storageService.getUploadToken();
+    const url = `${API_BASE_URL}${ENDPOINTS.GEOFENCES}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      const error = new Error(
+        errorBody.message || `API Error: ${response.status}`,
+      );
+      error.status = response.status;
+      throw error;
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Report a geofence entry or exit event to the backend.
+   * @param {object} data - { geofenceId, type: 'entry'|'exit', latitude, longitude, timestamp }
+   * @returns {Promise<{ success: boolean }>}
+   */
+  async reportGeofenceEvent(data) {
+    return apiRequest("GEOFENCE_EVENT", data);
+  },
+
+  /**
+   * Register a callback that fires when any API call gets a 401/404.
+   * Used by DeviceContext to trigger re-pairing.
+   */
+  onAuthFailure(callback) {
+    authFailureCallback = callback;
+  },
+
+  /**
+   * Validate the stored device token by making a lightweight heartbeat call.
+   * Returns true if the token is valid, false if expired/revoked.
+   */
+  async validateToken() {
+    const token = await storageService.getUploadToken();
+    if (!token) return false;
+
+    try {
+      const url = `${API_BASE_URL}${ENDPOINTS.HEARTBEAT}`;
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ timestamp: new Date().toISOString() }),
+      });
+      return response.ok;
+    } catch {
+      // Network error — don't invalidate token, assume still valid
+      return true;
+    }
   },
 };

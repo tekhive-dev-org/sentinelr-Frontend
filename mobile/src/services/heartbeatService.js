@@ -1,5 +1,6 @@
 import * as Battery from "expo-battery";
 import * as Device from "expo-device";
+import { AppState } from "react-native";
 import { apiService } from "./api";
 import { storageService } from "./storageService";
 
@@ -8,6 +9,7 @@ const KEEP_ALIVE_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
 let heartbeatTimer = null;
 let errorCallback = null;
+let appStateSubscription = null;
 
 // Track last sent status to avoid redundant uploads
 let lastStatus = null;
@@ -36,7 +38,15 @@ export const heartbeatService = {
       this.sendHeartbeat();
     }, HEARTBEAT_INTERVAL);
 
-    // console.log("[Heartbeat] Started");
+    // Listen for app going to background — send heartbeat immediately
+    if (!appStateSubscription) {
+      appStateSubscription = AppState.addEventListener('change', (nextState) => {
+        if (nextState === 'background' || nextState === 'inactive') {
+          // Force-send regardless of change detection
+          this.sendHeartbeat(true);
+        }
+      });
+    }
   },
 
   /**
@@ -47,18 +57,20 @@ export const heartbeatService = {
       clearInterval(heartbeatTimer);
       heartbeatTimer = null;
       errorCallback = null;
-      console.log("[Heartbeat] Stopped");
+    }
+    if (appStateSubscription) {
+      appStateSubscription.remove();
+      appStateSubscription = null;
     }
   },
 
   /**
    * Send single heartbeat with device status
    */
-  async sendHeartbeat() {
+  async sendHeartbeat(force = false) {
     try {
       const isPaired = await storageService.isPaired();
       if (!isPaired) {
-        console.log("[Heartbeat] Not paired, skipping");
         return;
       }
 
@@ -78,6 +90,7 @@ export const heartbeatService = {
       // Check if we should send (change in status or keep-alive)
       const now = Date.now();
       const shouldSend =
+        force ||
         !lastStatus ||
         status.batteryLevel !== lastStatus.batteryLevel ||
         status.isCharging !== lastStatus.isCharging ||
@@ -99,15 +112,7 @@ export const heartbeatService = {
       // Update last state
       lastStatus = status;
       lastSentTime = now;
-      console.log("[Heartbeat] Sent successfully");
     } catch (error) {
-      console.error(
-        "[Heartbeat] Failed:",
-        error.message,
-        "Status:",
-        error.status,
-      );
-
       // Handle auth errors (401/404) by invoking callback
       if (
         (error.status === 401 ||
@@ -115,9 +120,8 @@ export const heartbeatService = {
           error.code === "DEVICE_AUTH_INVALID") &&
         errorCallback
       ) {
-        console.log("[Heartbeat] Auth validaton failed, calling error handler");
         errorCallback(error);
-        this.stop(); // Stop service to prevent spam
+        this.stop();
       }
     }
   },

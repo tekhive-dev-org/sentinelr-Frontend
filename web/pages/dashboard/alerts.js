@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
-import { DashboardLayout } from '../../components/dashboard';
+import { DashboardLayout, SOSAlert } from '../../components/dashboard';
 import ComingSoon from '../../components/common/ComingSoon';
-import SosIcon from '@mui/icons-material/Sos';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
 export default function Alerts() {
@@ -32,15 +31,15 @@ export default function Alerts() {
 
   return (
     <DashboardLayout>
-      <ComingSoon
-        title={isAdmin ? 'Alert & Report Handling' : 'SOS Alert'}
-        description={
-          isAdmin
-            ? 'Review and manage user-generated alerts, incidents, and reports from one central hub.'
-            : 'Trigger emergency SOS alerts and notify your trusted contacts instantly when you need help.'
-        }
-        icon={isAdmin ? ReportProblemIcon : SosIcon}
-      />
+      {isAdmin ? (
+        <ComingSoon
+          title="Alert & Report Handling"
+          description="Review and manage user-generated alerts, incidents, and reports from one central hub."
+          icon={ReportProblemIcon}
+        />
+      ) : (
+        <SOSAlert />
+      )}
     </DashboardLayout>
   );
 }

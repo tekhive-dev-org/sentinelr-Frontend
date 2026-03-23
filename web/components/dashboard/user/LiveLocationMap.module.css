@@ -120,10 +120,12 @@
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 12px;
   font-size: 13px;
-  color: #ef4444;
+  color: #6b7280;
   background: rgba(255, 255, 255, 0.85);
   border-radius: 8px;
   padding: 8px 16px;
@@ -133,6 +135,22 @@
 .emptyStateError {
   color: #dc2626;
   font-weight: 500;
+}
+
+.primaryBtn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: #818cf8;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.primaryBtn:hover {
+  background: #6366f1;
 }
 
 /* ── Map overlays (rendered on top of live map) ───────────────────────────── */

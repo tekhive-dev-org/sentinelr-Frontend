@@ -9,7 +9,6 @@ const LOCATION_TASK_NAME = "sentinelr-background-location";
 // Define background task
 TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   if (error) {
-    console.error("[Location Task] Error:", error);
     return;
   }
 
@@ -25,9 +24,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   try {
     await heartbeatService.sendHeartbeat();
   } catch (heartbeatErr) {
-    console.error("[Location Task] Heartbeat send failed:", heartbeatErr);
     if (heartbeatErr?.status === 401 || heartbeatErr?.status === 404) {
-      console.log("[Location Task] Invalid token on heartbeat, stopping updates");
       await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
       return;
     }
@@ -50,13 +47,8 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
           timestamp: new Date(location.timestamp).toISOString(),
           source: "GPS",
         });
-        console.log("[Location Task] Ping uploaded successfully");
       } catch (err) {
-        console.error("[Location Task] Failed to upload ping:", err);
         if (err.status === 401 || err.status === 404) {
-          console.log(
-            "[Location Task] Invalid token (401/404), stopping updates",
-          );
           await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
           return;
         }
@@ -90,7 +82,6 @@ export const locationService = {
     // Check if already running
     const isRunning = await this.isRunning();
     if (isRunning) {
-      console.log("[Location Service] Already running");
       return;
     }
 
@@ -113,7 +104,6 @@ export const locationService = {
 
     // Mark as enabled in storage
     await storageService.setTrackingEnabled(true);
-    console.log("[Location Service] Started background tracking");
   },
 
   /**
@@ -124,7 +114,6 @@ export const locationService = {
 
     if (isRunning) {
       await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
-      console.log("[Location Service] Stopped background tracking");
     }
 
     await storageService.setTrackingEnabled(false);
@@ -163,9 +152,8 @@ export const locationService = {
       }
 
       await this.start();
-      console.log("[Location Service] Restored background tracking on app launch");
     } catch (err) {
-      console.warn("[Location Service] Failed to restore tracking state:", err?.message || err);
+      // silently fail
     }
   },
 };

@@ -56,7 +56,7 @@ export const geofencingService = {
    * @param {object} geofence - { name, type, center, radius, address, notifyOnEntry, notifyOnExit, assignedUserIds, schedule }
    */
   async createGeofence(geofence) {
-    return apiRequest('/geofences', {
+    return apiRequest('/create/geofence', {
       method: 'POST',
       body: JSON.stringify(geofence),
     });

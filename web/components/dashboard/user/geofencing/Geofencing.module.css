@@ -5,7 +5,7 @@
 
 /* ── Container ────────────────────────────────────────────────────────────── */
 .container {
-  padding: 24px;
+  padding: 16px 16px 30px !important;
   background-color: transparent;
   height: calc(100vh - 100px);
   display: flex;
@@ -494,11 +494,11 @@
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
-  z-index: 1100;
+  z-index: 5100;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 14px;
 }
 
 .modalCard {

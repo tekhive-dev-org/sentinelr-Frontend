@@ -667,6 +667,49 @@
   cursor: pointer;
 }
 
+/* ── Form hint ────────────────────────────────────────────────────────────── */
+.formHint {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+/* ── Day chips (schedule) ─────────────────────────────────────────────────── */
+.daysRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.dayChip {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.dayChip:hover {
+  border-color: #0f3c5f;
+  color: #0f3c5f;
+}
+
+.dayChipActive {
+  background: #0f3c5f;
+  color: #fff;
+  border-color: #0f3c5f;
+}
+
+.dayChipActive:hover {
+  background: #0c2f4a;
+  color: #fff;
+}
+
 .modalFooter {
   display: flex;
   justify-content: flex-end;

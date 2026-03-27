@@ -7,6 +7,16 @@ import React, { useState, useEffect } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import styles from './Geofencing.module.css';
 
+const DAYS_OPTIONS = [
+  { value: 'mon', label: 'Mon' },
+  { value: 'tue', label: 'Tue' },
+  { value: 'wed', label: 'Wed' },
+  { value: 'thu', label: 'Thu' },
+  { value: 'fri', label: 'Fri' },
+  { value: 'sat', label: 'Sat' },
+  { value: 'sun', label: 'Sun' },
+];
+
 const INITIAL_FORM = {
   name: '',
   type: 'safe_zone',
@@ -16,6 +26,11 @@ const INITIAL_FORM = {
   radius: 250,
   notifyOnEntry: true,
   notifyOnExit: true,
+  assignedUserIds: '',
+  scheduleEnabled: false,
+  scheduleDays: ['mon', 'tue', 'wed', 'thu', 'fri'],
+  scheduleStartTime: '08:00',
+  scheduleEndTime: '15:00',
 };
 
 export default function GeofenceFormModal({ isOpen, onClose, onSave, onDelete, editZone }) {
@@ -35,6 +50,11 @@ export default function GeofenceFormModal({ isOpen, onClose, onSave, onDelete, e
         radius: editZone.radius || 250,
         notifyOnEntry: editZone.notifyOnEntry ?? true,
         notifyOnExit: editZone.notifyOnExit ?? true,
+        assignedUserIds: (editZone.assignedUserIds || []).join(', '),
+        scheduleEnabled: editZone.schedule?.enabled ?? false,
+        scheduleDays: editZone.schedule?.days || ['mon', 'tue', 'wed', 'thu', 'fri'],
+        scheduleStartTime: editZone.schedule?.startTime || '08:00',
+        scheduleEndTime: editZone.schedule?.endTime || '15:00',
       });
     } else {
       setForm(INITIAL_FORM);
@@ -53,6 +73,13 @@ export default function GeofenceFormModal({ isOpen, onClose, onSave, onDelete, e
 
     setSaving(true);
     try {
+      const assignedUserIds = form.assignedUserIds
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .map(Number)
+        .filter((n) => !isNaN(n));
+
       const payload = {
         name: form.name.trim(),
         type: form.type,
@@ -64,6 +91,13 @@ export default function GeofenceFormModal({ isOpen, onClose, onSave, onDelete, e
         radius: form.radius,
         notifyOnEntry: form.notifyOnEntry,
         notifyOnExit: form.notifyOnExit,
+        ...(assignedUserIds.length > 0 && { assignedUserIds }),
+        schedule: {
+          enabled: form.scheduleEnabled,
+          days: form.scheduleDays,
+          startTime: form.scheduleStartTime,
+          endTime: form.scheduleEndTime,
+        },
       };
       await onSave(payload, editZone?.id);
       onClose();
@@ -202,6 +236,79 @@ export default function GeofenceFormModal({ isOpen, onClose, onSave, onDelete, e
                   Notify on exit
                 </label>
               </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Assigned User IDs</label>
+              <input
+                type="text"
+                className={styles.formInput}
+                placeholder="e.g., 22, 35, 41"
+                value={form.assignedUserIds}
+                onChange={(e) => handleChange('assignedUserIds', e.target.value)}
+              />
+              <span className={styles.formHint}>Comma-separated user IDs</span>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Schedule</label>
+              <div className={styles.checkboxRow}>
+                <input
+                  type="checkbox"
+                  className={styles.checkbox}
+                  id="scheduleEnabled"
+                  checked={form.scheduleEnabled}
+                  onChange={(e) => handleChange('scheduleEnabled', e.target.checked)}
+                />
+                <label className={styles.checkboxLabel} htmlFor="scheduleEnabled">
+                  Enable schedule
+                </label>
+              </div>
+
+              {form.scheduleEnabled && (
+                <>
+                  <div className={styles.daysRow}>
+                    {DAYS_OPTIONS.map((day) => {
+                      const isSelected = form.scheduleDays.includes(day.value);
+                      return (
+                        <button
+                          key={day.value}
+                          type="button"
+                          className={`${styles.dayChip} ${isSelected ? styles.dayChipActive : ''}`}
+                          onClick={() => {
+                            const next = isSelected
+                              ? form.scheduleDays.filter((d) => d !== day.value)
+                              : [...form.scheduleDays, day.value];
+                            handleChange('scheduleDays', next);
+                          }}
+                        >
+                          {day.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Start Time</label>
+                      <input
+                        type="time"
+                        className={styles.formInput}
+                        value={form.scheduleStartTime}
+                        onChange={(e) => handleChange('scheduleStartTime', e.target.value)}
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>End Time</label>
+                      <input
+                        type="time"
+                        className={styles.formInput}
+                        value={form.scheduleEndTime}
+                        onChange={(e) => handleChange('scheduleEndTime', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 

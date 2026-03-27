@@ -165,7 +165,7 @@ export default function LiveLocationMap() {
           <p>Please add a device first</p>
           <button
             className={styles.primaryBtn}
-            onClick={() => window.location.href = '/devices'}
+            onClick={() => window.location.href = '/dashboard/devices'}
           >
             Go to Devices
           </button>

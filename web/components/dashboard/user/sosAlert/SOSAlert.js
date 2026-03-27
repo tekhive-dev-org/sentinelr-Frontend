@@ -3,7 +3,7 @@
  * Main container for the SOS Alert dashboard page.
  *
  * Layout (desktop):
- *  ┌────────────────────────────────────────── [SOS Emergency] ─┐
+ *  ┌────────────────────────────────────────────────────────────┐
  *  │  ┌─────────────┐  ┌──────────────────────────────────────┐ │
  *  │  │ Critical SOS │  │                                      │ │
  *  │  │ Banner       │  │            Map                       │ │
@@ -113,11 +113,7 @@ export default function SOSAlert() {
 
   return (
     <div className={styles.container}>
-      {/* SOS Emergency Button */}
-      <button className={styles.sosEmergencyBtn}>
-        {/* <SosIcon /> */}
-        SOS Emergency
-      </button>
+    
 
       {/* Active Alert Section */}
       {activeAlert ? (

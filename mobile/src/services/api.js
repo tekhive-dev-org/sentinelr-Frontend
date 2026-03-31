@@ -233,6 +233,34 @@ export const apiService = {
   },
 
   /**
+   * Get parental control status for the current device
+   * @returns {Promise<{ success: boolean, controls: object, activities: array }>}
+   */
+  async getParentalStatus() {
+    const token = await storageService.getUploadToken();
+    const url = `${API_BASE_URL}${ENDPOINTS.PARENTAL_STATUS}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      const error = new Error(
+        errorBody.message || `API Error: ${response.status}`,
+      );
+      error.status = response.status;
+      throw error;
+    }
+
+    return response.json();
+  },
+
+  /**
    * Validate the stored device token by making a lightweight heartbeat call.
    * Returns true if the token is valid, false if expired/revoked.
    */

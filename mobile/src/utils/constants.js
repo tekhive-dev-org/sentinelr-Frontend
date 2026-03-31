@@ -13,6 +13,7 @@ export const ENDPOINTS = {
   SOS_TRIGGER: "/sos/trigger", // POST — sends SOS emergency alert
   GEOFENCES: "/geofences", // GET — fetch all geofences for this device
   GEOFENCE_EVENT: "/geofences/event", // POST — report a geofence entry/exit event
+  PARENTAL_STATUS: "/parental-controls/device-status", // GET — fetch parental control status for this device
 };
 
 // App Constants

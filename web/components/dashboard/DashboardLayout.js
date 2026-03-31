@@ -57,8 +57,8 @@ const pageConfig = {
   },
   '/dashboard/parental': {
     title: 'Parental Control',
-    subtitle: 'Manage parental control settings',
-    icon: '/assets/icons/user.png' // Using user as placeholder
+    subtitle: 'Personal sentinelr overview dashboard',
+    icon: '/assets/icons/user.png'
   },
   '/dashboard/geofencing': {
     title: 'Geofencing',

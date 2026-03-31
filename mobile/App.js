@@ -20,6 +20,7 @@ import PermissionsScreen from './src/screens/PermissionsScreen';
 import TrackingScreen from './src/screens/TrackingScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import SOSScreen from './src/screens/SOSScreen';
+import ParentalControlScreen from './src/screens/ParentalControlScreen';
 
 // Prevent auto-hiding of native splash screen
 SplashScreen.preventAutoHideAsync();
@@ -73,6 +74,19 @@ function MainTabs() {
           tabBarIcon: ({ focused, color, size }) => (
             <Ionicons
               name={focused ? 'shield-checkmark' : 'shield-checkmark-outline'}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Controls"
+        component={ParentalControlScreen}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons
+              name={focused ? 'shield' : 'shield-outline'}
               size={size}
               color={color}
             />

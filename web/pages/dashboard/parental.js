@@ -1,9 +1,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
-import { DashboardLayout } from '../../components/dashboard';
-import ComingSoon from '../../components/common/ComingSoon';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { DashboardLayout, ParentalControlDashboard } from '../../components/dashboard';
 
 export default function Parental() {
   const router = useRouter();
@@ -29,11 +27,7 @@ export default function Parental() {
 
   return (
     <DashboardLayout>
-      <ComingSoon
-        title="Parental Control"
-        description="Set screen time limits, content filters, and app restrictions to keep your family safe online."
-        icon={AdminPanelSettingsIcon}
-      />
+      <ParentalControlDashboard />
     </DashboardLayout>
   );
 }

@@ -8,4 +8,4 @@ export { default as BottomAppBar } from './BottomAppBar';
 export { DashboardOverview, SubscriptionManagement, AnalyticsManagement } from './admin';
 
 // User Components
-export { UserDashboardOverview, UserSubscription, UserSettings, HistoryReports, SOSAlert, GeofencingDashboard } from './user';
+export { UserDashboardOverview, UserSubscription, UserSettings, HistoryReports, SOSAlert, GeofencingDashboard, ParentalControlDashboard } from './user';

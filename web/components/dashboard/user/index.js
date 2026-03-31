@@ -10,6 +10,9 @@ export { SOSAlert } from './sosAlert';
 // Geofencing
 export { GeofencingDashboard } from './geofencing';
 
+// Parental Control
+export { ParentalControlDashboard } from './parental';
+
 // Settings
 export { UserSettings, SettingsService } from './Settings';
 

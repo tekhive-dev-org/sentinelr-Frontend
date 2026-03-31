@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
+import { familyService } from '../../../../services';
 import styles from './Geofencing.module.css';
 
 const DAYS_OPTIONS = [
@@ -26,7 +27,7 @@ const INITIAL_FORM = {
   radius: 250,
   notifyOnEntry: true,
   notifyOnExit: true,
-  assignedUserIds: '',
+  assignedUserIds: [],
   scheduleEnabled: false,
   scheduleDays: ['mon', 'tue', 'wed', 'thu', 'fri'],
   scheduleStartTime: '08:00',
@@ -36,8 +37,25 @@ const INITIAL_FORM = {
 export default function GeofenceFormModal({ isOpen, onClose, onSave, onDelete, editZone }) {
   const [form, setForm] = useState(INITIAL_FORM);
   const [saving, setSaving] = useState(false);
+  const [familyMembers, setFamilyMembers] = useState([]);
 
   const isEditing = !!editZone;
+
+  useEffect(() => {
+    if (!isOpen) return;
+    familyService.getFamilyMembers().then((res) => {
+      const family = res?.family;
+      const members = family?.members || res?.members || [];
+      const mapped = members.map((m) => {
+        const user = m.user || m;
+        return {
+          id: m.userId || m.id || user.id,
+          name: user.userName || user.name || m.userName || m.name || 'Unknown',
+        };
+      });
+      setFamilyMembers(mapped);
+    }).catch(() => setFamilyMembers([]));
+  }, [isOpen]);
 
   useEffect(() => {
     if (editZone) {
@@ -50,7 +68,7 @@ export default function GeofenceFormModal({ isOpen, onClose, onSave, onDelete, e
         radius: editZone.radius || 250,
         notifyOnEntry: editZone.notifyOnEntry ?? true,
         notifyOnExit: editZone.notifyOnExit ?? true,
-        assignedUserIds: (editZone.assignedUserIds || []).join(', '),
+        assignedUserIds: editZone.assignedUserIds || [],
         scheduleEnabled: editZone.schedule?.enabled ?? false,
         scheduleDays: editZone.schedule?.days || ['mon', 'tue', 'wed', 'thu', 'fri'],
         scheduleStartTime: editZone.schedule?.startTime || '08:00',
@@ -73,12 +91,7 @@ export default function GeofenceFormModal({ isOpen, onClose, onSave, onDelete, e
 
     setSaving(true);
     try {
-      const assignedUserIds = form.assignedUserIds
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean)
-        .map(Number)
-        .filter((n) => !isNaN(n));
+      const assignedUserIds = form.assignedUserIds;
 
       const payload = {
         name: form.name.trim(),
@@ -239,15 +252,24 @@ export default function GeofenceFormModal({ isOpen, onClose, onSave, onDelete, e
             </div>
 
             <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Assigned User IDs</label>
-              <input
-                type="text"
-                className={styles.formInput}
-                placeholder="e.g., 22, 35, 41"
-                value={form.assignedUserIds}
-                onChange={(e) => handleChange('assignedUserIds', e.target.value)}
-              />
-              <span className={styles.formHint}>Comma-separated user IDs</span>
+              <label className={styles.formLabel}>Assign Family Members</label>
+              <select
+                className={styles.formSelect}
+                multiple
+                value={form.assignedUserIds.map(String)}
+                onChange={(e) => {
+                  const selected = Array.from(e.target.selectedOptions, (opt) => Number(opt.value));
+                  handleChange('assignedUserIds', selected);
+                }}
+                style={{ minHeight: 90 }}
+              >
+                {familyMembers.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.name} (ID: {m.id})
+                  </option>
+                ))}
+              </select>
+              <span className={styles.formHint}>Hold Ctrl/Cmd to select multiple members</span>
             </div>
 
             <div className={styles.formGroup}>

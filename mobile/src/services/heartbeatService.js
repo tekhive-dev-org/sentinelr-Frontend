@@ -113,10 +113,9 @@ export const heartbeatService = {
       lastStatus = status;
       lastSentTime = now;
     } catch (error) {
-      // Handle auth errors (401/404) by invoking callback
+      // Handle definitive auth errors — only 401 or explicit code
       if (
         (error.status === 401 ||
-          error.status === 404 ||
           error.code === "DEVICE_AUTH_INVALID") &&
         errorCallback
       ) {

@@ -1,41 +1,58 @@
-.wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+/* ═══════════════════════════════════════════════════════════════════════════
+   LiveLocationMap – CSS Module
+   Matches the GeofenceMap style: full-bleed map with overlay controls.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Map section (fills parent) ───────────────────────────────────────────── */
+.mapSection {
+  position: relative;
+  width: 100%;
   height: 100%;
+  min-height: 340px;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-/* ── Controls row ─────────────────────────────────────────────────────────── */
-.controls {
+.mapWrapper {
+  width: 100%;
+  height: 100%;
+  min-height: 340px;
+}
+
+/* ── Overlay controls (top-left) ──────────────────────────────────────────── */
+.topControls {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 5;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .deviceSelect {
-  flex: 1;
- max-width: 160px;
-  padding: 6px 10px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   color: #374151;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   cursor: pointer;
   outline: none;
-  transition: border-color 0.15s;
+  transition: box-shadow 0.15s;
+  max-width: 180px;
 }
 
 .deviceSelect:focus {
-  border-color: #818cf8;
-  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 0 0 0 2px rgba(129, 140, 248, 0.3);
 }
 
 .deviceSelect:disabled {
-  background: #f3f4f6;
+  background: rgba(243, 244, 246, 0.9);
   cursor: not-allowed;
   color: #9ca3af;
 }
@@ -43,18 +60,21 @@
 /* ── Map / Satellite toggle ───────────────────────────────────────────────── */
 .styleToggle {
   display: flex;
-  background: #f3f4f6;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 10px;
   padding: 3px;
   gap: 2px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .toggleBtn {
-  padding: 4px 12px;
+  padding: 7px 14px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   color: #6b7280;
   background: transparent;
   cursor: pointer;
@@ -66,25 +86,32 @@
 }
 
 .toggleActive {
-  background: #fff;
-  color: #1a1a1a;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: #0f3c5f;
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
-.meta {
+/* ── Status pill (bottom-center overlay) ──────────────────────────────────── */
+.statusPill {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 8px 18px;
   font-size: 12px;
-  color: #6b7280;
-}
-
-.refreshing {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: #818cf8;
   font-weight: 500;
+  color: #6b7280;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
 }
 
 .dot {
@@ -92,7 +119,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #818cf8;
+  background: #22c55e;
   animation: pulse 1.2s infinite;
 }
 
@@ -101,22 +128,8 @@
   50%       { opacity: 0.3; }
 }
 
-.lastUpdated {
-  color: #9ca3af;
-}
-
-/* ── Map container ────────────────────────────────────────────────────────── */
-.mapArea {
-  flex: 1;
-  min-height: 340px;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #eef2f6;
-  position: relative;
-}
-
-/* ── Empty / error state ──────────────────────────────────────────────────── */
-.emptyState {
+/* ── Map empty / loading state ────────────────────────────────────────────── */
+.mapEmptyState {
   position: absolute;
   inset: 0;
   display: flex;
@@ -124,87 +137,52 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  font-size: 13px;
-  color: #6b7280;
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 8px;
-  padding: 8px 16px;
-  text-align: center;
-}
-
-.emptyStateError {
-  color: #dc2626;
-  font-weight: 500;
+  background: #f3f4f6;
+  color: #9ca3af;
+  font-size: 14px;
 }
 
 .primaryBtn {
-  padding: 8px 20px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
   color: #fff;
-  background: #818cf8;
+  background: #0f3c5f;
   cursor: pointer;
   transition: background 0.15s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .primaryBtn:hover {
-  background: #6366f1;
+  background: #0c2f4a;
 }
 
 /* ── Map overlays (rendered on top of live map) ───────────────────────────── */
 .mapOverlay {
   position: absolute;
-  bottom: 32px;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 4;
   background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 20px;
-  padding: 6px 16px;
+  padding: 8px 18px;
   font-size: 12px;
   color: #6b7280;
   pointer-events: none;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .mapOverlayError {
   color: #ef4444;
 }
 
-/* ── Custom marker ────────────────────────────────────────────────────────── */
-.markerPin {
-  position: relative;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-}
-
-.markerPin::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: #818cf8;
-  border: 3px solid #fff;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(129, 140, 248, 0.6);
-}
-
-.markerPulse {
-  position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  background: rgba(129, 140, 248, 0.25);
-  animation: ripple 2s ease-out infinite;
-}
-
-@keyframes ripple {
-  0%   { transform: scale(0.6); opacity: 0.8; }
-  100% { transform: scale(1.8); opacity: 0; }
-}
-
-/* ── Leaflet/MapLibre popup content ───────────────────────────────────────── */
+/* ── InfoWindow popup content ─────────────────────────────────────────────── */
 .popup {
   font-size: 13px;
   line-height: 1.5;

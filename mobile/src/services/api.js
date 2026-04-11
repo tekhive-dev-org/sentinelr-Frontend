@@ -30,8 +30,8 @@ async function apiRequest(endpoint, data = {}) {
     error.status = response.status;
     error.code = errorBody.code;
 
-    // Trigger auth failure callback on 401/404
-    if ((response.status === 401 || response.status === 404) && authFailureCallback) {
+    // Trigger auth failure callback only on 401 (definitive auth rejection)
+    if (response.status === 401 && authFailureCallback) {
       authFailureCallback(error);
     }
 
@@ -262,7 +262,8 @@ export const apiService = {
 
   /**
    * Validate the stored device token by making a lightweight heartbeat call.
-   * Returns true if the token is valid, false if expired/revoked.
+   * Returns true if the token is valid, false only if definitively expired/revoked (401/403).
+   * Transient errors (429, 5xx, network) are treated as "still valid".
    */
   async validateToken() {
     const token = await storageService.getUploadToken();
@@ -278,7 +279,14 @@ export const apiService = {
         },
         body: JSON.stringify({ timestamp: new Date().toISOString() }),
       });
-      return response.ok;
+
+      // Only treat 401/403 as definitively invalid
+      if (response.status === 401 || response.status === 403) {
+        return false;
+      }
+
+      // Everything else (200, 429, 5xx, etc.) — assume token is still valid
+      return true;
     } catch {
       // Network error — don't invalidate token, assume still valid
       return true;

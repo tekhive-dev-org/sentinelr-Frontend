@@ -52,6 +52,7 @@ export default function DevicesAndUsers() {
   const [devices, setDevices] = useState([]);
   const [users, setUsers] = useState([]);
   const [maxMembers, setMaxMembers] = useState(null); // from family.maxMembers
+  const [repairingDevice, setRepairingDevice] = useState(null);
 
   // Notification state
   const [notification, setNotification] = useState(null);
@@ -225,12 +226,14 @@ export default function DevicesAndUsers() {
   // Handle successful pairing
   const handlePairingComplete = (deviceData) => {
     // Refresh list to show new device
+    setRepairingDevice(null);
     fetchDevices();
     handleViewDevices();
   };
 
   // Handle view devices after pairing
   const handleViewDevices = () => {
+    setRepairingDevice(null);
     setViewMode(VIEW_MODES.LIST);
     setActiveTab("devices");
   };
@@ -242,6 +245,7 @@ export default function DevicesAndUsers() {
 
   // Handle cancel pairing
   const handleCancelPairing = () => {
+    setRepairingDevice(null);
     setViewMode(VIEW_MODES.LIST);
   };
 
@@ -254,6 +258,7 @@ export default function DevicesAndUsers() {
       );
       return;
     }
+    setRepairingDevice(null);
     setViewMode(VIEW_MODES.PAIRING);
   };
 
@@ -282,10 +287,31 @@ export default function DevicesAndUsers() {
     });
   };
 
-  // Handle re-pair device — closes detail modal and opens pairing screen
+  // Handle re-pair device — removes the old record first, then opens pairing
   const handleRepairDevice = (device) => {
-    setSelectedDevice(null);
-    handleStartPairing();
+    setConfirmationModal({
+      isOpen: true,
+      title: "Re-pair Device",
+      message: `Re-pairing "${device.deviceName || device.name}" will remove this old device record and start a fresh pairing session. Continue?`,
+      confirmText: "Remove and Re-pair",
+      isDanger: true,
+      onConfirm: async () => {
+        try {
+          await devicesService.removeDevice(device.id);
+          await fetchDevices();
+          setSelectedDevice(null);
+          setRepairingDevice(device);
+          setViewMode(VIEW_MODES.PAIRING);
+          showNotification(
+            "Old device removed. Complete pairing to add it again.",
+            "success",
+          );
+        } catch (err) {
+          console.error("Failed to re-pair device:", err);
+          showNotification("Failed to start re-pair flow.", "error");
+        }
+      },
+    });
   };
 
   // Handle remove device from dashboard (soft-delete — hides it from view)
@@ -522,6 +548,7 @@ export default function DevicesAndUsers() {
       onCancel={handleCancelPairing}
       onViewDevices={handleViewDevices}
       familyMembers={users}
+      initialDevice={repairingDevice}
     />
   );
 

@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "jsx": "react-native"
+  },
+  "include": ["App.js", "index.js", "src/**/*.js"],
+  "exclude": ["node_modules"]
+}

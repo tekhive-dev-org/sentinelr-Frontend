@@ -21,6 +21,7 @@ import TrackingScreen from './src/screens/TrackingScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import SOSScreen from './src/screens/SOSScreen';
 import ParentalControlScreen from './src/screens/ParentalControlScreen';
+import PrivacyPolicyScreen from './src/screens/PrivacyPolicyScreen';
 
 // Prevent auto-hiding of native splash screen
 SplashScreen.preventAutoHideAsync();
@@ -152,6 +153,7 @@ function AppNavigator() {
       ) : (
         <>
           <Stack.Screen name="MainTabs" component={MainTabs} />
+          <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
         </>
       )}
     </Stack.Navigator>

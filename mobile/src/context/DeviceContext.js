@@ -92,15 +92,19 @@ export function DeviceProvider({ children }) {
     }
   }, []);
 
-  // Register global 401/404 handler once
+  // Register global auth-failure handler once.
+  // Do not unpair immediately on auth errors; only unpair when backend pairStatus says Unpaired.
   useEffect(() => {
     if (!hasRegisteredAuthHandler.current) {
-      apiService.onAuthFailure(() => {
-        forceUnpair();
+      apiService.onAuthFailure(async () => {
+        const stillPaired = await checkPairStatusInDb();
+        if (!stillPaired) {
+          await forceUnpair(true);
+        }
       });
       hasRegisteredAuthHandler.current = true;
     }
-  }, [forceUnpair]);
+  }, [forceUnpair, checkPairStatusInDb]);
 
   // Real-time subscription — listen for device row changes via Supabase
   useEffect(() => {
@@ -218,11 +222,11 @@ export function DeviceProvider({ children }) {
         return;
       }
 
-      // Also validate the device token is still accepted
+      // Also validate whether the token is still accepted.
+      // Keep local pairing state when token is invalid to avoid unintended unpairing.
       const isValid = await apiService.validateToken();
       if (!cancelled && !isValid) {
-        console.log("[DeviceContext] Token invalid, forcing unpair");
-        await forceUnpair(true);
+        console.log("[DeviceContext] Token invalid; keeping paired state until backend pairStatus changes");
       }
     })();
 

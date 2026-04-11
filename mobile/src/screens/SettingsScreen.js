@@ -93,12 +93,13 @@ export default function SettingsScreen({ navigation }) {
     </View>
   );
 
-  const LinkRow = ({ title, icon, isLast = false }) => (
+  const LinkRow = ({ title, icon, onPress, isLast = false }) => (
     <TouchableOpacity
       style={[
         setStyles.row,
         !isLast && { borderBottomWidth: 1, borderColor: colors.borderLight },
       ]}
+      onPress={onPress}
     >
       <View style={setStyles.linkInner}>
         <Ionicons name={icon} size={18} color={colors.textSecondary} />
@@ -186,7 +187,11 @@ export default function SettingsScreen({ navigation }) {
           <SectionLabel label="SUPPORT" />
           <GlassCard noPadding>
             <LinkRow title="Help Center" icon="help-circle-outline" />
-            <LinkRow title="Privacy Policy" icon="shield-outline" />
+            <LinkRow
+              title="Privacy Policy"
+              icon="shield-outline"
+              onPress={() => navigation.navigate("PrivacyPolicy")}
+            />
             <LinkRow
               title="Terms of Service"
               icon="document-text-outline"

@@ -432,7 +432,7 @@ export default function SignUpForm() {
                   Terms & Conditions
                 </Link>{" "}
                 and{" "}
-                <Link href="#" className={styles.termsLink}>
+                <Link href="/privacy-policy" className={styles.termsLink}>
                   Privacy Policy
                 </Link>
                 .

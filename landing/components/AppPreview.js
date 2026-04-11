@@ -29,7 +29,7 @@ export default function AppPreview() {
       icon: <DownloadIcon className="text-2xl" />,
       title: 'Download & Create Account',
       description: 'Get Sentinelr from the App Store or Google Play. Sign up with your email in under 2 minutes to access your family safety dashboard.',
-      image: '/1.png',
+      image: '/acc.webp',
       tip: 'Available on iOS and Android',
     },
     {
@@ -45,7 +45,7 @@ export default function AppPreview() {
       icon: <DevicesIcon className="text-2xl" />,
       title: 'Register Your Devices',
       description: 'Add smartphones, tablets, laptops, or smartwatches to your network. Name each device and assign it to a family member for easy tracking.',
-      image: '/2.png',
+      image: '/register.webp',
       tip: 'Supports all major device types',
     },
     {
@@ -53,7 +53,7 @@ export default function AppPreview() {
       icon: <LinkIcon className="text-2xl" />,
       title: 'Pair & Connect',
       description: 'Use a secure pairing code or scan a QR code to connect each device. Once paired, you\'ll see a confirmation that the device is active and protected.',
-      image: '/6.png',
+      image: '/pair.jpeg',
       tip: 'Secure, encrypted connection',
     },
     {
@@ -61,20 +61,20 @@ export default function AppPreview() {
       icon: <DashboardIcon className="text-2xl" />,
       title: 'Monitor & Protect',
       description: 'View all family members and their devices from one dashboard. Access location, battery status, and safety controls like screen time and app management.',
-      image: '/7.png',
+      image: '/location.webp',
       tip: 'Real-time status updates',
     },
   ];
 
   const allImages = [
-    { src: '/1.png', label: 'Dashboard' },
-    { src: '/1.1.png', label: 'Family Tab' },
-    { src: '/2.png', label: 'Add Member' },
-    { src: '/2.1.png', label: 'Add Device' },
-    { src: '/3.png', label: 'Members List' },
-    { src: '/3.1.png', label: 'Member Profile' },
+    { src: '/acc.webp', label: 'Sign Up' },
+    { src: '/register.webp', label: 'Add Devices & Users' },
+    { src: '/2.1.png', label: 'Add User/Family Member First' },
+    { src: '/device.webp', label: 'Add Device' },
+    { src: '/3.png', label: 'Generate Pairing Code' },
+    {src: '/pair.jpeg', label: 'Pair The Mobile device'},
     { src: '/6.png', label: 'Paired Success' },
-    { src: '/7.png', label: 'Devices List' },
+    { src: '/location.webp', label: 'Live Location/Tracking' },
   ];
 
   const openPreview = (index) => {

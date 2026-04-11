@@ -39,6 +39,7 @@ export default function PairDevice({
   onCancel,
   onViewDevices,
   familyMembers = [],
+  initialDevice = null,
 }) {
   const [step, setStep] = useState(STEPS.FORM);
   const [pairingCode, setPairingCode] = useState("");
@@ -54,6 +55,24 @@ export default function PairDevice({
   const [deviceType, setDeviceType] = useState("Phone");
   const [smartphoneOS, setSmartphoneOS] = useState("ios");
   const [assignedUser, setAssignedUser] = useState("");
+
+  useEffect(() => {
+    if (!initialDevice) return;
+
+    const nextDeviceType = initialDevice.type || "Phone";
+    const nextPlatform = (initialDevice.platform || "").toLowerCase();
+    const nextAssignedUser =
+      initialDevice.assignedUserId ??
+      initialDevice.userId ??
+      initialDevice.memberUserId ??
+      "";
+
+    setDeviceName(initialDevice.deviceName || initialDevice.name || "");
+    setDeviceType(nextDeviceType);
+    setSmartphoneOS(nextPlatform === "android" ? "android" : "ios");
+    setAssignedUser(nextAssignedUser ? String(nextAssignedUser) : "");
+    setError(null);
+  }, [initialDevice]);
 
   // Timer countdown
   useEffect(() => {
@@ -697,7 +716,8 @@ export default function PairDevice({
           className={styles.secondaryButton}
           onClick={() => {
             setDeviceName("");
-            setDeviceType("phone");
+            setDeviceType("Phone");
+            setSmartphoneOS("ios");
             setAssignedUser("");
             handleRefreshCode();
             setStep(STEPS.FORM);

@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Alert, Linking, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Linking, StyleSheet, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { isRunningInExpoGo } from 'expo';
 import * as Location from 'expo-location';
-import * as Notifications from 'expo-notifications';
 import { useTheme } from '../context/ThemeContext';
 import NavigationHeader from '../components/NavigationHeader';
 import GlassCard from '../components/GlassCard';
 import { APP_NAME } from '../utils/constants';
+
+const isExpoGoAndroid = Platform.OS === 'android' && isRunningInExpoGo();
+
+async function getNotificationsModule() {
+  if (isExpoGoAndroid) {
+    return null;
+  }
+
+  const module = await import('expo-notifications');
+  return module;
+}
 
 export default function PermissionsScreen({ navigation }) {
   const { colors } = useTheme();
@@ -23,19 +34,27 @@ export default function PermissionsScreen({ navigation }) {
     try {
       const { status: foreground } = await Location.getForegroundPermissionsAsync();
       const { status: background } = await Location.getBackgroundPermissionsAsync();
-      
-      let notification = 'denied';
-      try {
-        const { status } = await Notifications.getPermissionsAsync();
-        notification = status;
-      } catch (e) {
-        console.log('Notifications not supported (likely Expo Go)', e.message);
-        notification = 'granted'; 
+
+      let notification = isExpoGoAndroid ? 'unavailable' : 'denied';
+      if (!isExpoGoAndroid) {
+        try {
+          const Notifications = await getNotificationsModule();
+          const { status } = await Notifications.getPermissionsAsync();
+          notification = status;
+        } catch (e) {
+          console.log('Notifications permission check failed:', e.message);
+        }
       }
 
       setLocationStatus(foreground === 'granted' ? 'granted' : 'denied');
       setBackgroundStatus(background === 'granted' ? 'granted' : 'denied');
-      setNotificationStatus(notification === 'granted' ? 'granted' : 'denied');
+      setNotificationStatus(
+        notification === 'granted'
+          ? 'granted'
+          : notification === 'unavailable'
+            ? 'unavailable'
+            : 'denied'
+      );
     } catch (error) {
       console.error('Error checking permissions:', error);
     }
@@ -99,15 +118,23 @@ export default function PermissionsScreen({ navigation }) {
   };
 
   const requestNotificationPermission = async () => {
+    if (isExpoGoAndroid) {
+      setNotificationStatus('unavailable');
+      Alert.alert(
+        'Development Build Required',
+        'Android push notifications are not available in Expo Go. Use a development build or standalone app to enable notification permissions.'
+      );
+      return;
+    }
+
     try {
+      const Notifications = await getNotificationsModule();
       const { status } = await Notifications.requestPermissionsAsync();
       setNotificationStatus(status === 'granted' ? 'granted' : 'denied');
     } catch (error) {
       console.log('Notifications request failed:', error.message);
-      setNotificationStatus('granted');
-      if (!error.message.includes('Expo Go')) {
-        Alert.alert('Notice', 'Notifications are limited in this environment');
-      }
+      setNotificationStatus('denied');
+      Alert.alert('Notice', 'Notifications are not available in this environment.');
     }
   };
 
@@ -135,61 +162,87 @@ export default function PermissionsScreen({ navigation }) {
 
   const getStatusIcon = (status) => {
     if (status === 'granted') return 'checkmark-circle';
+    if (status === 'unavailable') return 'information-circle';
     if (status === 'denied') return 'alert-circle';
     return 'ellipse-outline';
   };
 
-  const PermissionItem = ({ title, description, status, onEnable, onDisable }) => (
-    <GlassCard style={{ marginBottom: 12 }}>
-      <View style={permStyles.permRow}>
-        <View
-          style={[
-            permStyles.permIcon,
-            {
-              backgroundColor:
-                status === 'granted' ? colors.successSoft : colors.dangerSoft,
-            },
-          ]}
-        >
-          <Ionicons
-            name={getStatusIcon(status)}
-            size={22}
-            color={status === 'granted' ? colors.success : colors.danger}
-          />
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text style={[permStyles.permTitle, { color: colors.text }]}>
-            {title}
-          </Text>
-          <Text style={[permStyles.permDesc, { color: colors.textSecondary }]}>
-            {description}
-          </Text>
-        </View>
-        <TouchableOpacity
-          style={[
-            permStyles.permBtn,
-            {
-              backgroundColor:
-                status === 'granted' ? colors.successSoft : colors.dangerSoft,
-            },
-          ]}
-          onPress={status === 'granted' ? onDisable : onEnable}
-          activeOpacity={0.7}
-        >
-          <Text
+  const getStatusColors = (status) => {
+    if (status === 'granted') {
+      return {
+        backgroundColor: colors.successSoft,
+        color: colors.success,
+      };
+    }
+
+    if (status === 'unavailable') {
+      return {
+        backgroundColor: colors.warningSoft || 'rgba(230, 173, 19, 0.15)',
+        color: colors.warning,
+      };
+    }
+
+    return {
+      backgroundColor: colors.dangerSoft,
+      color: colors.danger,
+    };
+  };
+
+  const PermissionItem = ({ title, description, status, onEnable, onDisable }) => {
+    const statusColors = getStatusColors(status);
+    const buttonLabel =
+      status === 'granted' ? 'Granted' : status === 'unavailable' ? 'Dev Build' : 'Enable';
+
+    return (
+      <GlassCard style={{ marginBottom: 12 }}>
+        <View style={permStyles.permRow}>
+          <View
             style={[
-              permStyles.permBtnText,
+              permStyles.permIcon,
               {
-                color: status === 'granted' ? colors.success : colors.danger,
+                backgroundColor: statusColors.backgroundColor,
               },
             ]}
           >
-            {status === 'granted' ? 'Granted' : 'Enable'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </GlassCard>
-  );
+            <Ionicons
+              name={getStatusIcon(status)}
+              size={22}
+              color={statusColors.color}
+            />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={[permStyles.permTitle, { color: colors.text }]}>
+              {title}
+            </Text>
+            <Text style={[permStyles.permDesc, { color: colors.textSecondary }]}>
+              {description}
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={[
+              permStyles.permBtn,
+              {
+                backgroundColor: statusColors.backgroundColor,
+              },
+            ]}
+            onPress={status === 'granted' ? onDisable : onEnable}
+            activeOpacity={0.7}
+          >
+            <Text
+              style={[
+                permStyles.permBtnText,
+                {
+                  color: statusColors.color,
+                },
+              ]}
+            >
+              {buttonLabel}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </GlassCard>
+    );
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -241,7 +294,11 @@ export default function PermissionsScreen({ navigation }) {
             />
             <PermissionItem
               title="Notifications"
-              description="Receive alerts and updates"
+              description={
+                isExpoGoAndroid
+                  ? 'Push notifications require a development build on Android'
+                  : 'Receive alerts and updates'
+              }
               status={notificationStatus}
               onEnable={requestNotificationPermission}
               onDisable={() => openSettingsToDisable('Notifications')}

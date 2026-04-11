@@ -1,6 +1,7 @@
 /**
  * LiveLocationMap
  * Renders a Google Map showing the live location of a selected family device.
+ * Redesigned to match the GeofenceMap style — full-bleed map with overlay controls.
  * Requires NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in .env.local
  *
  * NOTE: Must be imported with next/dynamic { ssr: false } in the parent.
@@ -15,22 +16,21 @@ const POLL_MS        = 300_000; // 5 minutes
 const DEFAULT_ZOOM   = 15;
 const DEFAULT_CENTER = { lat: 20, lng: 0 };
 
-// Map type options shown in the controls bar
 const MAP_TYPES = [
-  { id: 'roadmap',  label: 'Map'       },
-  { id: 'hybrid',   label: 'Satellite'    },
+  { id: 'roadmap', label: 'Map' },
+  { id: 'hybrid',  label: 'Satellite' },
 ];
 
 const MAP_CONTAINER_STYLE = { width: '100%', height: '100%' };
 
 const BASE_MAP_OPTIONS = {
   disableDefaultUI: false,
-  mapTypeControl: false,   // we use our own toggle
-  streetViewControl: false,
+  mapTypeControl: false,
+  streetViewControl: true,
   fullscreenControl: false,
   zoomControl: true,
   scrollwheel: true,
-  gestureHandling: 'cooperative',
+  gestureHandling: 'greedy',
   clickableIcons: false,
 };
 
@@ -107,10 +107,26 @@ export default function LiveLocationMap() {
   const hasLocation = locationData?.latitude != null && locationData?.longitude != null;
   const markerPos   = hasLocation ? { lat: locationData.latitude, lng: locationData.longitude } : null;
 
+  if (loadError) {
+    return (
+      <div className={styles.mapEmptyState}>
+        Failed to load Google Maps. Check your API key.
+      </div>
+    );
+  }
+
+  if (!isLoaded) {
+    return (
+      <div className={styles.mapEmptyState} style={{ color: '#6b7280' }}>
+        Loading map…
+      </div>
+    );
+  }
+
   return (
-    <div className={styles.wrapper}>
-      {/* ── Controls ──────────────────────────────────────────────────────── */}
-      <div className={styles.controls}>
+    <div className={styles.mapSection}>
+      {/* ── Overlay controls on top of the map ────────────────────────────── */}
+      <div className={styles.topControls}>
         <select
           className={styles.deviceSelect}
           value={selectedId}
@@ -125,7 +141,6 @@ export default function LiveLocationMap() {
           ))}
         </select>
 
-        {/* Map type toggle */}
         <div className={styles.styleToggle}>
           {MAP_TYPES.map((t) => (
             <button
@@ -137,89 +152,77 @@ export default function LiveLocationMap() {
             </button>
           ))}
         </div>
-
-        <div className={styles.meta}>
-          {loading && (
-            <span className={styles.refreshing}>
-              <span className={styles.dot} /> Refreshing…
-            </span>
-          )}
-          {lastUpdated && !loading && (
-            <span className={styles.lastUpdated}>
-              Updated {lastUpdated.toLocaleTimeString()}
-            </span>
-          )}
-        </div>
       </div>
 
-      {/* ── Map area ──────────────────────────────────────────────────────── */}
-        <div className={styles.mapArea}>
-          {loadError ? (
-            <div className={`${styles.emptyState} ${styles.emptyStateError}`}>
-          Failed to load Google Maps. Check your API key.
-            </div>
-          ) : !isLoaded ? (
-            <div className={styles.emptyState} style={{ color: '#6b7280' }}>Loading map…</div>
-          ) : devices.length === 0 ? (
-            <div className={styles.emptyState}>
-          <p>Please add a device first</p>
-          <button
-            className={styles.primaryBtn}
-            onClick={() => window.location.href = '/dashboard/devices'}
-          >
-            Go to Devices
-          </button>
-            </div>
-          ) : (
-            <>
+      {/* ── Status pill (bottom overlay) ──────────────────────────────────── */}
+      {loading && (
+        <div className={styles.statusPill}>
+          <span className={styles.dot} /> Refreshing…
+        </div>
+      )}
+      {lastUpdated && !loading && (
+        <div className={styles.statusPill}>
+          Updated {lastUpdated.toLocaleTimeString()}
+        </div>
+      )}
+
+      {/* ── Map ───────────────────────────────────────────────────────────── */}
+      <div className={styles.mapWrapper}>
+        {devices.length === 0 ? (
+          <div className={styles.mapEmptyState}>
+            <p>Please add a device first</p>
+            <button
+              className={styles.primaryBtn}
+              onClick={() => window.location.href = '/dashboard/devices'}
+            >
+              Go to Devices
+            </button>
+          </div>
+        ) : (
           <GoogleMap
             mapContainerStyle={MAP_CONTAINER_STYLE}
             center={center}
             zoom={hasLocation ? DEFAULT_ZOOM : 2}
             mapTypeId={mapTypeId}
             options={BASE_MAP_OPTIONS}
-            onLoad={(map) => { mapRef.current = map;}}
-              onUnmount={() => { mapRef.current = null; }}
-            >
-              {hasLocation && (
-                <Marker
-                  position={markerPos}
-                  title={locationData.userName}
-                  animation={2} /* google.maps.Animation.DROP */
-                  onClick={() => setShowInfo(true)}
-                />
-              )}
+            onLoad={(map) => { mapRef.current = map; }}
+            onUnmount={() => { mapRef.current = null; }}
+          >
+            {hasLocation && (
+              <Marker
+                position={markerPos}
+                title={locationData.userName}
+                animation={2}
+                onClick={() => setShowInfo(true)}
+              />
+            )}
 
-              {hasLocation && showInfo && (
-                <InfoWindow
-                  position={markerPos}
-                  onCloseClick={() => setShowInfo(false)}
-                >
-                  <div className={styles.popup}>
-                    <strong className={styles.popupName}>{locationData.userName}</strong>
-                    {locationData.address && (
-                      <p className={styles.popupAddress}>{locationData.address}</p>
-                    )}
-                    <p className={styles.popupMeta}>Accuracy: {locationData.accuracy}m</p>
-                    <p className={styles.popupMeta}>
-                      {new Date(locationData.timestamp).toLocaleString()}
-                    </p>
-                  </div>
-                </InfoWindow>
-              )}
-            </GoogleMap>
+            {hasLocation && showInfo && (
+              <InfoWindow
+                position={markerPos}
+                onCloseClick={() => setShowInfo(false)}
+              >
+                <div className={styles.popup}>
+                  <strong className={styles.popupName}>{locationData.userName}</strong>
+                  {locationData.address && (
+                    <p className={styles.popupAddress}>{locationData.address}</p>
+                  )}
+                  <p className={styles.popupMeta}>Accuracy: {locationData.accuracy}m</p>
+                  <p className={styles.popupMeta}>
+                    {new Date(locationData.timestamp).toLocaleString()}
+                  </p>
+                </div>
+              </InfoWindow>
+            )}
+          </GoogleMap>
+        )}
 
-            {/* Overlay states on top of the live map */}
-            {loading && !hasLocation && (
-              <div className={styles.mapOverlay}>Loading location…</div>
-            )}
-            {!loading && !hasLocation && !error && (
-              <div className={styles.mapOverlay}>No location data for this device</div>
-            )}
-            {error && (
-              <div className={`${styles.mapOverlay} ${styles.mapOverlayError}`}>{error}</div>
-            )}
-          </>
+        {/* Overlay messages on top of the live map */}
+        {!loading && !hasLocation && !error && devices.length > 0 && (
+          <div className={styles.mapOverlay}>No location data for this device</div>
+        )}
+        {error && (
+          <div className={`${styles.mapOverlay} ${styles.mapOverlayError}`}>{error}</div>
         )}
       </div>
     </div>

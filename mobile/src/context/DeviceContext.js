@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
-import { Alert } from "react-native";
+import { Alert, AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiService } from "../services/api";
 import { getSupabase } from "../services/supabaseClient";
@@ -24,6 +24,39 @@ export function DeviceProvider({ children }) {
   const [lastPingTime, setLastPingTime] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState("offline");
   const hasRegisteredAuthHandler = useRef(false);
+  const pairCheckInterval = useRef(null);
+
+  // Query the database directly for the device's current pairStatus
+  const checkPairStatusInDb = useCallback(async (id) => {
+    const checkId = id || deviceId;
+    if (!checkId) return true; // no device to check
+    const supabase = getSupabase();
+    if (!supabase) return true; // can't check without client, assume still paired
+    try {
+      const { data, error } = await supabase
+        .from("Devices")
+        .select("pairStatus")
+        .eq("id", checkId)
+        .maybeSingle();
+      if (error) {
+        console.warn("[DeviceContext] pairStatus query error:", error.message);
+        return true; // query failed, assume still paired
+      }
+      if (!data) {
+        console.warn("[DeviceContext] Device not found in DB, id:", checkId);
+        return true; // row not found — could be RLS, assume still paired
+      }
+      const status = data.pairStatus;
+      console.log("[DeviceContext] DB pairStatus:", status, "for device:", checkId);
+      if (status === "Unpaired" || status === "unpaired") {
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.warn("[DeviceContext] pairStatus check failed:", err);
+      return true; // network/other error, assume still paired
+    }
+  }, [deviceId]);
 
   // Clear all local pairing state, stop services, and optionally notify the user
   const forceUnpair = useCallback(async (showAlert = true) => {
@@ -103,6 +136,47 @@ export function DeviceProvider({ children }) {
     };
   }, [isPaired, deviceId, forceUnpair]);
 
+  // Re-check pairStatus in DB when app comes back to foreground
+  useEffect(() => {
+    if (!isPaired || !deviceId) return;
+
+    const subscription = AppState.addEventListener("change", async (nextState) => {
+      if (nextState === "active") {
+        const stillPaired = await checkPairStatusInDb();
+        if (!stillPaired) {
+          await forceUnpair(true);
+        }
+      }
+    });
+
+    return () => subscription.remove();
+  }, [isPaired, deviceId, forceUnpair, checkPairStatusInDb]);
+
+  // Periodic pairStatus polling as a fallback for the realtime subscription
+  useEffect(() => {
+    if (!isPaired || !deviceId) {
+      if (pairCheckInterval.current) {
+        clearInterval(pairCheckInterval.current);
+        pairCheckInterval.current = null;
+      }
+      return;
+    }
+
+    pairCheckInterval.current = setInterval(async () => {
+      const stillPaired = await checkPairStatusInDb();
+      if (!stillPaired) {
+        await forceUnpair(true);
+      }
+    }, 30000); // every 30 seconds
+
+    return () => {
+      if (pairCheckInterval.current) {
+        clearInterval(pairCheckInterval.current);
+        pairCheckInterval.current = null;
+      }
+    };
+  }, [isPaired, deviceId, forceUnpair, checkPairStatusInDb]);
+
   // Load saved state on mount
   useEffect(() => {
     loadSavedState();
@@ -121,22 +195,39 @@ export function DeviceProvider({ children }) {
       if (savedToken) setUploadToken(savedToken);
       if (savedPaired === "true") {
         setIsPaired(true);
-
-        // Validate the stored token with the backend
-        const isValid = await apiService.validateToken();
-        if (!isValid) {
-          // Token expired or revoked — clear local state to show pairing screen
-          await forceUnpair(true);
-          return;
-        }
       }
       if (savedTracking === "true") setIsTracking(true);
     } catch (error) {
-      // Silent failure
+      console.warn("[DeviceContext] loadSavedState error:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  // After loading saved state, validate pairing in the background (non-blocking)
+  useEffect(() => {
+    if (!isPaired || !deviceId || isLoading) return;
+
+    let cancelled = false;
+    (async () => {
+      // Check pairStatus in the database
+      const stillPaired = await checkPairStatusInDb(deviceId);
+      if (!cancelled && !stillPaired) {
+        console.log("[DeviceContext] DB says device is unpaired, forcing unpair");
+        await forceUnpair(true);
+        return;
+      }
+
+      // Also validate the device token is still accepted
+      const isValid = await apiService.validateToken();
+      if (!cancelled && !isValid) {
+        console.log("[DeviceContext] Token invalid, forcing unpair");
+        await forceUnpair(true);
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [isPaired, deviceId, isLoading, checkPairStatusInDb, forceUnpair]);
 
   const completePairing = async (newDeviceId, newToken) => {
     if (!newDeviceId) {
@@ -161,12 +252,25 @@ export function DeviceProvider({ children }) {
 
   const unpairDevice = async () => {
     try {
-      // Notify backend first so the web dashboard reflects "Unpaired" status
       if (deviceId) {
+        // 1) Try the backend API (may fail if device token lacks permission)
         try {
           await apiService.unpairDevice(deviceId);
         } catch {
-          // Non-fatal: still clear local state even if backend call fails
+          // Non-fatal — fall through to direct DB update
+        }
+
+        // 2) Update pairStatus directly in Supabase so the web dashboard sees it immediately
+        const supabase = getSupabase();
+        if (supabase) {
+          try {
+            await supabase
+              .from("Devices")
+              .update({ pairStatus: "Unpaired" })
+              .eq("id", deviceId);
+          } catch {
+            // Non-fatal: still clear local state
+          }
         }
       }
 
@@ -182,12 +286,25 @@ export function DeviceProvider({ children }) {
    */
   const removeDeviceFromDashboard = async () => {
     try {
-      // Call backend to hide device from dashboard
       if (deviceId) {
+        // 1) Try the backend API
         try {
           await apiService.removeDevice(deviceId);
         } catch {
           // Non-fatal
+        }
+
+        // 2) Update pairStatus directly in Supabase so the web sees it
+        const supabase = getSupabase();
+        if (supabase) {
+          try {
+            await supabase
+              .from("Devices")
+              .update({ pairStatus: "Unpaired" })
+              .eq("id", deviceId);
+          } catch {
+            // Non-fatal
+          }
         }
       }
 

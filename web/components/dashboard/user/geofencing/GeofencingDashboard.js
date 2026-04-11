@@ -18,7 +18,7 @@
  *  └──────────────────┴───────────────────────────────────────┘
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import FenceIcon from '@mui/icons-material/Fence';
@@ -61,6 +61,9 @@ export default function GeofencingDashboard() {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editZone, setEditZone] = useState(null);
+
+  // Debounce ref for radius updates
+  const radiusTimerRef = useRef(null);
 
   // ── Fetch geofences & events ────────────────────────────────────────────────
   const fetchGeofences = useCallback(async () => {
@@ -112,17 +115,19 @@ export default function GeofencingDashboard() {
     }
   };
 
-  const handleRadiusChange = async (zoneId, radius) => {
+  const handleRadiusChange = (zoneId, radius) => {
     setGeofences((prev) =>
       prev.map((z) => (z.id === zoneId ? { ...z, radius } : z))
     );
-    // Debounce: we only save when the user finishes dragging (via onMouseUp on the slider).
-    // For now, do an immediate save on change.
-    try {
-      await geofencingService.updateGeofence(zoneId, { radius });
-    } catch (err) {
-      setToast({ type: 'error', message: err.message || 'Failed to update radius.' });
-    }
+    // Debounce: only fire the API call after the user stops dragging for 500ms
+    clearTimeout(radiusTimerRef.current);
+    radiusTimerRef.current = setTimeout(async () => {
+      try {
+        await geofencingService.updateGeofence(zoneId, { radius });
+      } catch (err) {
+        setToast({ type: 'error', message: err.message || 'Failed to update radius.' });
+      }
+    }, 500);
   };
 
   const handleEdit = (zone) => {

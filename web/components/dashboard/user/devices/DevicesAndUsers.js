@@ -527,8 +527,8 @@ export default function DevicesAndUsers() {
 
   return (
     <div className={styles.container}>
-      {/* Warning Banner */}
-      {showWarning && (
+      {/* Warning Banner — hidden once family members exist */}
+      {showWarning && users.length === 0 && (
         <div className={styles.warningBanner}>
           <div className={styles.warningContent}>
             <svg

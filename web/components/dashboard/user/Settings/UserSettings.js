@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import Link from 'next/link';
 import AccountTab from './AccountTab';
 import PasswordTab from './PasswordTab';
 import NotificationsTab from './NotificationsTab';
@@ -199,6 +200,12 @@ export default function UserSettings({ user }) {
             onDiscard={handleDiscard}
           />
         )}
+      </div>
+
+      <div style={{ marginTop: 12, textAlign: 'center' }}>
+        <Link href="/privacy-policy" style={{ color: '#0f4c75', fontSize: 13, fontWeight: 500 }}>
+          View Privacy Policy
+        </Link>
       </div>
     </div>
   );

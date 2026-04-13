@@ -220,6 +220,13 @@ export default function LoginForm() {
                 Sign up
               </Link>
             </p>
+            <p className={styles.subtitle}>
+              By continuing, you agree to our{" "}
+              <Link href="/privacy-policy" className={styles.signupLink}>
+                Privacy Policy
+              </Link>
+              .
+            </p>
 
             {/* Divider */}
             <div className={styles.divider}>

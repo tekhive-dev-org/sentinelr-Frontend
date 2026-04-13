@@ -16,7 +16,7 @@ export default {
     },
     ios: {
       supportsTablet: true,
-      bundleIdentifier: 'com.sentinelr.mobile',
+      bundleIdentifier: 'com.techhive.sentinelr',
       infoPlist: {
         NSLocationWhenInUseUsageDescription:
           'Sentinelr needs access to your location to track device position for family safety.',
@@ -26,7 +26,7 @@ export default {
       },
     },
     android: {
-      package: 'com.sentinelr.mobile',
+      package: 'com.techhive.sentinelr',
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#000000',

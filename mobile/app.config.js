@@ -4,7 +4,7 @@ export default {
   expo: {
     name: 'Sentinelr',
     slug: 'sentinelr-mobile',
-    version: '1.0.0',
+    version: '1.1.0',
     orientation: 'portrait',
     icon: './assets/icon.png',
     userInterfaceStyle: 'automatic',
@@ -27,6 +27,7 @@ export default {
     },
     android: {
       package: 'com.techhive.sentinelr',
+      versionCode: 2,
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#000000',

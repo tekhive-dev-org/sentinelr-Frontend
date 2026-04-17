@@ -172,7 +172,7 @@ export default function SettingsScreen({ navigation }) {
               title="Device ID"
               value={deviceId ? `...${deviceId.slice(-8)}` : "Unknown"}
             />
-            <SettingsRow title="App Version" value="1.0.0" />
+            <SettingsRow title="App Version" value="1.1.0" />
             <SettingsRow title="Status" value="Paired" isLast />
           </GlassCard>
 
@@ -228,7 +228,7 @@ export default function SettingsScreen({ navigation }) {
             Device stays on dashboard with "Unpaired" status
           </Text>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[
               setStyles.dangerBtn,
               {
@@ -258,7 +258,7 @@ export default function SettingsScreen({ navigation }) {
             ]}
           >
             Hides this device from the web dashboard view
-          </Text>
+          </Text> */}
         </ScrollView>
       </SafeAreaView>
     </View>

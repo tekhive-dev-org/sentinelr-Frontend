@@ -172,7 +172,7 @@ export default function SettingsScreen({ navigation }) {
               title="Device ID"
               value={deviceId ? `...${deviceId.slice(-8)}` : "Unknown"}
             />
-            <SettingsRow title="App Version" value="1.1.0" />
+            <SettingsRow title="App Version" value="1.1.1" />
             <SettingsRow title="Status" value="Paired" isLast />
           </GlassCard>
 

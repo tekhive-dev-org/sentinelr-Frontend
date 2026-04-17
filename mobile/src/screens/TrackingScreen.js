@@ -6,6 +6,7 @@ import * as Battery from "expo-battery";
 import { useDevice } from "../context/DeviceContext";
 import { useTheme } from "../context/ThemeContext";
 import { locationService } from "../services/locationService";
+import { locationEvents } from "../services/locationService";
 import { heartbeatService } from "../services/heartbeatService";
 import NavigationHeader from "../components/NavigationHeader";
 import GlassCard from "../components/GlassCard";
@@ -56,6 +57,22 @@ export default function TrackingScreen({ navigation }) {
     } else {
       stopTracking();
     }
+  }, [isTracking]);
+
+  // Real-time location updates from background task
+  useEffect(() => {
+    if (!isTracking) return;
+
+    const unsubscribe = locationEvents.onPing((location) => {
+      updateLocation({
+        latitude: location.latitude,
+        longitude: location.longitude,
+        accuracy: location.accuracy,
+        timestamp: location.timestamp,
+      });
+    });
+
+    return unsubscribe;
   }, [isTracking]);
 
   const handleAppStateChange = (nextAppState) => {

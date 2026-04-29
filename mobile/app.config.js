@@ -4,7 +4,7 @@ export default {
   expo: {
     name: 'Sentinelr',
     slug: 'sentinelr-mobile',
-    version: '1.0.0',
+    version: '1.1.1',
     orientation: 'portrait',
     icon: './assets/icon.png',
     userInterfaceStyle: 'automatic',
@@ -16,7 +16,7 @@ export default {
     },
     ios: {
       supportsTablet: true,
-      bundleIdentifier: 'com.sentinelr.mobile',
+      bundleIdentifier: 'com.techhive.sentinelr',
       infoPlist: {
         NSLocationWhenInUseUsageDescription:
           'Sentinelr needs access to your location to track device position for family safety.',
@@ -26,7 +26,8 @@ export default {
       },
     },
     android: {
-      package: 'com.sentinelr.mobile',
+      package: 'com.techhive.sentinelr',
+      // versionCode: 2,
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#000000',

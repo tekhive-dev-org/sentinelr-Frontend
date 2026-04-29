@@ -155,7 +155,7 @@ export default function LiveLocationMap() {
       </div>
 
       {/* ── Status pill (bottom overlay) ──────────────────────────────────── */}
-      {loading && (
+      {/* {loading && (
         <div className={styles.statusPill}>
           <span className={styles.dot} /> Refreshing…
         </div>
@@ -164,7 +164,7 @@ export default function LiveLocationMap() {
         <div className={styles.statusPill}>
           Updated {lastUpdated.toLocaleTimeString()}
         </div>
-      )}
+      )} */}
 
       {/* ── Map ───────────────────────────────────────────────────────────── */}
       <div className={styles.mapWrapper}>

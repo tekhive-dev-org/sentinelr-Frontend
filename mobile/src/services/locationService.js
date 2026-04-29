@@ -6,6 +6,23 @@ import { heartbeatService } from "./heartbeatService";
 
 const LOCATION_TASK_NAME = "sentinelr-background-location";
 
+// Simple in-process event bus for ping updates (works when app is in foreground)
+const _listeners = new Set();
+
+export const locationEvents = {
+  /** Subscribe to ping events. Returns an unsubscribe function. */
+  onPing(callback) {
+    _listeners.add(callback);
+    return () => _listeners.delete(callback);
+  },
+  /** @internal */
+  _emit(location) {
+    for (const cb of _listeners) {
+      try { cb(location); } catch {}
+    }
+  },
+};
+
 // Define background task
 TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   if (error) {
@@ -37,8 +54,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
       const { latitude, longitude, accuracy, altitude, speed } =
         location.coords;
 
-      try {
-        await apiService.uploadPing({
+      const ping = {
           latitude,
           longitude,
           accuracy,
@@ -46,8 +62,16 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
           speed,
           timestamp: new Date(location.timestamp).toISOString(),
           source: "GPS",
-        });
+        };
+
+      try {
+        console.log("[Location] Uploading ping:", JSON.stringify(ping));
+        await apiService.uploadPing(ping);
+        console.log("[Location] Ping uploaded successfully");
+        locationEvents._emit(ping);
       } catch (err) {
+        console.warn("[Location] Ping upload failed:", err.message, err.status);
+        locationEvents._emit(ping); // still update UI with latest coords
         if (err.status === 401 || err.status === 404) {
           await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
           return;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Alert, Linking, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Linking, StyleSheet, Platform, Modal, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { isRunningInExpoGo } from 'expo';
@@ -25,6 +25,7 @@ export default function PermissionsScreen({ navigation }) {
   const [locationStatus, setLocationStatus] = useState('pending');
   const [notificationStatus, setNotificationStatus] = useState('pending');
   const [backgroundStatus, setBackgroundStatus] = useState('pending');
+  const [showBgDisclosure, setShowBgDisclosure] = useState(false);
 
   useEffect(() => {
     checkPermissions();
@@ -78,19 +79,22 @@ export default function PermissionsScreen({ navigation }) {
     }
   };
 
-  const requestBackgroundLocationPermission = async () => {
-    try {
-      const { status: foreground } = await Location.getForegroundPermissionsAsync();
-      
-      if (foreground !== 'granted') {
-        Alert.alert(
-          'Enable Location First',
-          'Please enable Location Access before requesting background location.',
-          [{ text: 'OK' }]
-        );
-        return;
-      }
+  const showBackgroundLocationDisclosure = async () => {
+    const { status: foreground } = await Location.getForegroundPermissionsAsync();
+    if (foreground !== 'granted') {
+      Alert.alert(
+        'Enable Location First',
+        'Please enable Location Access before requesting background location.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+    setShowBgDisclosure(true);
+  };
 
+  const requestBackgroundLocationPermission = async () => {
+    setShowBgDisclosure(false);
+    try {
       const { status: background } = await Location.requestBackgroundPermissionsAsync();
       setBackgroundStatus(background === 'granted' ? 'granted' : 'denied');
 
@@ -289,7 +293,7 @@ export default function PermissionsScreen({ navigation }) {
               title="Background Location"
               description="Track location when app is closed"
               status={backgroundStatus}
-              onEnable={requestBackgroundLocationPermission}
+              onEnable={showBackgroundLocationDisclosure}
               onDisable={() => openSettingsToDisable('Background Location')}
             />
             <PermissionItem
@@ -304,6 +308,60 @@ export default function PermissionsScreen({ navigation }) {
               onDisable={() => openSettingsToDisable('Notifications')}
             />
           </View>
+
+          {/* Background Location Disclosure Modal */}
+          <Modal
+            visible={showBgDisclosure}
+            transparent
+            animationType="slide"
+            onRequestClose={() => setShowBgDisclosure(false)}
+          >
+            <View style={permStyles.modalOverlay}>
+              <View style={[permStyles.modalContent, { backgroundColor: colors.card }]}>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  <View style={permStyles.modalIconRow}>
+                    <Ionicons name="location" size={32} color={colors.warning} />
+                  </View>
+                  <Text style={[permStyles.modalTitle, { color: colors.text }]}>
+                    Background Location Access
+                  </Text>
+                  <Text style={[permStyles.modalBody, { color: colors.textSecondary }]}>
+                    {APP_NAME} collects your device's <Text style={{ fontWeight: '700', color: colors.text }}>precise GPS location</Text> even when the app is closed or not in use. This is required for:
+                  </Text>
+                  <View style={permStyles.modalBullets}>
+                    <Text style={[permStyles.modalBullet, { color: colors.textSecondary }]}>
+                      {"\u2022"} <Text style={{ fontWeight: '600', color: colors.text }}>Real-time tracking</Text> — so family members can see your location at all times
+                    </Text>
+                    <Text style={[permStyles.modalBullet, { color: colors.textSecondary }]}>
+                      {"\u2022"} <Text style={{ fontWeight: '600', color: colors.text }}>Geofence alerts</Text> — to notify you when a family member enters or leaves a designated area
+                    </Text>
+                    <Text style={[permStyles.modalBullet, { color: colors.textSecondary }]}>
+                      {"\u2022"} <Text style={{ fontWeight: '600', color: colors.text }}>SOS emergency alerts</Text> — to share your location instantly during an emergency
+                    </Text>
+                  </View>
+                  <Text style={[permStyles.modalBody, { color: colors.textSecondary, marginTop: 12 }]}>
+                    Your location data is encrypted in transit and is only shared with members of your family group. You can disable this at any time in your device settings.
+                  </Text>
+                </ScrollView>
+                <View style={permStyles.modalActions}>
+                  <TouchableOpacity
+                    style={[permStyles.modalBtnSecondary, { borderColor: colors.border }]}
+                    onPress={() => setShowBgDisclosure(false)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[permStyles.modalBtnText, { color: colors.textSecondary }]}>No Thanks</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[permStyles.modalBtnPrimary, { backgroundColor: colors.warning }]}
+                    onPress={requestBackgroundLocationPermission}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[permStyles.modalBtnText, { color: '#000' }]}>Allow Access</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
 
           {/* Settings Link */}
           <TouchableOpacity
@@ -390,5 +448,61 @@ const permStyles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginLeft: 8,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
+    maxHeight: '75%',
+  },
+  modalIconRow: {
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  modalBody: {
+    fontSize: 14,
+    lineHeight: 21,
+  },
+  modalBullets: {
+    marginTop: 10,
+    paddingLeft: 4,
+  },
+  modalBullet: {
+    fontSize: 14,
+    lineHeight: 22,
+    marginBottom: 6,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    marginTop: 20,
+    gap: 12,
+  },
+  modalBtnSecondary: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  modalBtnPrimary: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 14,
+    alignItems: 'center',
+  },
+  modalBtnText: {
+    fontSize: 15,
+    fontWeight: '700',
   },
 });

@@ -93,10 +93,11 @@ export function DeviceProvider({ children }) {
   }, []);
 
   // Register global auth-failure handler once.
-  // Do not unpair immediately on auth errors; only unpair when backend pairStatus says Unpaired.
+  // Only unpair if the backend pairStatus explicitly says Unpaired.
   useEffect(() => {
     if (!hasRegisteredAuthHandler.current) {
-      apiService.onAuthFailure(async () => {
+      apiService.onAuthFailure(async (error) => {
+        // On any auth error, check if backend still considers device paired
         const stillPaired = await checkPairStatusInDb();
         if (!stillPaired) {
           await forceUnpair(true);
@@ -252,6 +253,10 @@ export function DeviceProvider({ children }) {
     } catch (error) {
       throw error;
     }
+  };
+
+  const clearPairingNotice = () => {
+    setPairingNotice(null);
   };
 
   const unpairDevice = async () => {

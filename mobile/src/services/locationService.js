@@ -73,6 +73,8 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
         console.warn("[Location] Ping upload failed:", err.message, err.status);
         locationEvents._emit(ping); // still update UI with latest coords
         if (err.status === 401 || err.status === 404) {
+          await storageService.setTrackingEnabled(false);
+          heartbeatService.stop();
           await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
           return;
         }
@@ -113,8 +115,8 @@ export const locationService = {
     await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
       accuracy: Location.Accuracy.High,
       distanceInterval: 0, // send even when stationary (time-driven heartbeat)
-      timeInterval: 30000, // 30 seconds
-      deferredUpdatesInterval: 30000, // flush every 30s to keep backend up to date
+      timeInterval: 300000, // 5 minutes
+      deferredUpdatesInterval: 300000, // flush every 5 minutes to keep backend up to date
       deferredUpdatesDistance: 0, // do not wait for movement before dispatching
       showsBackgroundLocationIndicator: true,
       foregroundService: {

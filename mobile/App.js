@@ -14,6 +14,7 @@ import { locationService } from './src/services/locationService';
 import { geofencingService } from './src/services/geofencingService';
 
 // Screens
+import LandingScreen from './src/screens/LandingScreen';
 import PairingScreen from './src/screens/PairingScreen';
 import QRScannerScreen from './src/screens/QRScannerScreen';
 import PermissionsScreen from './src/screens/PermissionsScreen';
@@ -147,6 +148,7 @@ function AppNavigator() {
     >
       {!isPaired ? (
         <>
+          <Stack.Screen name="Landing" component={LandingScreen} />
           <Stack.Screen name="Pairing" component={PairingScreen} />
           <Stack.Screen name="QRScanner" component={QRScannerScreen} />
         </>

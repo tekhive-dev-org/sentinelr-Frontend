@@ -36,6 +36,14 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
     return;
   }
 
+  // Verify device is still active in DB before uploading anything
+  const isActive = await storageService.checkDeviceActive();
+  if (!isActive) {
+    heartbeatService.stop();
+    await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
+    return;
+  }
+
   // Always attempt heartbeat when the background task wakes.
   // sendHeartbeat() is internally throttled by keep-alive rules.
   try {

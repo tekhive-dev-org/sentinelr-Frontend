@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS } from '../utils/constants';
+import { getSupabase } from './supabaseClient';
 
 /**
  * Storage service for persistent data
@@ -59,5 +60,55 @@ export const storageService = {
       STORAGE_KEYS.IS_PAIRED,
       STORAGE_KEYS.TRACKING_ENABLED,
     ]);
+  },
+
+  /**
+   * Verify the device is still active in the database before sending data.
+   * Checks pairStatus !== 'Unpaired' AND deletedAt IS NULL.
+   * Falls back to true (allow) on network/query errors so transient issues
+   * don't silently drop data.
+   *
+   * @param {string} [deviceId] - Optional; reads from AsyncStorage if omitted.
+   * @returns {Promise<boolean>} true = device is active, false = stop sending.
+   */
+  async checkDeviceActive(deviceId) {
+    const id = deviceId || await this.getDeviceId();
+    if (!id) return false;
+
+    const supabase = getSupabase();
+    if (!supabase) return true; // client not available, allow through
+
+    try {
+      const { data, error } = await supabase
+        .from('Devices')
+        .select('pairStatus, deletedAt')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (error) {
+        console.warn('[storageService] checkDeviceActive query error:', error.message);
+        return true; // query failed, allow through
+      }
+      if (!data) {
+        console.warn('[storageService] checkDeviceActive: device not found in DB, id:', id);
+        return true; // RLS may hide it; allow through
+      }
+
+      if (data.deletedAt) {
+        console.warn('[storageService] Device is deleted, stopping sends.');
+        return false;
+      }
+
+      const status = (data.pairStatus || '').toLowerCase();
+      if (status === 'unpaired') {
+        console.warn('[storageService] Device is unpaired, stopping sends.');
+        return false;
+      }
+
+      return true;
+    } catch (err) {
+      console.warn('[storageService] checkDeviceActive failed:', err);
+      return true; // network error, allow through
+    }
   },
 };

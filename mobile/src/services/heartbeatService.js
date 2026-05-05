@@ -74,6 +74,13 @@ export const heartbeatService = {
         return;
       }
 
+      // Verify device is still active in the DB before sending
+      const isActive = await storageService.checkDeviceActive();
+      if (!isActive) {
+        this.stop();
+        return;
+      }
+
       const batteryLevel = await Battery.getBatteryLevelAsync();
       const batteryState = await Battery.getBatteryStateAsync();
 

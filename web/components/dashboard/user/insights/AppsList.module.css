@@ -1,64 +1,182 @@
 .container {
-  margin-top: 32px;
+  margin-top: 8px;
+  padding-bottom: 16px;
+}
+
+.headingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
 }
 
 .heading {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   color: #111827;
-  margin-bottom: 4px;
+  margin: 0 0 4px;
 }
 
 .subtext {
   color: #6b7280;
-  font-size: 14px;
-  margin-bottom: 24px;
+  font-size: 13px;
+  margin: 0;
 }
 
+/* ── List ─────────────────────────────────────────────────────────────────── */
 .list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
+/* ── App row ──────────────────────────────────────────────────────────────── */
 .appItem {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: 24px 44px 1fr auto;
   align-items: center;
-  padding: 16px 24px;
+  gap: 14px;
+  padding: 14px 20px;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.02),
-    0 2px 4px -1px rgba(0, 0, 0, 0.02),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5); /* Inner shine */
-  transition: box-shadow 0.2s;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  transition: box-shadow 0.2s, border-color 0.2s;
 }
 
 .appItem:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+  border-color: #d1d5db;
 }
 
-.column {
-  display: flex;
-  flex-direction: column;
-}
-
-.label {
-  color: #4b5563;
+/* Rank number */
+.rank {
   font-size: 13px;
-  margin-bottom: 4px;
+  font-weight: 700;
+  color: #d1d5db;
+  text-align: center;
+  flex-shrink: 0;
 }
 
-.value {
-  color: #111827;
-  font-size: 14px;
-  font-weight: 600;
+/* Icon container */
+.iconWrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .appIcon {
-  border-radius: 12px;
+  border-radius: 10px;
+  object-fit: cover;
 }
+
+/* App name + subtitle */
+.infoCol {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.appName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.appSub {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* Time label + usage bar */
+.timeCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  min-width: 110px;
+}
+
+.timeLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f3c5f;
+  white-space: nowrap;
+}
+
+.barTrack {
+  width: 100%;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: linear-gradient(90deg, #0f3c5f, #426b8e);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+  min-width: 4px;
+}
+
+/* ── Tablet (≤ 768px) ─────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .appItem {
+    grid-template-columns: 20px 40px 1fr auto;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+
+  .timeCol {
+    min-width: 90px;
+  }
+}
+
+/* ── Mobile (≤ 480px) ─────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .appItem {
+    grid-template-columns: 18px 38px 1fr auto;
+    gap: 8px;
+    padding: 12px 12px;
+  }
+
+  .appName {
+    font-size: 13px;
+  }
+
+  .appSub {
+    font-size: 11px;
+  }
+
+  .timeLabel {
+    font-size: 13px;
+  }
+
+  .timeCol {
+    min-width: 72px;
+  }
+
+  .barTrack {
+    width: 56px;
+  }
+
+  .rank {
+    font-size: 12px;
+  }
+}
+

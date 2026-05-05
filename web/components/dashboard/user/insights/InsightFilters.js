@@ -49,58 +49,54 @@ export default function InsightFilters({ onChartTypeChange, currentChartType, ac
   return (
     <div className={styles.container}>
       <div className={styles.leftGroup}>
-        <h2 className={styles.title}>Usage Analytics</h2>
-        
-        {/* Period Selector (Week) */}
-        <CustomSelect
-            value={['this_week', 'last_week'].includes(activePeriod) ? activePeriod : 'custom'}
-            onChange={(val) => {
-                if (val !== 'custom') onPeriodChange(val);
-            }}
-            options={periodOptions}
-            icon={<CalendarTodayOutlinedIcon style={{ fontSize: 16 }} />}
-            className={styles.periodSelect}
-        />
-        
-        {/* Day Picker */}
-        <div className={styles.datePickerWrapper}>
-             {/* The visible button */}
-            <button 
-                className={styles.pillTrigger} 
-                onClick={() => setDatePickerOpen(true)}
-            >
-                {selectedDate ? format(selectedDate, 'MMM d, yyyy') : 'Day'}
-                <CalendarTodayOutlinedIcon className={styles.icon} />
-            </button>
-            
-            {/* Hidden DatePicker controlled by state */}
-            <div className={styles.hiddenPicker}>
-                <DatePicker 
-                    open={datePickerOpen}
-                    onClose={() => setDatePickerOpen(false)}
-                    value={selectedDate}
-                    onChange={handleDateChange}
-                    slotProps={{
-                        textField: {
-                            // We don't render the input visibly, but we need it for the picker logic
-                        }
-                    }}
-                />
-            </div>
+        {/* <h2 className={styles.title}>Usage Analytics</h2> */}
+
+        {/* Filter controls row — scrollable on mobile */}
+        <div className={styles.filterRow}>
+          {/* Period Selector (Week) */}
+          <CustomSelect
+              value={['this_week', 'last_week'].includes(activePeriod) ? activePeriod : 'custom'}
+              onChange={(val) => {
+                  if (val !== 'custom') onPeriodChange(val);
+              }}
+              options={periodOptions}
+              icon={<CalendarTodayOutlinedIcon style={{ fontSize: 16 }} />}
+              className={styles.periodSelect}
+          />
+
+          {/* Day Picker */}
+          <div className={styles.datePickerWrapper}>
+              <button
+                  className={styles.pillTrigger}
+                  onClick={() => setDatePickerOpen(true)}
+              >
+                  {selectedDate ? format(selectedDate, 'MMM d, yyyy') : 'Day'}
+                  <CalendarTodayOutlinedIcon className={styles.icon} />
+              </button>
+              <div className={styles.hiddenPicker}>
+                  <DatePicker
+                      open={datePickerOpen}
+                      onClose={() => setDatePickerOpen(false)}
+                      value={selectedDate}
+                      onChange={handleDateChange}
+                      slotProps={{ textField: {} }}
+                  />
+              </div>
+          </div>
+
+          {/* Content Type Selector */}
+          <CustomSelect
+              value={currentChartType}
+              onChange={(val) => onChartTypeChange(val)}
+              options={chartTypeOptions}
+              className={styles.typeSelect}
+          />
         </div>
-        
-        {/* Content Type Selector */}
-        <CustomSelect
-            value={currentChartType}
-            onChange={(val) => onChartTypeChange(val)}
-            options={chartTypeOptions}
-            className={styles.typeSelect}
-        />
       </div>
-          
+
       {/* Export Button */}
-      <div>
-        <button 
+      <div className={styles.exportGroup}>
+        <button
             onClick={handleExportClick}
             className={styles.exportBtn}
         >

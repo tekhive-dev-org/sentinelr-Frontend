@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useTheme } from '../context/ThemeContext';
 import { apiService } from '../services/api';
+import { storageService } from '../services/storageService';
 import NavigationHeader from '../components/NavigationHeader';
 import GlassCard from '../components/GlassCard';
 
@@ -166,6 +167,20 @@ export default function SOSScreen() {
     );
 
     try {
+      // Verify device is still paired and not deleted before sending
+      const isActive = await storageService.checkDeviceActive();
+      if (!isActive) {
+        Alert.alert(
+          'Device Unpaired',
+          'This device is no longer paired to a dashboard. Please re-pair to use SOS.',
+          [{ text: 'OK' }],
+        );
+        setTriggered(false);
+        scaleAnim.setValue(1);
+        progressAnim.setValue(0);
+        return;
+      }
+
       const loc = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
       });

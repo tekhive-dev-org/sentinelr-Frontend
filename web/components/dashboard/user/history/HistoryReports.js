@@ -49,13 +49,17 @@ const LiveLocationMap = dynamic(
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 /**
- * Transform raw location-history entries into timeline events.
- * Each location point becomes a "stop" event.
- * When two consecutive points are far enough apart, a "driving" segment is
- * inserted between them (Haversine distance > 50 m).
+ * Extract only the street portion from a full address string.
+ * Mirrors expo-location's `addr.street` — everything before the first comma.
+ * e.g. "123 Main Street, Lagos, Nigeria" → "123 Main Street"
  */
+function streetOnly(address) {
+  if (!address) return '';
+  return address.split(',')[0].trim();
+}
+
 function haversineKm(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Earth radius in km
+  const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
   const a =
@@ -66,54 +70,90 @@ function haversineKm(lat1, lon1, lat2, lon2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+/** Format a millisecond duration as "45 min" or "1h 30m". Returns null for < 1 min. */
+function formatDuration(ms) {
+  const totalMin = Math.round(ms / 60000);
+  if (totalMin < 1) return null;
+  if (totalMin < 60) return `${totalMin} min`;
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
+
+/**
+ * Transform raw location-history entries into timeline events.
+ *
+ * Consecutive pings within CLUSTER_RADIUS_KM of each other are merged into
+ * a single "place" visit (Google Maps Timeline style). Between distinct places
+ * a lightweight "travel" connector is emitted.
+ */
 function buildTimelineEvents(historyEntries = []) {
   if (!historyEntries.length) return [];
 
-  // Sort oldest → newest so the timeline reads chronologically
+  const CLUSTER_RADIUS_KM = 0.10; // 100 m — pings within this radius = same place
+
   const sorted = [...historyEntries].sort(
     (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
   );
 
+  // Build clusters of spatially-close consecutive pings
+  const clusters = [];
+  let cluster = [sorted[0]];
+  for (let i = 1; i < sorted.length; i++) {
+    const prev = cluster[cluster.length - 1];
+    const curr = sorted[i];
+    if (haversineKm(prev.latitude, prev.longitude, curr.latitude, curr.longitude) <= CLUSTER_RADIUS_KM) {
+      cluster.push(curr);
+    } else {
+      clusters.push(cluster);
+      cluster = [curr];
+    }
+  }
+  clusters.push(cluster);
+
   const events = [];
   let idCounter = 1;
 
-  // First entry → "start" marker
-  const first = sorted[0];
-  events.push({
-    id: `te_${idCounter++}`,
-    type: 'start',
-    time: format(new Date(first.timestamp), 'hh:mm a'),
-    label: first.address || `${first.latitude.toFixed(4)}, ${first.longitude.toFixed(4)}`,
-  });
+  for (let i = 0; i < clusters.length; i++) {
+    const c = clusters[i];
+    const first = c[0];
+    const last = c[c.length - 1];
 
-  for (let i = 1; i < sorted.length; i++) {
-    const prev = sorted[i - 1];
-    const curr = sorted[i];
-    const dist = haversineKm(prev.latitude, prev.longitude, curr.latitude, curr.longitude);
+    // Use the best available address in the cluster
+    const addressPing = c.find((p) => p.address) || first;
+    const name = streetOnly(addressPing.address) || 'Unknown location';
 
-    // Insert a "driving" segment between non-trivial moves (> 50 m)
-    if (dist > 0.05) {
-      const prevTime = format(new Date(prev.timestamp), 'hh:mm a');
-      const currTime = format(new Date(curr.timestamp), 'hh:mm a');
-      events.push({
-        id: `te_${idCounter++}`,
-        type: 'driving',
-        distance: dist >= 1 ? `${dist.toFixed(1)} km` : `${Math.round(dist * 1000)} m`,
-        speed: '',
-        timeRange: `${prevTime} - ${currTime}`,
-        date: new Date(curr.timestamp),
-      });
-    }
+    const arrivedAt = format(new Date(first.timestamp), 'hh:mm a');
+    const leftAt = format(new Date(last.timestamp), 'hh:mm a');
+    const durationMs = new Date(last.timestamp) - new Date(first.timestamp);
 
-    // Each location point → "stop" event
     events.push({
       id: `te_${idCounter++}`,
-      type: 'stop',
-      location: curr.address || `${curr.latitude.toFixed(4)}, ${curr.longitude.toFixed(4)}`,
-      address: curr.address || '',
-      timeRange: format(new Date(curr.timestamp), 'hh:mm a'),
-      date: new Date(curr.timestamp),
+      type: 'place',
+      name,
+      arrivedAt,
+      leftAt,
+      duration: formatDuration(durationMs),
+      date: new Date(first.timestamp),
     });
+
+    // Travel connector to next place
+    if (i < clusters.length - 1) {
+      const nextFirst = clusters[i + 1][0];
+      const distKm = haversineKm(
+        last.latitude, last.longitude,
+        nextFirst.latitude, nextFirst.longitude
+      );
+      const travelMs = new Date(nextFirst.timestamp) - new Date(last.timestamp);
+      events.push({
+        id: `te_${idCounter++}`,
+        type: 'travel',
+        distance: distKm >= 1 ? `${distKm.toFixed(1)} km` : `${Math.round(distKm * 1000)} m`,
+        duration: formatDuration(travelMs),
+        timeRange: `${leftAt} – ${format(new Date(nextFirst.timestamp), 'hh:mm a')}`,
+        date: new Date(last.timestamp),
+      });
+    }
   }
 
   return events;
@@ -137,11 +177,20 @@ function deriveStats(historyEntries = []) {
     );
   }
 
+  // Count distinct place visits (clusters of pings within 100 m of each other)
+  const CLUSTER_RADIUS_KM = 0.10;
+  let places = sorted.length > 0 ? 1 : 0;
+  for (let i = 1; i < sorted.length; i++) {
+    if (haversineKm(sorted[i - 1].latitude, sorted[i - 1].longitude, sorted[i].latitude, sorted[i].longitude) > CLUSTER_RADIUS_KM) {
+      places++;
+    }
+  }
+
   return {
     distance: Math.round(totalDistKm),
-    stops: sorted.length,
-    alerts: 0,         // populated from alerts API later
-    notifications: 0,  // populated from alerts API later
+    stops: places,
+    alerts: 0,
+    notifications: 0,
   };
 }
 
@@ -224,9 +273,8 @@ export default function HistoryReports() {
     const q = search.toLowerCase();
     return timelineEvents.filter((evt) => {
       const searchable = [
-        evt.label,
-        evt.location,
-        evt.address,
+        evt.name,          // place event
+        evt.distance,      // travel event
         evt.alertTitle,
         evt.alertMessage,
         evt.type,

@@ -1,115 +1,141 @@
 /**
  * HistoryTimeline
- * Right-hand timeline sidebar showing chronological driving, stop, and alert events.
+ * Right-hand timeline sidebar — Google Maps Timeline style.
+ * Events are either "place" (clustered stay) or "travel" (movement between places).
  */
 
 import React from 'react';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { format } from 'date-fns';
 import styles from './HistoryReports.module.css';
 
 /**
- * Expected event shape:
- * {
- *   id: string | number,
- *   type: 'start' | 'driving' | 'stop' | 'alert',
- *   label?: string,            // e.g. "Home Base"
- *   time?: string,             // "08:00 AM"
- *   timeRange?: string,        // "07:00 - 07:30"
- *   date?: string | Date,
- *   distance?: string,         // "5.2 miles"
- *   speed?: string,            // "Avg Speed: 35mph"
- *   location?: string,         // "Ikeja - City Mall"
- *   address?: string,          // "123 Ikeja drive, Lagos"
- *   duration?: string,         // "STOP 1H 15M"
- *   alertTitle?: string,       // "GEOFENCE EXIT"
- *   alertMessage?: string,
- * }
+ * Expected event shapes:
+ *
+ * place:
+ *   { id, type:'place', name, arrivedAt, leftAt, duration?, date }
+ *
+ * travel:
+ *   { id, type:'travel', distance, duration?, timeRange, date }
+ *
+ * alert:
+ *   { id, type:'alert', alertTitle?, alertMessage?, date }
  */
 
 function formatDate(d) {
   if (!d) return '';
   try {
     const dt = typeof d === 'string' ? new Date(d) : d;
-    return format(dt, 'MMM d, yyyy');
+    return format(dt, 'MMM d');
   } catch {
-    return String(d);
+    return '';
   }
 }
 
-function TimelineStartItem({ event }) {
-  return (
-    <div className={styles.timelineItem}>
-      <div className={`${styles.timelineNode} ${styles.nodeGray}`} />
-      <div className={styles.timelineStartMarker}>
-        Start of day
-      </div>
-      <div className={styles.timelineStartLocation}>
-        {event.time && <>{event.time} • </>}
-        {event.label || 'Unknown'}
-      </div>
-    </div>
-  );
-}
+/** A visited place — prominent card with pin icon, name, time range, duration chip */
+function PlaceItem({ event }) {
+  const timeLabel =
+    event.arrivedAt === event.leftAt
+      ? event.arrivedAt
+      : `${event.arrivedAt} – ${event.leftAt}`;
 
-function TimelineDrivingItem({ event }) {
   return (
     <div className={styles.timelineItem}>
       <div className={`${styles.timelineNode} ${styles.nodeBlue}`}>
-        <DirectionsCarIcon />
+        <LocationOnIcon />
       </div>
-      <div className={styles.timelineEvent}>
-        <div className={styles.timelineEventHeader}>
-          <div className={styles.eventTypeRow}>
-            <DirectionsCarIcon className={styles.eventIcon} />
-            <span className={styles.eventType}>Driving</span>
-          </div>
-          {event.speed && <span className={styles.eventSpeed}>{event.speed}</span>}
-        </div>
-        {event.distance && <div className={styles.eventDistance}>{event.distance}</div>}
-        {event.location && <div className={styles.eventLocation}>{event.location}</div>}
-        {event.address && <div className={styles.eventAddress}>{event.address}</div>}
-        <div className={styles.eventTimestamp}>
-          {event.timeRange && (
-            <span className={styles.eventTimeRange}>
-              <FiberManualRecordIcon style={{ fontSize: 8, color: '#2563eb' }} />
-              {event.timeRange}
+      <div
+        className={styles.timelineEvent}
+        style={{ borderColor: '#dbeafe', background: '#f8faff' }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            gap: 8,
+            marginBottom: 5,
+          }}
+        >
+          <span
+            style={{
+              fontWeight: 700,
+              fontSize: 13,
+              color: '#111827',
+              lineHeight: 1.3,
+            }}
+          >
+            {event.name}
+          </span>
+          {event.duration && (
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: '#2563eb',
+                background: '#dbeafe',
+                borderRadius: 5,
+                padding: '2px 7px',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+              }}
+            >
+              {event.duration}
             </span>
           )}
-          {event.date && <span>{formatDate(event.date)}</span>}
+        </div>
+        <div
+          style={{
+            fontSize: 12,
+            color: '#6b7280',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+          }}
+        >
+          <span>{timeLabel}</span>
+          {event.date && (
+            <span style={{ color: '#d1d5db' }}>·</span>
+          )}
+          {event.date && (
+            <span style={{ color: '#9ca3af' }}>{formatDate(event.date)}</span>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-function TimelineStopItem({ event }) {
+/** A travel segment — compact connector row, no heavy card */
+function TravelItem({ event }) {
+  const parts = [event.distance, event.duration].filter(Boolean).join(' · ');
   return (
-    <div className={styles.timelineItem}>
-      <div className={`${styles.timelineNode} ${styles.nodeRed}`}>
-        <LocationOnIcon />
+    <div className={styles.timelineItem} style={{ paddingBottom: 12 }}>
+      <div
+        className={`${styles.timelineNode} ${styles.nodeGray}`}
+        style={{ background: '#f3f4f6' }}
+      >
+        <DirectionsCarIcon style={{ fontSize: 10, color: '#9ca3af' }} />
       </div>
-      <div className={styles.timelineEvent}>
-        <div className={styles.timelineEventHeader}>
-          <div className={styles.eventTypeRow}>
-            <LocationOnIcon className={styles.eventIcon} style={{ color: '#dc2626' }} />
-            <span className={styles.eventType}>{event.duration || 'Stop'}</span>
-          </div>
-        </div>
-        {event.location && <div className={styles.eventLocation}>{event.location}</div>}
-        {event.address && <div className={styles.eventAddress}>{event.address}</div>}
-        <div className={styles.eventTimestamp}>
-          {event.timeRange && (
-            <span className={styles.eventTimeRange}>
-              <FiberManualRecordIcon style={{ fontSize: 8, color: '#dc2626' }} />
-              {event.timeRange}
-            </span>
-          )}
-          {event.date && <span>{formatDate(event.date)}</span>}
-        </div>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 5,
+          paddingTop: 1,
+          flexWrap: 'wrap',
+        }}
+      >
+        <span style={{ fontSize: 12, color: '#9ca3af', fontWeight: 500 }}>
+          {parts}
+        </span>
+        {event.timeRange && (
+          <span style={{ fontSize: 11, color: '#d1d5db' }}>
+            · {event.timeRange}
+          </span>
+        )}
       </div>
     </div>
   );
@@ -123,17 +149,20 @@ function TimelineAlertItem({ event }) {
       </div>
       <div className={styles.timelineAlert}>
         <div className={styles.alertType}>{event.alertTitle || 'Alert'}</div>
-        {event.alertMessage && <div className={styles.alertMessage}>{event.alertMessage}</div>}
-        {event.date && <div className={styles.alertDate}>{formatDate(event.date)}</div>}
+        {event.alertMessage && (
+          <div className={styles.alertMessage}>{event.alertMessage}</div>
+        )}
+        {event.date && (
+          <div className={styles.alertDate}>{formatDate(event.date)}</div>
+        )}
       </div>
     </div>
   );
 }
 
 const RENDERERS = {
-  start: TimelineStartItem,
-  driving: TimelineDrivingItem,
-  stop: TimelineStopItem,
+  place: PlaceItem,
+  travel: TravelItem,
   alert: TimelineAlertItem,
 };
 
@@ -157,12 +186,10 @@ export default function HistoryTimeline({ events = [], loading = false, error = 
         ) : (
           <>
             {events.map((evt) => {
-              const Renderer = RENDERERS[evt.type] || TimelineDrivingItem;
-              return <Renderer key={evt.id} event={evt} />;
+              const Renderer = RENDERERS[evt.type];
+              return Renderer ? <Renderer key={evt.id} event={evt} /> : null;
             })}
-            <div className={styles.timelineEnd}>
-              End of records for selected period
-            </div>
+            <div className={styles.timelineEnd}>End of records</div>
           </>
         )}
       </div>

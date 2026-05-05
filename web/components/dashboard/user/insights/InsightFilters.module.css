@@ -1,58 +1,72 @@
+/* ── Filter bar container ──────────────────────────────────────────────────── */
 .container {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 24px;
-  flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
 }
 
+/* Left side: title + scrollable filter row */
 .leftGroup {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 1;
+  min-width: 0;
 }
 
 .title {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   color: #111827;
   margin: 0;
-  margin-right: 16px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-/* Pill/Button Styles */
-.pillTrigger {
+/* The three filter controls sit in their own flex row */
+.filterRow {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.75);
+  min-width: 0;
+}
+
+/* ── Control pills / selects ──────────────────────────────────────────────── */
+.pillTrigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.02),
-    0 2px 4px -1px rgba(0, 0, 0, 0.02),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5); /* Inner shine */
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.6);
   border: 1px solid #e5e7eb;
-  border-radius: 24px;
-  font-size: 14px;
+  border-radius: 8px;
+  font-size: 13px;
   color: #374151;
   cursor: pointer;
   outline: none;
-  height: 40px;
+  height: 36px;
   box-sizing: border-box;
-  transition: all 0.2s;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .pillTrigger:hover {
   background: #f9fafb;
+  border-color: #d1d5db;
 }
 
 /* Date Picker Wrapper */
 .datePickerWrapper {
   position: relative;
-  
+  flex-shrink: 0;
 }
 
 .hiddenPicker {
@@ -66,29 +80,31 @@
   z-index: -1;
 }
 
-/* Override visibility to ensure sizing is calculated */
 .hiddenPicker :global(.MuiFormControl-root) {
   width: 100%;
   height: 100%;
 }
 
-/* Native Select Styles Removed - Using CustomSelect component */
-
-/* Specific widths for containers - Increased as requested */
 .periodSelect {
-  min-width: 160px; /* Increased from 140px */
+  min-width: 145px;
+  flex-shrink: 0;
 }
 
 .typeSelect {
-  min-width: 200px; /* Increased from 180px */
+  min-width: 195px;
+  flex-shrink: 0;
 }
 
-/* Export Button */
+/* ── Export button ────────────────────────────────────────────────────────── */
+.exportGroup {
+  flex-shrink: 0;
+}
+
 .exportBtn {
   background-color: #0f3c5f;
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 8px 16px;
   font-size: 14px;
   font-weight: 500;
@@ -97,6 +113,7 @@
   gap: 4px;
   cursor: pointer;
   height: 36px;
+  white-space: nowrap;
   transition: background-color 0.2s;
 }
 
@@ -105,7 +122,7 @@
 }
 
 .icon {
-  font-size: 16px !important;
+  font-size: 15px !important;
   color: #6b7280;
 }
 
@@ -113,10 +130,66 @@
   font-size: 18px !important;
 }
 
-.selectIcon {
-  font-size: 16px !important;
-  color: #6b7280;
-  position: absolute;
-  right: 12px;
-  pointer-events: none;
+/* ── Tablet (≤ 900px) ─────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .title {
+    font-size: 16px;
+  }
+
+  .typeSelect {
+    min-width: 165px;
+  }
 }
+
+/* ── Mobile (≤ 640px) ─────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .leftGroup {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 10px;
+    flex: unset;
+  }
+
+  .title {
+    font-size: 17px;
+  }
+
+  /* Wrap instead of scroll — avoids clipping the absolute-positioned dropdowns */
+  .filterRow {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .periodSelect {
+    min-width: 130px;
+    flex: 1 1 130px;
+  }
+
+  .typeSelect {
+    min-width: 160px;
+    flex: 1 1 160px;
+  }
+
+  .datePickerWrapper {
+    flex: 0 0 auto;
+  }
+
+  .exportGroup {
+    width: 100%;
+  }
+
+  .exportBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+

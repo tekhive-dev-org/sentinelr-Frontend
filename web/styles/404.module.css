@@ -1,0 +1,241 @@
+/* ── Full-page container ──────────────────────────────────────────────────── */
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0e4b68 0%, #0c3d54 50%, #083344 100%);
+  padding: 24px 16px 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Background glow orbs ─────────────────────────────────────────────────── */
+.orb1 {
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.18) 0%, transparent 70%);
+  top: -140px;
+  right: -140px;
+  pointer-events: none;
+}
+
+.orb2 {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(14, 75, 104, 0.35) 0%, transparent 70%);
+  bottom: -100px;
+  left: -100px;
+  pointer-events: none;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────────── */
+.card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+  max-width: 480px;
+  width: 100%;
+}
+
+/* ── Logo ─────────────────────────────────────────────────────────────────── */
+.logoRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 48px;
+}
+
+.logo {
+  width: 66px;
+  height: 66px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.logoText {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: -0.3px;
+}
+
+/* ── Big 404 display ──────────────────────────────────────────────────────── */
+.errorCode {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 28px;
+  line-height: 1;
+  user-select: none;
+}
+
+.four {
+  font-size: 120px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.15);
+  letter-spacing: -6px;
+  line-height: 1;
+}
+
+.zero {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 6px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.shieldSvg {
+  width: 52px;
+  height: 52px;
+}
+
+/* ── Text ─────────────────────────────────────────────────────────────────── */
+.heading {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 12px;
+  letter-spacing: -0.4px;
+}
+
+.body {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.65;
+  margin: 0 0 40px;
+}
+
+/* ── Action buttons ───────────────────────────────────────────────────────── */
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 28px;
+  background: #fff;
+  color: #0c3d54;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btnPrimary:hover {
+  background: #f0f9ff;
+  transform: translateY(-1px);
+}
+
+.btnPrimary:active {
+  transform: translateY(0);
+}
+
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 28px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.btnSecondary:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.btnSecondary:active {
+  transform: translateY(0);
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+.footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 64px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* ── Mobile (≤ 480px) ─────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .four {
+    font-size: 80px;
+    letter-spacing: -4px;
+  }
+
+  .zero {
+    width: 68px;
+    height: 68px;
+    border-width: 4px;
+  }
+
+  .shieldSvg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .heading {
+    font-size: 22px;
+  }
+
+  .body {
+    font-size: 14px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .btnPrimary,
+  .btnSecondary {
+    width: 100%;
+  }
+
+  .logoRow {
+    margin-bottom: 36px;
+  }
+}

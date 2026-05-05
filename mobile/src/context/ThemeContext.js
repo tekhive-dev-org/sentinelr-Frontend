@@ -29,14 +29,14 @@ export const themes = {
 
       // Brand colors
       primary: '#3e0d10',
-      danger: '#db323f',
-      dangerSoft: 'rgba(219, 50, 63, 0.18)',
-      warning: '#e6ad13',
-      warningSoft: 'rgba(230, 173, 19, 0.15)',
-      success: '#22c55e',
-      successSoft: 'rgba(34, 197, 94, 0.15)',
-      accent: '#3b82f6',
-      accentSoft: 'rgba(59, 130, 246, 0.15)',
+      danger: '#dc2626',
+      dangerSoft: 'rgba(220, 38, 38, 0.18)',
+      warning: '#ea580c',
+      warningSoft: 'rgba(234, 88, 12, 0.15)',
+      success: '#16a34a',
+      successSoft: 'rgba(22, 163, 74, 0.15)',
+      accent: '#3c03cf',
+      accentSoft: 'rgba(59, 0, 209, 0.15)',
 
       // Borders
       border: 'rgba(255, 255, 255, 0.06)',
@@ -50,35 +50,35 @@ export const themes = {
     name: 'light',
     colors: {
       // Backgrounds
-      background: '#e0e5ec',
-      surface: '#e0e5ec',
-      surfaceSolid: '#e0e5ec',
-      card: '#e0e5ec',
+      background: '#f8fafc',
+      surface: '#f8fafc',
+      surfaceSolid: '#f8fafc',
+      card: '#ffffff',
 
       // Neumorphic shadows
       neuLight: '#ffffff',
-      neuDark: '#a3b1c6',
-      neuInset: 'rgba(0,0,0,0.08)',
+      neuDark: '#c8d0db',
+      neuInset: 'rgba(0,0,0,0.06)',
 
       // Text
-      text: '#2d3748',
-      textSecondary: '#5a6578',
-      textMuted: '#8f9bb3',
+      text: '#111827',
+      textSecondary: '#374151',
+      textMuted: '#6b7280',
 
       // Brand colors
       primary: '#3e0d10',
-      danger: '#db323f',
-      dangerSoft: 'rgba(219, 50, 63, 0.12)',
-      warning: '#c9960f',
-      warningSoft: 'rgba(201, 150, 15, 0.12)',
+      danger: '#dc2626',
+      dangerSoft: 'rgba(220, 38, 38, 0.10)',
+      warning: '#ea580c',
+      warningSoft: 'rgba(234, 88, 12, 0.10)',
       success: '#16a34a',
-      successSoft: 'rgba(22, 163, 74, 0.12)',
-      accent: '#2563eb',
-      accentSoft: 'rgba(37, 99, 235, 0.10)',
+      successSoft: 'rgba(22, 163, 74, 0.10)',
+      accent: '#3c03cf',
+      accentSoft: 'rgba(59, 0, 209, 0.10)',
 
       // Borders
-      border: 'rgba(0, 0, 0, 0.06)',
-      borderLight: 'rgba(0, 0, 0, 0.04)',
+      border: '#e5e7eb',
+      borderLight: '#f3f4f6',
 
       // Status bar
       statusBar: 'dark',

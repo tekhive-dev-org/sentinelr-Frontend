@@ -112,18 +112,26 @@ export default function Insights() {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <DashboardLayout>
-
-        <div style={{ padding: '0 32px 32px' }} className="dashboard-content">
+        <div className="insights-page">
           <style jsx>{`
-            @media (max-width: 768px) {
-              .dashboard-content {
-                padding: 0 16px 16px !important;
+            .insights-page {
+              padding: 0 32px 40px;
+              max-width: 1200px;
+            }
+            @media (max-width: 1024px) {
+              .insights-page {
+                padding: 0 24px 32px;
+              }
+            }
+            @media (max-width: 640px) {
+              .insights-page {
+                padding: 0 16px 24px;
               }
             }
           `}</style>
-          
-          <InsightFilters 
-              currentChartType={chartType} 
+
+          <InsightFilters
+              currentChartType={chartType}
               onChartTypeChange={setChartType}
               activePeriod={activePeriod}
               onPeriodChange={setActivePeriod}
@@ -131,7 +139,7 @@ export default function Insights() {
           />
 
           <UsageChart chartType={chartType} data={usageData} loading={loading} />
-          
+
           <AppsList apps={appsData} loading={loading} />
         </div>
       </DashboardLayout>

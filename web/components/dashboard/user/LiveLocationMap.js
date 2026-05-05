@@ -10,9 +10,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useJsApiLoader, GoogleMap, Marker, InfoWindow } from '@react-google-maps/api';
 import { devicesService } from '../../../services/devicesService';
+import { supabase } from '../../../services/supabaseClient';
 import styles from './LiveLocationMap.module.css';
-
-const POLL_MS        = 300_000; // 5 minutes
 const DEFAULT_ZOOM   = 15;
 const DEFAULT_CENTER = { lat: 20, lng: 0 };
 
@@ -73,12 +72,13 @@ export default function LiveLocationMap() {
     }
   }, []);
 
-  // ── Poll live location whenever selected device changes ─────────────────────
+  // ── Fetch current location then subscribe to real-time inserts ─────────────
   useEffect(() => {
     if (!selectedId) return;
     let cancelled = false;
 
-    const poll = async () => {
+    // 1. Fetch the most recent location immediately so the map isn't blank
+    const fetchInitial = async () => {
       setLoading(true);
       try {
         const data = await devicesService.getLiveLocation({ deviceId: selectedId });
@@ -99,9 +99,50 @@ export default function LiveLocationMap() {
 
     setShowInfo(false);
     setLocationData(null);
-    poll();
-    const timer = setInterval(poll, POLL_MS);
-    return () => { cancelled = true; clearInterval(timer); };
+    fetchInitial();
+
+    // 2. Subscribe to every new INSERT on device_locations for this device
+    const channel = supabase
+      .channel(`live-location:${selectedId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'Locations',
+          filter: `deviceId=eq.${selectedId}`,
+        },
+        (payload) => {
+          if (cancelled) return;
+          const row = payload.new;
+          // Merge the realtime row with any extra fields (e.g. userName) already
+          // held in state so the InfoWindow stays populated.
+          setLocationData((prev) => ({
+            ...prev,
+            latitude: row.latitude,
+            longitude: row.longitude,
+            accuracy: row.accuracy,
+            altitude: row.altitude,
+            speed: row.speed,
+            heading: row.heading,
+            battery_level: row.battery_level,
+            timestamp: row.timestamp ?? row.created_at,
+          }));
+          setError(null);
+          setLastUpdated(new Date());
+          panToLocation(row.latitude, row.longitude);
+        },
+      )
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR') {
+          console.error('[LiveLocationMap] Realtime subscription error');
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      supabase.removeChannel(channel);
+    };
   }, [selectedId, panToLocation]);
 
   const hasLocation = locationData?.latitude != null && locationData?.longitude != null;

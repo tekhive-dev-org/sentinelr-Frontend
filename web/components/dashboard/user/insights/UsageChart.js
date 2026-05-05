@@ -12,12 +12,14 @@ export default function UsageChart({ chartType, data, loading }) {
   return (
     <div className={styles.chartContainer}>
         <div className={styles.header}>
-            <h3 className={styles.title}>
-                Avg Screen time <span className={styles.timeHighlight}>7h 30m</span>
-            </h3>
+            <div className={styles.headerMeta}>
+                <span className={styles.metaLabel}>Avg Screen Time</span>
+                <span className={styles.timeHighlight}>7h 30m</span>
+            </div>
         </div>
 
-      <ResponsiveContainer width="100%" height={320} minWidth={0} minHeight={0}>
+      <div className={styles.chartWrapper}>
+      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
         {loading ? (
              <LoadingSpinner />
         ) : chartType === 'graph' ? (
@@ -74,6 +76,7 @@ export default function UsageChart({ chartType, data, loading }) {
           </BarChart>
         )}
       </ResponsiveContainer>
+      </div>
     </div>
   );
 }

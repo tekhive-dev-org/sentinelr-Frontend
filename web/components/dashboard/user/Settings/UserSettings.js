@@ -202,9 +202,12 @@ export default function UserSettings({ user }) {
         )}
       </div>
 
-      <div style={{ marginTop: 12, textAlign: 'center' }}>
-        <Link href="/privacy-policy" style={{ color: '#0f4c75', fontSize: 13, fontWeight: 500 }}>
-          View Privacy Policy
+      <div className={styles.footerBar}>
+        <span className={styles.footerText}>
+          Your data is protected under our
+        </span>
+        <Link href="/privacy-policy" className={styles.footerLink}>
+          Privacy Policy
         </Link>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "./DevicesAndUsers.module.css";
+import s from "./DeviceDetailModal.module.css";
 import CloseIcon from "@mui/icons-material/Close";
 import RouterIcon from "@mui/icons-material/Router";
 import SmartphoneIcon from "@mui/icons-material/Smartphone";
@@ -13,25 +13,18 @@ import SaveIcon from "@mui/icons-material/Save";
 import LinkOffIcon from "@mui/icons-material/LinkOff";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
-
-const DeviceIcon = ({ type, platform, className }) => {
-  const iconStyle = { fontSize: 32 };
-  if (type === "Phone" && platform === "iOS")
-    return <AppleIcon style={iconStyle} className={className} />;
-  if (type === "Phone" && platform === "Android")
-    return <AndroidIcon style={iconStyle} className={className} />;
-  if (type === "Phone")
-    return <SmartphoneIcon style={iconStyle} className={className} />;
-  if (type === "Tablet")
-    return <TabletIcon style={iconStyle} className={className} />;
-  if (type === "Laptop")
-    return <LaptopIcon style={iconStyle} className={className} />;
-  if (type === "Watch")
-    return <WatchIcon style={iconStyle} className={className} />;
-  return <RouterIcon style={iconStyle} className={className} />;
-};
-
 import LinkIcon from "@mui/icons-material/Link";
+
+const DeviceIcon = ({ type, platform }) => {
+  const sz = { fontSize: 30 };
+  if (type === "Phone" && platform === "iOS") return <AppleIcon style={sz} />;
+  if (type === "Phone" && platform === "Android") return <AndroidIcon style={sz} />;
+  if (type === "Phone") return <SmartphoneIcon style={sz} />;
+  if (type === "Tablet") return <TabletIcon style={sz} />;
+  if (type === "Laptop") return <LaptopIcon style={sz} />;
+  if (type === "Watch") return <WatchIcon style={sz} />;
+  return <RouterIcon style={sz} />;
+};
 
 export default function DeviceDetailModal({
   isOpen,
@@ -52,7 +45,6 @@ export default function DeviceDetailModal({
   useEffect(() => {
     if (device) {
       setEditName(device.deviceName);
-      // Priority: assignedUserId (the field we update) > userId (device owner) > memberUserId
       setEditAssignedUserId(device.userId);
     }
     setIsEditing(false);
@@ -70,9 +62,7 @@ export default function DeviceDetailModal({
     try {
       await onUpdate(device.id, {
         name: editName,
-        assignedUserId: editAssignedUserId
-          ? Number(editAssignedUserId)
-          : undefined,
+        assignedUserId: editAssignedUserId ? Number(editAssignedUserId) : undefined,
       });
       setIsEditing(false);
     } catch (err) {
@@ -82,306 +72,187 @@ export default function DeviceDetailModal({
     }
   };
 
-  return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div
-        className={styles.userDetailModal}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div style={{ position: "absolute", top: 16, right: 16 }}>
-          <button className={styles.modalClose} onClick={onClose}>
-            <CloseIcon style={{ fontSize: 20 }} />
-          </button>
-        </div>
+  const assignedMember = familyMembers.find(
+    (m) => Number(m.id) === Number(device.userId),
+  );
 
-        {/* Header */}
-        <div className={styles.userDetailHeaderContainer}>
-          <div className={styles.userDetailAvatar}>
+  return (
+    <div className={s.overlay} onClick={onClose}>
+      <div className={s.modal} onClick={(e) => e.stopPropagation()}>
+
+        {/* Close */}
+        <button className={s.closeBtn} onClick={onClose} aria-label="Close">
+          <CloseIcon style={{ fontSize: 18 }} />
+        </button>
+
+        {/* ── Hero ── */}
+        <div className={s.hero}>
+          <div className={s.avatarWrap}>
             <DeviceIcon type={device.type} platform={device.platform} />
           </div>
-
-          <div className={styles.userDetailContent}>
-            <div className={styles.userDetailText}>
-              <h2 className={styles.userDetailName}>
-                {device.deviceName || device.name}
-              </h2>
-              <p className={styles.userDetailEmail}>
-                {device.type} • {device.platform || "Generic"}
-              </p>
-            </div>
-
-            <div className={styles.userDetailActionsRow}>
-              <span
-                className={`${styles.statusBadge} ${
-                  isPaired
-                    ? styles.statusOnlineBadge
-                    : styles.statusOfflineBadge
-                }`}
-              >
-                <span className={styles.statusDotSmall}></span>
-                {isPaired ? "Paired" : "Unpaired"}
-              </span>
-            </div>
+          <div className={s.heroInfo}>
+            <h2 className={s.deviceName}>{device.deviceName || device.name}</h2>
+            <p className={s.deviceMeta}>
+              {device.type}
+              {device.platform ? ` · ${device.platform}` : ""}
+            </p>
+            <span className={`${s.statusBadge} ${isPaired ? s.statusPaired : s.statusUnpaired}`}>
+              <span className={s.statusDot} />
+              {isPaired ? "Paired" : "Unpaired"}
+            </span>
           </div>
         </div>
 
-        <div className={styles.userDetailDivider}></div>
+        {/* ── Info Grid ── */}
+        <div className={s.infoGrid}>
+          <div className={s.infoCell}>
+            <div className={s.infoCellLabel}>Device ID</div>
+            <div className={s.infoCellValue}>
+              {device.id ? `••••${String(device.id).slice(-6)}` : "—"}
+            </div>
+          </div>
+          <div className={s.infoCell}>
+            <div className={s.infoCellLabel}>Assigned To</div>
+            <div className={s.infoCellValue}>
+              {assignedMember?.name || device?.assignedUser?.name || "Unassigned"}
+            </div>
+          </div>
+          <div className={s.infoCell}>
+            <div className={s.infoCellLabel}>Type</div>
+            <div className={s.infoCellValue}>{device.type || "—"}</div>
+          </div>
+          <div className={s.infoCell}>
+            <div className={s.infoCellLabel}>Platform</div>
+            <div className={s.infoCellValue}>{device.platform || "Generic"}</div>
+          </div>
+        </div>
 
-        {/* Device Info */}
-        <div className={styles.activeControlsSection}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <h3 className={styles.activeControlsTitle}>Device Settings</h3>
+        {/* ── Device Settings ── */}
+        <div className={s.section}>
+          <div className={s.sectionHeader}>
+            <h3 className={s.sectionTitle}>Device Settings</h3>
             {!isEditing && (
-              <button
-                className={styles.btnSecondary}
-                style={{ padding: "6px 14px", fontSize: "13px" }}
-                onClick={() => setIsEditing(true)}
-              >
-                <EditIcon
-                  style={{
-                    fontSize: 15,
-                    marginRight: 4,
-                    verticalAlign: "middle",
-                  }}
-                />
+              <button className={s.editBtn} onClick={() => setIsEditing(true)}>
+                <EditIcon style={{ fontSize: 13 }} />
                 Edit
               </button>
             )}
           </div>
 
-          <div
-            style={{
-              marginTop: "16px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "12px",
-            }}
-          >
-            {/* Device Name */}
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Device Name</label>
-              {isEditing ? (
-                <input
-                  className={styles.formInput}
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  placeholder="Enter device name"
-                />
-              ) : (
-                <p style={{ margin: 0, fontSize: "14px", color: "#374151" }}>
-                  {device.deviceName || device.name || "—"}
-                </p>
-              )}
-            </div>
-
-            {/* Assigned User */}
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>
-                <SwapHorizIcon
-                  style={{
-                    fontSize: 15,
-                    marginRight: 4,
-                    verticalAlign: "middle",
-                  }}
-                />
-                Assigned To
-              </label>
-              {isEditing ? (
-                <select
-                  className={styles.formSelect}
-                  value={editAssignedUserId}
-                  onChange={(e) => setEditAssignedUserId(e.target.value)}
-                >
-                  <option value="">— Unassigned —</option>
-                  {familyMembers.map((member) => (
-                    <option key={member.id} value={member.id}>
-                      {member.name}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <p style={{ margin: 0, fontSize: "14px", color: "#374151" }}>
-                  {familyMembers.find(
-                    (m) =>
-                      // Coerce both sides to Number to avoid string vs number mismatch
-                      Number(m.id) === Number(device.userId),
-                  )?.name ||
-                    device?.assignedUser?.name ||
-                    "Unassigned"}
-                </p>
-              )}
-            </div>
-
-            {error && (
-              <p style={{ color: "#ef4444", fontSize: "13px", margin: 0 }}>
-                {error}
-              </p>
+          {/* Device Name */}
+          <div className={s.fieldRow}>
+            <div className={s.fieldLabel}>Device Name</div>
+            {isEditing ? (
+              <input
+                className={s.input}
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                placeholder="Enter device name"
+              />
+            ) : (
+              <div className={s.fieldValue}>{device.deviceName || device.name || "—"}</div>
             )}
+          </div>
 
-            {/* Edit Actions */}
-            {isEditing && (
-              <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
-                <button
-                  className={styles.btnPrimary}
-                  style={{ flex: 1 }}
-                  onClick={handleSave}
-                  disabled={saving}
-                >
-                  <SaveIcon
-                    style={{
-                      fontSize: 15,
-                      marginRight: 4,
-                      verticalAlign: "middle",
-                    }}
-                  />
-                  {saving ? "Saving..." : "Save Changes"}
-                </button>
-                <button
-                  className={styles.btnSecondary}
-                  style={{ flex: 1 }}
-                  onClick={() => {
-                    setIsEditing(false);
-                    setEditName(device.name);
-                    setEditAssignedUserId(device.assignedUser.id);
-                    setError(null);
-                  }}
-                  disabled={saving}
-                >
-                  Cancel
-                </button>
+          {/* Assigned User */}
+          <div className={s.fieldRow}>
+            <div className={s.fieldLabel}>
+              <SwapHorizIcon style={{ fontSize: 14 }} />
+              Assigned To
+            </div>
+            {isEditing ? (
+              <select
+                className={s.select}
+                value={editAssignedUserId}
+                onChange={(e) => setEditAssignedUserId(e.target.value)}
+              >
+                <option value="">— Unassigned —</option>
+                {familyMembers.map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className={s.fieldValue}>
+                {assignedMember?.name || device?.assignedUser?.name || "Unassigned"}
               </div>
             )}
           </div>
+
+          {error && <p className={s.errorMsg}>{error}</p>}
+
+          {isEditing && (
+            <div className={s.editActions}>
+              <button className={s.btnSave} onClick={handleSave} disabled={saving}>
+                <SaveIcon style={{ fontSize: 15 }} />
+                {saving ? "Saving…" : "Save Changes"}
+              </button>
+              <button
+                className={s.btnCancel}
+                onClick={() => {
+                  setIsEditing(false);
+                  setEditName(device.deviceName);
+                  setEditAssignedUserId(device.userId);
+                  setError(null);
+                }}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+            </div>
+          )}
         </div>
 
-        <div className={styles.userDetailDivider}></div>
+        <div className={s.divider} />
 
-        {/* Device Actions */}
-        <div
-          style={{
-            padding: "16px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "10px",
-          }}
-        >
-          <p
-            style={{
-              margin: "0 0 6px",
-              fontSize: "12px",
-              color: "#6b7280",
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-            }}
-          >
-            Device Actions
-          </p>
-
-          {/* Unpair — only shown when device is currently Paired */}
-          {isPaired && (
-            <div>
-              <button
-                onClick={() => onUnpair && onUnpair(device)}
-                className={styles.btnSecondary}
-                style={{
-                  width: "100%",
-                  borderColor: "#d97706",
-                  color: "#92400e",
-                  backgroundColor: "#fffbeb",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "6px",
-                }}
-              >
-                <LinkOffIcon style={{ fontSize: 17 }} />
-                Unpair Device
-              </button>
-              <p
-                style={{
-                  margin: "4px 0 0",
-                  fontSize: "11px",
-                  color: "#9ca3af",
-                  textAlign: "center",
-                }}
-              >
-                Device stays on dashboard with "Unpaired" status
-              </p>
-            </div>
-          )}
-
-          {/* Re-pair — only shown when device is currently Unpaired */}
-          {!isPaired && (
-            <div>
-              <button
-                onClick={() => onRepair && onRepair(device)}
-                className={styles.btnSecondary}
-                style={{
-                  width: "100%",
-                  borderColor: "#2563eb",
-                  color: "#1d4ed8",
-                  backgroundColor: "#eff6ff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "6px",
-                }}
-              >
-                <LinkIcon style={{ fontSize: 17 }} />
-                Re-pair Device
-              </button>
-              <p
-                style={{
-                  margin: "4px 0 0",
-                  fontSize: "11px",
-                  color: "#9ca3af",
-                  textAlign: "center",
-                }}
-              >
-                Removes this record and opens the pairing screen
-              </p>
-            </div>
-          )}
-
-          {/* Remove from Dashboard */}
-          <div>
-            <button
-              onClick={() => onRemove && onRemove(device)}
-              className={styles.btnSecondary}
-              style={{
-                width: "100%",
-                borderColor: "#ef4444",
-                color: "#ef4444",
-                backgroundColor: "#fef2f2",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "6px",
-              }}
-            >
-              <DeleteOutlineIcon style={{ fontSize: 17 }} />
-              Remove from Dashboard
-            </button>
-            <p
-              style={{
-                margin: "4px 0 0",
-                fontSize: "11px",
-                color: "#9ca3af",
-                textAlign: "center",
-              }}
-            >
-              Hides device from this dashboard view
-            </p>
+        {/* ── Device Actions ── */}
+        <div className={s.actions}>
+          <div className={s.sectionHeader} style={{ marginBottom: 10 }}>
+            <h3 className={s.sectionTitle}>Device Actions</h3>
           </div>
+
+          {isPaired && (
+            <button
+              className={`${s.actionBtn} ${s.btnUnpair}`}
+              onClick={() => onUnpair && onUnpair(device)}
+            >
+              <LinkOffIcon style={{ fontSize: 20 }} />
+              <div className={s.actionBtnContent}>
+                <span className={s.actionBtnLabel}>Unpair Device</span>
+                <span className={s.actionBtnHint}>Stays on dashboard with Unpaired status</span>
+              </div>
+            </button>
+          )}
+
+          {!isPaired && (
+            <button
+              className={`${s.actionBtn} ${s.btnRepair}`}
+              onClick={() => onRepair && onRepair(device)}
+            >
+              <LinkIcon style={{ fontSize: 20 }} />
+              <div className={s.actionBtnContent}>
+                <span className={s.actionBtnLabel}>Re-pair Device</span>
+                <span className={s.actionBtnHint}>Removes record and opens pairing screen</span>
+              </div>
+            </button>
+          )}
+
+          <button
+            className={`${s.actionBtn} ${s.btnRemove}`}
+            onClick={() => onRemove && onRemove(device)}
+          >
+            <DeleteOutlineIcon style={{ fontSize: 20 }} />
+            <div className={s.actionBtnContent}>
+              <span className={s.actionBtnLabel}>Remove from Dashboard</span>
+              <span className={s.actionBtnHint}>Hides this device from your dashboard view</span>
+            </div>
+          </button>
         </div>
+
       </div>
     </div>
   );
 }
+
+

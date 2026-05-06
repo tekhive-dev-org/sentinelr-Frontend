@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Alert, Linking, StyleSheet, Platform, Modal, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  Linking,
+  StyleSheet,
+  Platform,
+  Modal,
+  ScrollView,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { isRunningInExpoGo } from 'expo';
@@ -12,13 +22,59 @@ import { APP_NAME } from '../utils/constants';
 const isExpoGoAndroid = Platform.OS === 'android' && isRunningInExpoGo();
 
 async function getNotificationsModule() {
-  if (isExpoGoAndroid) {
-    return null;
-  }
-
-  const module = await import('expo-notifications');
-  return module;
+  if (isExpoGoAndroid) return null;
+  return import('expo-notifications');
 }
+
+// ── Permission row ─────────────────────────────────────────────────────────
+const PermissionRow = ({ icon, title, description, status, onEnable, onDisable, colors }) => {
+  const granted = status === 'granted';
+  const unavailable = status === 'unavailable';
+
+  const tint = granted
+    ? colors.success
+    : unavailable
+    ? colors.warning
+    : colors.danger;
+  const tintSoft = granted
+    ? colors.successSoft
+    : unavailable
+    ? colors.warningSoft
+    : colors.dangerSoft;
+  const statusIcon = granted
+    ? 'checkmark-circle'
+    : unavailable
+    ? 'information-circle'
+    : 'close-circle';
+  const btnLabel = granted ? 'Granted' : unavailable ? 'Dev build' : 'Enable';
+
+  return (
+    <View style={[s.permCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      {/* Left icon badge */}
+      <View style={[s.permBadge, { backgroundColor: tintSoft }]}>
+        <Ionicons name={icon} size={20} color={tint} />
+      </View>
+
+      {/* Text */}
+      <View style={s.permText}>
+        <Text style={[s.permTitle, { color: colors.text }]}>{title}</Text>
+        <Text style={[s.permDesc, { color: colors.textSecondary }]}>{description}</Text>
+      </View>
+
+      {/* Status + button */}
+      <View style={s.permRight}>
+        <Ionicons name={statusIcon} size={18} color={tint} style={{ marginBottom: 6 }} />
+        <TouchableOpacity
+          style={[s.permBtn, { backgroundColor: tintSoft, borderColor: tint }]}
+          onPress={granted ? onDisable : onEnable}
+          activeOpacity={0.7}
+        >
+          <Text style={[s.permBtnText, { color: tint }]}>{btnLabel}</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
 
 export default function PermissionsScreen({ navigation }) {
   const { colors } = useTheme();
@@ -27,9 +83,7 @@ export default function PermissionsScreen({ navigation }) {
   const [backgroundStatus, setBackgroundStatus] = useState('pending');
   const [showBgDisclosure, setShowBgDisclosure] = useState(false);
 
-  useEffect(() => {
-    checkPermissions();
-  }, []);
+  useEffect(() => { checkPermissions(); }, []);
 
   const checkPermissions = async () => {
     try {
@@ -42,51 +96,33 @@ export default function PermissionsScreen({ navigation }) {
           const Notifications = await getNotificationsModule();
           const { status } = await Notifications.getPermissionsAsync();
           notification = status;
-        } catch (e) {
-          console.log('Notifications permission check failed:', e.message);
-        }
+        } catch {}
       }
 
       setLocationStatus(foreground === 'granted' ? 'granted' : 'denied');
       setBackgroundStatus(background === 'granted' ? 'granted' : 'denied');
       setNotificationStatus(
-        notification === 'granted'
-          ? 'granted'
-          : notification === 'unavailable'
-            ? 'unavailable'
-            : 'denied'
+        notification === 'granted' ? 'granted' : notification === 'unavailable' ? 'unavailable' : 'denied',
       );
-    } catch (error) {
-      console.error('Error checking permissions:', error);
-    }
+    } catch {}
   };
 
   const requestLocationPermission = async () => {
     try {
-      const { status: foreground } = await Location.requestForegroundPermissionsAsync();
-      setLocationStatus(foreground === 'granted' ? 'granted' : 'denied');
-
-      if (foreground !== 'granted') {
-        Alert.alert(
-          'Location Required',
-          'Please enable location access to use tracking features.',
-          [{ text: 'OK' }]
-        );
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      setLocationStatus(status === 'granted' ? 'granted' : 'denied');
+      if (status !== 'granted') {
+        Alert.alert('Location Required', 'Please enable location access to use tracking features.', [{ text: 'OK' }]);
       }
-    } catch (error) {
-      console.error('Location permission error:', error);
+    } catch {
       Alert.alert('Error', 'Failed to request location permission');
     }
   };
 
   const showBackgroundLocationDisclosure = async () => {
-    const { status: foreground } = await Location.getForegroundPermissionsAsync();
-    if (foreground !== 'granted') {
-      Alert.alert(
-        'Enable Location First',
-        'Please enable Location Access before requesting background location.',
-        [{ text: 'OK' }]
-      );
+    const { status } = await Location.getForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Enable Location First', 'Please enable Location Access before requesting background location.', [{ text: 'OK' }]);
       return;
     }
     setShowBgDisclosure(true);
@@ -95,414 +131,427 @@ export default function PermissionsScreen({ navigation }) {
   const requestBackgroundLocationPermission = async () => {
     setShowBgDisclosure(false);
     try {
-      const { status: background } = await Location.requestBackgroundPermissionsAsync();
-      setBackgroundStatus(background === 'granted' ? 'granted' : 'denied');
-
-      if (background !== 'granted') {
+      const { status } = await Location.requestBackgroundPermissionsAsync();
+      setBackgroundStatus(status === 'granted' ? 'granted' : 'denied');
+      if (status !== 'granted') {
         Alert.alert(
           'Background Location Required',
-          'For continuous tracking, please enable "Allow all the time" in your device settings.\n\nGo to Settings > Apps > Sentinelr > Permissions > Location > Allow all the time',
-          [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Open Settings', onPress: () => Linking.openSettings() }
-          ]
+          'For continuous tracking, enable "Allow all the time" in your device settings.\n\nGo to Settings > Apps > ' + APP_NAME + ' > Permissions > Location > Allow all the time',
+          [{ text: 'Cancel', style: 'cancel' }, { text: 'Open Settings', onPress: () => Linking.openSettings() }],
         );
       }
-    } catch (error) {
-      console.error('Background location permission error:', error);
-      Alert.alert(
-        'Background Location',
-        'Could not request background location permission. Please enable it manually in Settings.',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Open Settings', onPress: () => Linking.openSettings() }
-        ]
-      );
+    } catch {
+      Alert.alert('Background Location', 'Could not request permission. Please enable it manually in Settings.', [
+        { text: 'Cancel', style: 'cancel' }, { text: 'Open Settings', onPress: () => Linking.openSettings() },
+      ]);
     }
   };
 
   const requestNotificationPermission = async () => {
     if (isExpoGoAndroid) {
       setNotificationStatus('unavailable');
-      Alert.alert(
-        'Development Build Required',
-        'Android push notifications are not available in Expo Go. Use a development build or standalone app to enable notification permissions.'
-      );
+      Alert.alert('Development Build Required', 'Android push notifications are not available in Expo Go. Use a development build to enable notifications.');
       return;
     }
-
     try {
       const Notifications = await getNotificationsModule();
       const { status } = await Notifications.requestPermissionsAsync();
       setNotificationStatus(status === 'granted' ? 'granted' : 'denied');
-    } catch (error) {
-      console.log('Notifications request failed:', error.message);
+    } catch {
       setNotificationStatus('denied');
       Alert.alert('Notice', 'Notifications are not available in this environment.');
     }
   };
 
-  const openSettingsToDisable = (permissionName) => {
+  const openSettingsToDisable = (name) => {
     Alert.alert(
-      `Disable ${permissionName}`,
-      `To disable ${permissionName.toLowerCase()}, you need to go to your device settings.\n\nWould you like to open settings now?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Open Settings', 
-          onPress: async () => {
-            await Linking.openSettings();
-            // Re-check permissions when user comes back
-            setTimeout(checkPermissions, 1000);
-          }
-        }
-      ]
+      `Disable ${name}`,
+      `To disable ${name.toLowerCase()}, go to your device settings.`,
+      [{ text: 'Cancel', style: 'cancel' }, { text: 'Open Settings', onPress: async () => { await Linking.openSettings(); setTimeout(checkPermissions, 1000); } }],
     );
   };
 
-
-
-
-
-  const getStatusIcon = (status) => {
-    if (status === 'granted') return 'checkmark-circle';
-    if (status === 'unavailable') return 'information-circle';
-    if (status === 'denied') return 'alert-circle';
-    return 'ellipse-outline';
-  };
-
-  const getStatusColors = (status) => {
-    if (status === 'granted') {
-      return {
-        backgroundColor: colors.successSoft,
-        color: colors.success,
-      };
-    }
-
-    if (status === 'unavailable') {
-      return {
-        backgroundColor: colors.warningSoft || 'rgba(230, 173, 19, 0.15)',
-        color: colors.warning,
-      };
-    }
-
-    return {
-      backgroundColor: colors.dangerSoft,
-      color: colors.danger,
-    };
-  };
-
-  const PermissionItem = ({ title, description, status, onEnable, onDisable }) => {
-    const statusColors = getStatusColors(status);
-    const buttonLabel =
-      status === 'granted' ? 'Granted' : status === 'unavailable' ? 'Dev Build' : 'Enable';
-
-    return (
-      <GlassCard style={{ marginBottom: 12 }}>
-        <View style={permStyles.permRow}>
-          <View
-            style={[
-              permStyles.permIcon,
-              {
-                backgroundColor: statusColors.backgroundColor,
-              },
-            ]}
-          >
-            <Ionicons
-              name={getStatusIcon(status)}
-              size={22}
-              color={statusColors.color}
-            />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={[permStyles.permTitle, { color: colors.text }]}>
-              {title}
-            </Text>
-            <Text style={[permStyles.permDesc, { color: colors.textSecondary }]}>
-              {description}
-            </Text>
-          </View>
-          <TouchableOpacity
-            style={[
-              permStyles.permBtn,
-              {
-                backgroundColor: statusColors.backgroundColor,
-              },
-            ]}
-            onPress={status === 'granted' ? onDisable : onEnable}
-            activeOpacity={0.7}
-          >
-            <Text
-              style={[
-                permStyles.permBtnText,
-                {
-                  color: statusColors.color,
-                },
-              ]}
-            >
-              {buttonLabel}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </GlassCard>
-    );
-  };
+  // Progress count
+  const grantedCount = [locationStatus, backgroundStatus, notificationStatus].filter(s => s === 'granted').length;
+  const totalRequired = 3;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
-        <NavigationHeader
-          title="Permissions"
-          subtitle="Required access for tracking"
-          showMenu={false}
-        />
+        <NavigationHeader title="Permissions" subtitle="Required access" showMenu={false} />
 
-        <View style={permStyles.body}>
-          {/* Hero */}
-          <View style={permStyles.heroArea}>
-            <View
-              style={[
-                permStyles.heroIcon,
-                {
-                  backgroundColor: colors.neuInset,
-                  borderColor: colors.border,
-                },
-              ]}
-            >
-              <Ionicons name="shield-checkmark" size={36} color={colors.warning} />
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={s.scroll}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* ── Hero ──────────────────────────────────────────────────────── */}
+          <GlassCard style={s.hero}>
+            <View style={[s.heroBadge, { backgroundColor: colors.warningSoft }]}>
+              <Ionicons name="shield-checkmark" size={32} color={colors.warning} />
             </View>
-            <Text style={[permStyles.heroTitle, { color: colors.text }]}>
-              Grant Access
+            <Text style={[s.heroTitle, { color: colors.text }]}>App Permissions</Text>
+            <Text style={[s.heroSub, { color: colors.textSecondary }]}>
+              {APP_NAME} needs the following permissions to track your location and keep your family safe.
             </Text>
-            <Text style={[permStyles.heroSub, { color: colors.textSecondary }]}>
-              {APP_NAME} needs these permissions to keep your device tracked and
-              secure
-            </Text>
-          </View>
 
-          {/* Permissions List */}
-          <View style={{ marginTop: 8 }}>
-            <PermissionItem
-              title="Location Access"
-              description="Required to track device location"
-              status={locationStatus}
-              onEnable={requestLocationPermission}
-              onDisable={() => openSettingsToDisable('Location Access')}
-            />
-            <PermissionItem
-              title="Background Location"
-              description="Track location when app is closed"
-              status={backgroundStatus}
-              onEnable={showBackgroundLocationDisclosure}
-              onDisable={() => openSettingsToDisable('Background Location')}
-            />
-            <PermissionItem
-              title="Notifications"
-              description={
-                isExpoGoAndroid
-                  ? 'Push notifications require a development build on Android'
-                  : 'Receive alerts and updates'
-              }
-              status={notificationStatus}
-              onEnable={requestNotificationPermission}
-              onDisable={() => openSettingsToDisable('Notifications')}
-            />
-          </View>
-
-          {/* Background Location Disclosure Modal */}
-          <Modal
-            visible={showBgDisclosure}
-            transparent
-            animationType="slide"
-            onRequestClose={() => setShowBgDisclosure(false)}
-          >
-            <View style={permStyles.modalOverlay}>
-              <View style={[permStyles.modalContent, { backgroundColor: colors.card }]}>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  <View style={permStyles.modalIconRow}>
-                    <Ionicons name="location" size={32} color={colors.warning} />
-                  </View>
-                  <Text style={[permStyles.modalTitle, { color: colors.text }]}>
-                    Background Location Access
-                  </Text>
-                  <Text style={[permStyles.modalBody, { color: colors.textSecondary }]}>
-                    {APP_NAME} collects your device's <Text style={{ fontWeight: '700', color: colors.text }}>precise GPS location</Text> even when the app is closed or not in use. This is required for:
-                  </Text>
-                  <View style={permStyles.modalBullets}>
-                    <Text style={[permStyles.modalBullet, { color: colors.textSecondary }]}>
-                      {"\u2022"} <Text style={{ fontWeight: '600', color: colors.text }}>Real-time tracking</Text> — so family members can see your location at all times
-                    </Text>
-                    <Text style={[permStyles.modalBullet, { color: colors.textSecondary }]}>
-                      {"\u2022"} <Text style={{ fontWeight: '600', color: colors.text }}>Geofence alerts</Text> — to notify you when a family member enters or leaves a designated area
-                    </Text>
-                    <Text style={[permStyles.modalBullet, { color: colors.textSecondary }]}>
-                      {"\u2022"} <Text style={{ fontWeight: '600', color: colors.text }}>SOS emergency alerts</Text> — to share your location instantly during an emergency
-                    </Text>
-                  </View>
-                  <Text style={[permStyles.modalBody, { color: colors.textSecondary, marginTop: 12 }]}>
-                    Your location data is encrypted in transit and is only shared with members of your family group. You can disable this at any time in your device settings.
-                  </Text>
-                </ScrollView>
-                <View style={permStyles.modalActions}>
-                  <TouchableOpacity
-                    style={[permStyles.modalBtnSecondary, { borderColor: colors.border }]}
-                    onPress={() => setShowBgDisclosure(false)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={[permStyles.modalBtnText, { color: colors.textSecondary }]}>No Thanks</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[permStyles.modalBtnPrimary, { backgroundColor: colors.warning }]}
-                    onPress={requestBackgroundLocationPermission}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={[permStyles.modalBtnText, { color: '#000' }]}>Allow Access</Text>
-                  </TouchableOpacity>
-                </View>
+            {/* Progress bar */}
+            <View style={s.progressWrap}>
+              <View style={[s.progressTrack, { backgroundColor: colors.neuInset }]}>
+                <View
+                  style={[
+                    s.progressFill,
+                    {
+                      width: `${(grantedCount / totalRequired) * 100}%`,
+                      backgroundColor: grantedCount === totalRequired ? colors.success : colors.warning,
+                    },
+                  ]}
+                />
               </View>
+              <Text style={[s.progressLabel, { color: colors.textMuted }]}>
+                {grantedCount}/{totalRequired} granted
+              </Text>
             </View>
-          </Modal>
+          </GlassCard>
 
-          {/* Settings Link */}
+          {/* ── Permission Cards ──────────────────────────────────────────── */}
+          <View style={s.sectionHeader}>
+            <Text style={[s.sectionTitle, { color: colors.textMuted }]}>REQUIRED PERMISSIONS</Text>
+          </View>
+
+          <PermissionRow
+            icon="location"
+            title="Location Access"
+            description="Foreground GPS tracking"
+            status={locationStatus}
+            onEnable={requestLocationPermission}
+            onDisable={() => openSettingsToDisable('Location Access')}
+            colors={colors}
+          />
+          <PermissionRow
+            icon="navigate"
+            title="Background Location"
+            description="Track when app is closed"
+            status={backgroundStatus}
+            onEnable={showBackgroundLocationDisclosure}
+            onDisable={() => openSettingsToDisable('Background Location')}
+            colors={colors}
+          />
+          <PermissionRow
+            icon="notifications"
+            title="Notifications"
+            description={isExpoGoAndroid ? 'Requires development build on Android' : 'Alerts and SOS updates'}
+            status={notificationStatus}
+            onEnable={requestNotificationPermission}
+            onDisable={() => openSettingsToDisable('Notifications')}
+            colors={colors}
+          />
+
+          {/* ── Open Settings ─────────────────────────────────────────────── */}
           <TouchableOpacity
-            style={permStyles.settingsLink}
+            style={[s.settingsBtn, { borderColor: colors.border }]}
             onPress={() => Linking.openSettings()}
+            activeOpacity={0.7}
           >
-            <Ionicons name="settings-outline" size={18} color={colors.warning} />
-            <Text style={[permStyles.settingsText, { color: colors.warning }]}>
-              Open Device Settings
-            </Text>
+            <Ionicons name="settings-outline" size={16} color={colors.textSecondary} />
+            <Text style={[s.settingsBtnText, { color: colors.textSecondary }]}>Open Device Settings</Text>
           </TouchableOpacity>
-        </View>
+        </ScrollView>
       </SafeAreaView>
+
+      {/* ── Background Location Disclosure Modal ─────────────────────────── */}
+      <Modal
+        visible={showBgDisclosure}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowBgDisclosure(false)}
+      >
+        <View style={s.modalOverlay}>
+          <View style={[s.modalSheet, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            {/* Handle */}
+            <View style={[s.modalHandle, { backgroundColor: colors.border }]} />
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <View style={[s.modalIconWrap, { backgroundColor: colors.warningSoft }]}>
+                <Ionicons name="navigate" size={28} color={colors.warning} />
+              </View>
+              <Text style={[s.modalTitle, { color: colors.text }]}>
+                Background Location Access
+              </Text>
+              <Text style={[s.modalBody, { color: colors.textSecondary }]}>
+                {APP_NAME} collects your device's{' '}
+                <Text style={{ fontWeight: '700', color: colors.text }}>precise GPS location</Text>{' '}
+                even when the app is closed or not in use. This is required for:
+              </Text>
+
+              {[
+                { icon: 'location', label: 'Real-time tracking', detail: 'Family members can see your location at all times' },
+                { icon: 'map', label: 'Geofence alerts', detail: 'Get notified when someone enters or leaves a zone' },
+                { icon: 'alert-circle', label: 'SOS emergency alerts', detail: 'Share your location instantly during an emergency' },
+              ].map((item) => (
+                <View key={item.label} style={[s.modalBulletRow, { borderColor: colors.border }]}>
+                  <View style={[s.modalBulletIcon, { backgroundColor: colors.warningSoft }]}>
+                    <Ionicons name={item.icon} size={15} color={colors.warning} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[s.modalBulletLabel, { color: colors.text }]}>{item.label}</Text>
+                    <Text style={[s.modalBulletDetail, { color: colors.textSecondary }]}>{item.detail}</Text>
+                  </View>
+                </View>
+              ))}
+
+              <Text style={[s.modalFootnote, { color: colors.textMuted }]}>
+                Your location data is encrypted in transit and only shared with members of your family group. You can disable this at any time in Settings.
+              </Text>
+            </ScrollView>
+
+            <View style={s.modalActions}>
+              <TouchableOpacity
+                style={[s.modalBtnSecondary, { borderColor: colors.border }]}
+                onPress={() => setShowBgDisclosure(false)}
+                activeOpacity={0.7}
+              >
+                <Text style={[s.modalBtnText, { color: colors.textSecondary }]}>No Thanks</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[s.modalBtnPrimary, { backgroundColor: colors.warning }]}
+                onPress={requestBackgroundLocationPermission}
+                activeOpacity={0.7}
+              >
+                <Text style={[s.modalBtnText, { color: '#000' }]}>Allow Access</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
-const permStyles = StyleSheet.create({
-  body: {
-    flex: 1,
-    paddingHorizontal: 20,
+const s = StyleSheet.create({
+  scroll: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 40,
+    gap: 10,
   },
-  heroArea: {
+
+  // Hero card
+  hero: {
     alignItems: 'center',
-    paddingVertical: 24,
+    paddingVertical: 28,
+    gap: 10,
   },
-  heroIcon: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+  heroBadge: {
+    width: 68,
+    height: 68,
+    borderRadius: 20,
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-    borderWidth: 1,
+    marginBottom: 4,
   },
   heroTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '800',
-    marginBottom: 8,
+    letterSpacing: -0.3,
   },
   heroSub: {
-    fontSize: 14,
+    fontSize: 13,
     textAlign: 'center',
-    lineHeight: 20,
-    paddingHorizontal: 20,
+    lineHeight: 19,
+    paddingHorizontal: 12,
   },
-  permRow: {
+  progressWrap: {
+    width: '100%',
+    paddingHorizontal: 8,
+    gap: 6,
+    marginTop: 4,
+  },
+  progressTrack: {
+    height: 6,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  progressLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    textAlign: 'center',
+    letterSpacing: 0.4,
+  },
+
+  // Section header
+  sectionHeader: {
+    paddingHorizontal: 4,
+    paddingTop: 4,
+  },
+  sectionTitle: {
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+  },
+
+  // Permission row card
+  permCard: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 12,
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
   },
-  permIcon: {
+  permBadge: {
     width: 42,
     height: 42,
-    borderRadius: 21,
-    justifyContent: 'center',
+    borderRadius: 12,
     alignItems: 'center',
-    marginRight: 14,
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  permText: {
+    flex: 1,
+    gap: 2,
   },
   permTitle: {
-    fontSize: 15,
+    fontSize: 14.5,
     fontWeight: '700',
-    marginBottom: 2,
+    letterSpacing: -0.1,
   },
   permDesc: {
     fontSize: 12,
+    lineHeight: 16,
+  },
+  permRight: {
+    alignItems: 'center',
+    flexShrink: 0,
   },
   permBtn: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 12,
-    marginLeft: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    borderWidth: 1,
   },
   permBtnText: {
-    fontSize: 13,
+    fontSize: 11.5,
     fontWeight: '700',
   },
-  settingsLink: {
+
+  // Open settings link
+  settingsBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginTop: 4,
   },
-  settingsText: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginLeft: 8,
+  settingsBtnText: {
+    fontSize: 13.5,
+    fontWeight: '500',
   },
+
+  // Modal
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(0,0,0,0.55)',
     justifyContent: 'flex-end',
   },
-  modalContent: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+  modalSheet: {
+    borderTopLeftRadius: 26,
+    borderTopRightRadius: 26,
+    borderWidth: 1,
     padding: 24,
-    maxHeight: '75%',
+    paddingTop: 14,
+    maxHeight: '78%',
   },
-  modalIconRow: {
+  modalHandle: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  modalIconWrap: {
+    width: 60,
+    height: 60,
+    borderRadius: 18,
     alignItems: 'center',
-    marginBottom: 12,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginBottom: 14,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 19,
     fontWeight: '800',
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
+    letterSpacing: -0.3,
   },
   modalBody: {
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: 13.5,
+    lineHeight: 20,
+    marginBottom: 12,
   },
-  modalBullets: {
-    marginTop: 10,
-    paddingLeft: 4,
+  modalBulletRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    paddingVertical: 10,
+    borderTopWidth: 1,
   },
-  modalBullet: {
-    fontSize: 14,
-    lineHeight: 22,
-    marginBottom: 6,
+  modalBulletIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+    marginTop: 1,
+  },
+  modalBulletLabel: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  modalBulletDetail: {
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  modalFootnote: {
+    fontSize: 11.5,
+    lineHeight: 17,
+    marginTop: 14,
+    marginBottom: 4,
   },
   modalActions: {
     flexDirection: 'row',
+    gap: 10,
     marginTop: 20,
-    gap: 12,
   },
   modalBtnSecondary: {
     flex: 1,
-    paddingVertical: 14,
+    height: 50,
     borderRadius: 14,
-    borderWidth: 1,
+    borderWidth: 1.5,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   modalBtnPrimary: {
     flex: 1,
-    paddingVertical: 14,
+    height: 50,
     borderRadius: 14,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   modalBtnText: {
     fontSize: 15,
     fontWeight: '700',
   },
 });
+
+

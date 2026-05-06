@@ -56,7 +56,28 @@ export const alertsService = {
    * Get SOS alerts only
    */
   async getSOSAlerts() {
-    return apiRequest('/alerts/sos');
+    return apiRequest('/sos-alerts');
+  },
+
+  /**
+   * Get intruder alerts only
+   */
+  async getIntruderAlerts() {
+    return apiRequest('/alerts/intruder');
+  },
+
+  /**
+   * Get geofence alerts only
+   */
+  async getGeofenceAlerts() {
+    return apiRequest('/alerts?type=geofence');
+  },
+
+  /**
+   * Get screen time alerts only
+   */
+  async getScreenTimeAlerts() {
+    return apiRequest('/alerts?type=screen_time');
   },
 
   /**

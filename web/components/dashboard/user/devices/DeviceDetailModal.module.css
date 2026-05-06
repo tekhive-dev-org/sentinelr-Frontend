@@ -1,0 +1,461 @@
+/* ═══════════════════════════════════════════════
+   Device Detail Modal — Professional UI
+   ═══════════════════════════════════════════════ */
+
+/* ── Overlay ─────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 10px !important;
+}
+
+/* ── Modal Shell ─────────────────────────────── */
+.modal {
+  background: #ffffff;
+  border-radius: 14px !important;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.18),
+    0 4px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+  position: relative;
+  scrollbar-width: none;
+  margin: auto;
+}
+
+.modal::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Close Button ────────────────────────────── */
+.closeBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  z-index: 1;
+}
+
+.closeBtn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* ── Hero Header ─────────────────────────────── */
+.hero {
+  padding: 28px 28px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.avatarWrap {
+  width: 68px;
+  height: 68px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f4c75;
+  flex-shrink: 0;
+  border: 1px solid rgba(15, 76, 117, 0.12);
+}
+
+.heroInfo {
+  flex: 1;
+  padding-top: 4px;
+  padding-right: 36px; /* clear of close btn */
+}
+
+.deviceName {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 4px;
+  letter-spacing: -0.2px;
+  line-height: 1.25;
+}
+
+.deviceMeta {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 10px;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+}
+
+.statusPaired {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.statusUnpaired {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.statusPaired .statusDot {
+  background: #16a34a;
+}
+
+.statusUnpaired .statusDot {
+  background: #d97706;
+}
+
+/* ── Info Grid (read-only device facts) ─────── */
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 20px 28px 0;
+}
+
+.infoCell {
+  background: #ffffff;
+  padding: 14px 16px;
+}
+
+.infoCellLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 4px;
+}
+
+.infoCellValue {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #0f172a;
+  word-break: break-all;
+}
+
+/* ── Section ─────────────────────────────────── */
+.section {
+  padding: 22px 28px 0;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  margin: 0;
+}
+
+.editBtn {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+}
+
+.editBtn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+/* ── Form Fields ─────────────────────────────── */
+.fieldRow {
+  margin-bottom: 14px;
+}
+
+.fieldLabel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+.fieldValue {
+  font-size: 14px;
+  color: #0f172a;
+  font-weight: 400;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #0f172a;
+  background: #ffffff;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #0f4c75;
+  box-shadow: 0 0 0 3px rgba(15, 76, 117, 0.1);
+}
+
+.select {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #0f172a;
+  background: #ffffff;
+  box-sizing: border-box;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #0f4c75;
+  box-shadow: 0 0 0 3px rgba(15, 76, 117, 0.1);
+}
+
+.errorMsg {
+  color: #ef4444;
+  font-size: 12.5px;
+  font-weight: 500;
+  margin: 4px 0 0;
+}
+
+.editActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.btnSave {
+  flex: 1;
+  height: 40px;
+  border-radius: 8px;
+  background: #0f4c75;
+  color: #ffffff;
+  border: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.15s;
+}
+
+.btnSave:hover:not(:disabled) {
+  background: #0c3b5e;
+}
+
+.btnSave:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnCancel {
+  flex: 1;
+  height: 40px;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #475569;
+  border: 1.5px solid #e2e8f0;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btnCancel:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.btnCancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Divider ─────────────────────────────────── */
+.divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 22px 0 0;
+}
+
+/* ── Action Buttons ──────────────────────────── */
+.actions {
+  padding: 22px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.actionBtn {
+  width: 100%;
+  height: 44px;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  transition: all 0.18s;
+}
+
+.actionBtnContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.actionBtnLabel {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.actionBtnHint {
+  font-size: 11.5px;
+  font-weight: 400;
+  opacity: 0.7;
+  line-height: 1.3;
+}
+
+.btnUnpair {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #92400e;
+}
+
+.btnUnpair:hover {
+  background: #fef3c7;
+  border-color: #fbbf24;
+}
+
+.btnRepair {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.btnRepair:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
+
+.btnRemove {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.btnRemove:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
+/* ── Responsive ──────────────────────────────── */
+@media (max-width: 520px) {
+  .overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal {
+    border-radius: 20px 20px 0 0;
+    max-height: 92vh;
+    max-width: 100%;
+  }
+
+  .hero {
+    padding: 24px 20px 0;
+  }
+
+  .infoGrid {
+    margin: 18px 20px 0;
+    grid-template-columns: 1fr;
+  }
+
+  .section {
+    padding: 20px 20px 0;
+  }
+
+  .actions {
+    padding: 20px 20px 32px;
+  }
+}

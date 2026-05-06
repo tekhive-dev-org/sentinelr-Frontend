@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
   Animated,
   Pressable,
-  Alert,
   Vibration,
   Platform,
   StyleSheet,
@@ -31,6 +30,10 @@ export default function SOSScreen() {
   const [countdown, setCountdown] = useState(HOLD_SECONDS);
   const [triggered, setTriggered] = useState(false);
   const [currentAddress, setCurrentAddress] = useState(null);
+  const [toast, setToast] = useState(null); // { message, type: 'success'|'error'|'warning' }
+
+  const toastAnim = useRef(new Animated.Value(0)).current;
+  const toastTimerRef = useRef(null);
 
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -42,7 +45,26 @@ export default function SOSScreen() {
 
   const halfRing = RING_SIZE / 2;
 
-  // ── Fetch current location on mount ─────────────────────────────────────────
+  const showToast = useCallback((message, type = 'success') => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToast({ message, type });
+    toastAnim.setValue(0);
+    Animated.spring(toastAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 60,
+      friction: 10,
+    }).start();
+    toastTimerRef.current = setTimeout(() => {
+      Animated.timing(toastAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => setToast(null));
+    }, 4000);
+  }, [toastAnim]);
+
+  // ΓöÇΓöÇ Fetch current location on mount ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
   useEffect(() => {
     fetchCurrentLocation();
   }, []);
@@ -70,7 +92,7 @@ export default function SOSScreen() {
     }
   };
 
-  // ── Pulse animation loop for hold state ─────────────────────────────────────
+  // ΓöÇΓöÇ Pulse animation loop for hold state ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
   const startPulse = () => {
     pulseRef.current = Animated.loop(
       Animated.sequence([
@@ -94,7 +116,7 @@ export default function SOSScreen() {
     pulseAnim.setValue(1);
   };
 
-  // ── Press handlers ──────────────────────────────────────────────────────────
+  // ΓöÇΓöÇ Press handlers ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
   const handlePressIn = () => {
     if (triggered) return;
 
@@ -154,7 +176,7 @@ export default function SOSScreen() {
     progressAnim.setValue(0);
   };
 
-  // ── SOS trigger ─────────────────────────────────────────────────────────────
+  // ΓöÇΓöÇ SOS trigger ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
   const triggerSOS = async () => {
     clearInterval(countdownRef.current);
     stopPulse();
@@ -170,11 +192,7 @@ export default function SOSScreen() {
       // Verify device is still paired and not deleted before sending
       const isActive = await storageService.checkDeviceActive();
       if (!isActive) {
-        Alert.alert(
-          'Device Unpaired',
-          'This device is no longer paired to a dashboard. Please re-pair to use SOS.',
-          [{ text: 'OK' }],
-        );
+        showToast('Device unpaired. Please re-pair to use SOS.', 'warning');
         setTriggered(false);
         scaleAnim.setValue(1);
         progressAnim.setValue(0);
@@ -190,20 +208,16 @@ export default function SOSScreen() {
         longitude: loc.coords.longitude,
         accuracy: loc.coords.accuracy,
         timestamp: new Date().toISOString(),
+        message: 'Emergency SOS triggered',
       });
 
-      Alert.alert(
-        'SOS Alert Sent',
-        'Your emergency alert has been sent to all family members.',
-        [{ text: 'OK' }],
-      );
+      showToast('Alert sent to all family members.', 'success');
     } catch (err) {
       console.error('[SOS] trigger error:', err);
-      Alert.alert(
-        'SOS Alert',
-        'Emergency alert triggered. Your family has been notified.',
-        [{ text: 'OK' }],
-      );
+      setTriggered(false);
+      scaleAnim.setValue(1);
+      progressAnim.setValue(0);
+      showToast('Failed to send alert.', 'error');
     }
 
     setTimeout(() => {
@@ -213,7 +227,7 @@ export default function SOSScreen() {
     }, 5000);
   };
 
-  // ── Circular progress interpolations ────────────────────────────────────────
+  // ΓöÇΓöÇ Circular progress interpolations ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
   const rightRotate = progressAnim.interpolate({
     inputRange: [0, 0.5, 1],
     outputRange: ['0deg', '180deg', '180deg'],
@@ -228,8 +242,40 @@ export default function SOSScreen() {
 
   const ringColor = triggered ? colors.success : colors.text;
 
+  const toastBg =
+    toast?.type === 'success' ? colors.success :
+    toast?.type === 'error'   ? colors.danger :
+    colors.warning;
+
+  const toastIcon =
+    toast?.type === 'success' ? 'checkmark-circle' :
+    toast?.type === 'error'   ? 'close-circle' :
+    'warning';
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
+      {/* ── Toast Banner ── */}
+      {toast && (
+        <Animated.View
+          style={[
+            sosStyles.toast,
+            { backgroundColor: toastBg },
+            {
+              opacity: toastAnim,
+              transform: [{
+                translateY: toastAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [-20, 0],
+                }),
+              }],
+            },
+          ]}
+        >
+          <Ionicons name={toastIcon} size={18} color="#fff" />
+          <Text style={sosStyles.toastText}>{toast.message}</Text>
+        </Animated.View>
+      )}
+
       <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
         <NavigationHeader
           title="Safety Center"
@@ -238,7 +284,7 @@ export default function SOSScreen() {
         />
 
         <View style={sosStyles.body}>
-          {/* ── Emergency Help Text ────────────────────────────────────────── */}
+          {/* ΓöÇΓöÇ Emergency Help Text ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
           <View style={sosStyles.heroArea}>
             <Text style={[sosStyles.heroTitle, { color: colors.text }]}>
               Emergency Help
@@ -251,7 +297,7 @@ export default function SOSScreen() {
             </Text>
           </View>
 
-          {/* ── SOS Button Area ────────────────────────────────────────────── */}
+          {/* ΓöÇΓöÇ SOS Button Area ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
           <View style={sosStyles.buttonArea}>
             <Pressable
               onPressIn={handlePressIn}
@@ -267,7 +313,7 @@ export default function SOSScreen() {
                   transform: [{ scale: scaleAnim }],
                 }}
               >
-                {/* ── Circular progress ring ──────────────────────────────── */}
+                {/* ΓöÇΓöÇ Circular progress ring ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
                 <View style={sosStyles.ringContainer}>
                   <View
                     style={[
@@ -305,7 +351,7 @@ export default function SOSScreen() {
                   </View>
                 </View>
 
-                {/* ── Red SOS button ──────────────────────────────────────── */}
+                {/* ΓöÇΓöÇ Red SOS button ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
                 <Animated.View
                   style={[
                     sosStyles.sosButton,
@@ -369,7 +415,7 @@ export default function SOSScreen() {
             </View>
           </View>
 
-          {/* ── Current Location Card ──────────────────────────────────────── */}
+          {/* ΓöÇΓöÇ Current Location Card ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
           <View style={{ paddingBottom: 24, width: '100%' }}>
             <GlassCard>
             <View style={sosStyles.locationRow}>
@@ -515,5 +561,30 @@ const sosStyles = StyleSheet.create({
   locationText: {
     fontSize: 13,
     fontWeight: '500',
+  },
+  toast: {
+    position: 'absolute',
+    top: 56,
+    left: 16,
+    right: 16,
+    zIndex: 999,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  toastText: {
+    flex: 1,
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    lineHeight: 20,
   },
 });

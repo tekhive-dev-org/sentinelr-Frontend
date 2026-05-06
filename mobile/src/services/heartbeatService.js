@@ -9,6 +9,7 @@ const KEEP_ALIVE_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
 let heartbeatTimer = null;
 let errorCallback = null;
+let batteryCallback = null;
 let appStateSubscription = null;
 
 // Track last sent status to avoid redundant uploads
@@ -20,10 +21,9 @@ export const heartbeatService = {
    * Start periodic heartbeat
    * @param {Function} onError - Callback for critical errors (e.g. auth failure)
    */
-  start(onError) {
-    if (onError) {
-      errorCallback = onError;
-    }
+  start(onError, onBatteryUpdate) {
+    if (onError) errorCallback = onError;
+    if (onBatteryUpdate) batteryCallback = onBatteryUpdate;
 
     if (heartbeatTimer) {
       // console.log("[Heartbeat] Already running");
@@ -57,6 +57,7 @@ export const heartbeatService = {
       clearInterval(heartbeatTimer);
       heartbeatTimer = null;
       errorCallback = null;
+      batteryCallback = null;
     }
     if (appStateSubscription) {
       appStateSubscription.remove();
@@ -83,9 +84,13 @@ export const heartbeatService = {
 
       const batteryLevel = await Battery.getBatteryLevelAsync();
       const batteryState = await Battery.getBatteryStateAsync();
+      const batteryPct = Math.round(batteryLevel * 100);
+
+      // Keep UI in sync with exactly what we send to the API
+      if (batteryCallback) batteryCallback(batteryPct);
 
       const status = {
-        batteryLevel: Math.round(batteryLevel * 100),
+        batteryLevel: batteryPct,
         isCharging: batteryState === Battery.BatteryState.CHARGING,
         deviceName: Device.deviceName || "Unknown",
         deviceModel: Device.modelName || "Unknown",

@@ -8,6 +8,42 @@ import { storageService } from "./storageService";
 // Global callback invoked on 401/404 auth failures
 let authFailureCallback = null;
 
+// Helper for alert endpoints that require both authToken + deviceToken
+async function alertApiRequest(endpoint, data = {}) {
+  const authToken = await storageService.getAuthToken();
+  const deviceToken = await storageService.getUploadToken();
+  // Fall back to deviceToken if no separate authToken is stored
+  const bearerToken = authToken || deviceToken;
+  const url = `${API_BASE_URL}${ENDPOINTS[endpoint]}`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(bearerToken && { Authorization: `Bearer ${bearerToken}` }),
+      ...(deviceToken && { "x-device-token": deviceToken }),
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({}));
+    const error = new Error(
+      errorBody.message || `API Error: ${response.status}`,
+    );
+    error.status = response.status;
+    error.code = errorBody.code;
+
+    if (response.status === 401 && authFailureCallback) {
+      authFailureCallback(error);
+    }
+
+    throw error;
+  }
+
+  return response.json();
+}
+
 // Helper for authenticated API calls
 async function apiRequest(endpoint, data = {}) {
   const token = await storageService.getUploadToken();
@@ -17,7 +53,10 @@ async function apiRequest(endpoint, data = {}) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
+      ...(token && {
+        Authorization: `Bearer ${token}`,
+        "x-device-token": token,
+      }),
     },
     body: JSON.stringify(data),
   });
@@ -183,8 +222,21 @@ export const apiService = {
    * @param {object} data - { latitude, longitude, accuracy, timestamp }
    * @returns {Promise<{ success: boolean }>}
    */
-  async triggerSOS(data) {
-    return apiRequest("SOS_TRIGGER", data);
+  async triggerSOS({ latitude, longitude, accuracy, timestamp, message = '' }) {
+    return alertApiRequest("SOS_TRIGGER", {
+      location: { latitude, longitude, accuracy },
+      message,
+      timestamp,
+    });
+  },
+
+  /**
+   * Report an intruder attempt (wrong PIN capture, etc.).
+   * @param {object} data - { attemptType, attemptCount, photo, timestamp }
+   * @returns {Promise<{ success: boolean }>}
+   */
+  async reportIntruderAttempt(data) {
+    return alertApiRequest("INTRUDER_REPORT", data);
   },
 
   /**
@@ -199,7 +251,10 @@ export const apiService = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(token && {
+          Authorization: `Bearer ${token}`,
+          "x-device-token": token,
+        }),
       },
     });
 
@@ -244,7 +299,10 @@ export const apiService = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(token && {
+          Authorization: `Bearer ${token}`,
+          "x-device-token": token,
+        }),
       },
     });
 

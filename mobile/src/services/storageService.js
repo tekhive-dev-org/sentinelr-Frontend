@@ -30,6 +30,16 @@ export const storageService = {
     await AsyncStorage.setItem(STORAGE_KEYS.UPLOAD_TOKEN, token);
   },
 
+  // Get auth token (user JWT)
+  async getAuthToken() {
+    return await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+  },
+
+  // Set auth token (user JWT)
+  async setAuthToken(token) {
+    await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
+  },
+
   // Check if device is paired
   async isPaired() {
     const paired = await AsyncStorage.getItem(STORAGE_KEYS.IS_PAIRED);
@@ -57,6 +67,7 @@ export const storageService = {
     await AsyncStorage.multiRemove([
       STORAGE_KEYS.DEVICE_ID,
       STORAGE_KEYS.UPLOAD_TOKEN,
+      STORAGE_KEYS.AUTH_TOKEN,
       STORAGE_KEYS.IS_PAIRED,
       STORAGE_KEYS.TRACKING_ENABLED,
     ]);

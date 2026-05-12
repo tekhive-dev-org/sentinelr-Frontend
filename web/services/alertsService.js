@@ -56,7 +56,15 @@ export const alertsService = {
    * Get SOS alerts only
    */
   async getSOSAlerts() {
-    return apiRequest('/sos-alerts');
+    try {
+      return await apiRequest('/alerts?type=sos');
+    } catch (error) {
+      try {
+        return await apiRequest('/sos-alerts');
+      } catch {
+        return apiRequest('/alerts/sos');
+      }
+    }
   },
 
   /**

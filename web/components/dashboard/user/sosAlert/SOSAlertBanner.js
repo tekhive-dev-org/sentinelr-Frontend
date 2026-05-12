@@ -6,71 +6,95 @@
 import React from 'react';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import BatteryAlertIcon from '@mui/icons-material/BatteryAlert';
-import SpeedIcon from '@mui/icons-material/Speed';
 import ExploreIcon from '@mui/icons-material/Explore';
+import MyLocationOutlinedIcon from '@mui/icons-material/MyLocationOutlined';
 import PhoneIcon from '@mui/icons-material/Phone';
 import ShareIcon from '@mui/icons-material/Share';
+import SpeedIcon from '@mui/icons-material/Speed';
+import SmartphoneOutlinedIcon from '@mui/icons-material/SmartphoneOutlined';
 import styles from './SOSAlert.module.css';
 
-function formatTimeAgo(dateStr) {
-  if (!dateStr) return '';
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'Just now';
-  if (mins < 60) return `${mins} min${mins > 1 ? 's' : ''} ago`;
-  const hrs = Math.floor(mins / 60);
-  return `${hrs} hr${hrs > 1 ? 's' : ''} ago`;
-}
+function formatDateTime(dateValue) {
+  if (!dateValue) return 'Awaiting sync';
 
-function formatTime(dateStr) {
-  if (!dateStr) return '--:--';
-  return new Date(dateStr).toLocaleTimeString('en-US', {
+  const parsedDate = new Date(dateValue);
+  if (Number.isNaN(parsedDate.getTime())) return 'Awaiting sync';
+
+  return parsedDate.toLocaleString('en-US', {
     hour: 'numeric',
     minute: '2-digit',
-    hour12: true,
+    month: 'short',
+    day: 'numeric',
   });
 }
 
-export default function SOSAlertBanner({ alert, onCall, onShare, onResolve, onDismiss }) {
+export default function SOSAlertBanner({
+  alert,
+  pendingAction,
+  onCall,
+  onCopySummary,
+  onOpenMap,
+  onResolve,
+  onDismiss,
+}) {
   if (!alert) return null;
 
-  const batteryLevel = alert.deviceInfo?.batteryLevel ?? '--';
-  const batteryStatus = alert.deviceInfo?.batteryStatus || 'Unknown';
-  const speed = alert.deviceInfo?.speed ?? '--';
-  const speedUnit = alert.deviceInfo?.speedUnit || 'mph';
-  const movementType = alert.deviceInfo?.movementType || 'Unknown';
-  const heading = alert.deviceInfo?.heading || '--';
-  const statusLabel = alert.deviceInfo?.status || 'Moving';
+  const isResolving = pendingAction === `resolve:${alert.id}`;
+  const isDismissing = pendingAction === `dismiss:${alert.id}`;
 
   return (
-    <div className={styles.sosInfoColumn}>
-      {/* Critical Banner */}
-      <div className={styles.criticalBanner}>
-        <div className={styles.bannerTop}>
-          <div>
-            <span className={styles.bannerLabel}>CRITICAL SOS</span>
-            <span className={styles.bannerSubLabel}>TRIGGERED</span>
-          </div>
-          <span className={styles.liveBadge}>
-            <span className={styles.liveDot} />
-            LIVE
-          </span>
+    <div className={styles.criticalBanner}>
+      <div className={styles.bannerTop}>
+        <div>
+          <span className={styles.bannerLabel}>Critical SOS</span>
+            <span className={styles.bannerSubLabel}>Live response required</span>
         </div>
-        <div className={styles.bannerName}>{alert.userName || 'Unknown'}</div>
+
+        <span className={styles.liveBadge}>
+            <span className={styles.liveDot} />
+            {alert.statusLabel}
+        </span>
       </div>
 
-      {/* Device Stats */}
+      <div className={styles.bannerIdentity}>
+          <div className={styles.bannerAvatar}>
+            {alert.userName.slice(0, 2).toUpperCase()}
+          </div>
+
+          <div className={styles.bannerAvatarText}>
+            <h2 className={styles.bannerName}>{alert.userName}</h2>
+            <p className={styles.bannerIncidentMeta}>{alert.incidentCode} · {alert.triggerLabel}</p>
+            <div className={styles.bannerPills}>
+              <span className={styles.bannerPill}>{alert.priorityLabel}</span>
+              <span className={styles.bannerPill}>{alert.deviceName}</span>
+            </div>
+          </div>
+        </div>
+
+      <div className={styles.incidentSummaryGrid}>
+          <div className={styles.incidentSummaryCard}>
+            <span className={styles.incidentSummaryLabel}>Primary contact</span>
+            <strong className={styles.incidentSummaryValue}>{alert.phone}</strong>
+            <span className={styles.incidentSummaryMeta}>{alert.relationship}</span>
+          </div>
+          <div className={styles.incidentSummaryCard}>
+            <span className={styles.incidentSummaryLabel}>Last known location</span>
+            <strong className={styles.incidentSummaryValue}>{alert.locationLabel}</strong>
+            <span className={styles.incidentSummaryMeta}>{alert.coordinatesLabel}</span>
+          </div>
+      </div>
+
+      <div className={styles.bannerDivider} />
+
       <div className={styles.deviceStatsGrid}>
         <div className={styles.deviceStatCard}>
           <div className={styles.deviceStatIcon}>
             <AccessTimeIcon />
           </div>
           <div className={styles.deviceStatInfo}>
-            <span className={styles.deviceStatLabel}>Time Triggered</span>
-            <span className={styles.deviceStatValue}>{formatTime(alert.createdAt)}</span>
-            <span className={`${styles.deviceStatSublabel} ${styles.alertValue}`}>
-              {formatTimeAgo(alert.createdAt)}
-            </span>
+            <span className={styles.deviceStatLabel}>Triggered</span>
+            <span className={styles.deviceStatValue}>{formatDateTime(alert.createdAt)}</span>
+            <span className={`${styles.deviceStatSublabel} ${styles.alertValue}`}>{alert.relativeTime}</span>
           </div>
         </div>
 
@@ -79,11 +103,9 @@ export default function SOSAlertBanner({ alert, onCall, onShare, onResolve, onDi
             <BatteryAlertIcon />
           </div>
           <div className={styles.deviceStatInfo}>
-            <span className={styles.deviceStatLabel}>Battery Level</span>
-            <span className={styles.deviceStatValue}>
-              {typeof batteryLevel === 'number' ? `${batteryLevel}%` : batteryLevel}
-            </span>
-            <span className={styles.deviceStatSublabel}>{batteryStatus}</span>
+            <span className={styles.deviceStatLabel}>Battery</span>
+            <span className={styles.deviceStatValue}>{alert.batteryLabel}</span>
+            <span className={styles.deviceStatSublabel}>{alert.deviceStatus}</span>
           </div>
         </div>
 
@@ -92,11 +114,9 @@ export default function SOSAlertBanner({ alert, onCall, onShare, onResolve, onDi
             <SpeedIcon />
           </div>
           <div className={styles.deviceStatInfo}>
-            <span className={styles.deviceStatLabel}>Speed</span>
-            <span className={styles.deviceStatValue}>
-              {speed} {speedUnit}
-            </span>
-            <span className={styles.deviceStatSublabel}>{movementType}</span>
+            <span className={styles.deviceStatLabel}>Movement</span>
+            <span className={styles.deviceStatValue}>{alert.speedLabel}</span>
+            <span className={styles.deviceStatSublabel}>{alert.movementType}</span>
           </div>
         </div>
 
@@ -105,31 +125,71 @@ export default function SOSAlertBanner({ alert, onCall, onShare, onResolve, onDi
             <ExploreIcon />
           </div>
           <div className={styles.deviceStatInfo}>
-            <span className={styles.deviceStatLabel}>Status</span>
-            <span className={styles.deviceStatValue}>{statusLabel}</span>
-            <span className={styles.deviceStatSublabel}>Heading: {heading}</span>
+            <span className={styles.deviceStatLabel}>Heading</span>
+            <span className={styles.deviceStatValue}>{alert.headingLabel}</span>
+            <span className={styles.deviceStatSublabel}>Response clock: {alert.responseClock}</span>
+          </div>
+        </div>
+
+        <div className={styles.deviceStatCard}>
+          <div className={styles.deviceStatIcon}>
+            <SmartphoneOutlinedIcon />
+          </div>
+          <div className={styles.deviceStatInfo}>
+            <span className={styles.deviceStatLabel}>Protected device</span>
+            <span className={styles.deviceStatValue}>{alert.deviceName}</span>
+            <span className={styles.deviceStatSublabel}>{alert.deviceType}</span>
+          </div>
+        </div>
+
+        <div className={styles.deviceStatCard}>
+          <div className={styles.deviceStatIcon}>
+            <MyLocationOutlinedIcon />
+          </div>
+          <div className={styles.deviceStatInfo}>
+            <span className={styles.deviceStatLabel}>Resolution note</span>
+            <span className={styles.deviceStatValue}>{alert.resolution}</span>
+            <span className={styles.deviceStatSublabel}>{alert.description}</span>
           </div>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className={styles.actionButtons}>
-        <button className={styles.callBtn} onClick={onCall}>
-          <PhoneIcon style={{ fontSize: 18 }} />
-          Call {alert.userName?.split(' ')[0] || 'User'}
-        </button>
+      <div className={styles.bannerDivider} />
 
-        <button className={styles.shareBtn} onClick={onShare}>
+      <div className={styles.actionButtons}>
+        <div className={styles.primaryActionRow}>
+          <button type="button" className={styles.callBtn} onClick={() => onCall(alert)}>
+            <PhoneIcon style={{ fontSize: 18 }} />
+            Call contact
+          </button>
+
+          <button type="button" className={styles.mapBtn} onClick={() => onOpenMap(alert)}>
+            <MyLocationOutlinedIcon style={{ fontSize: 18 }} />
+            Open map
+          </button>
+        </div>
+
+        <button type="button" className={styles.shareBtn} onClick={() => onCopySummary(alert)}>
           <ShareIcon style={{ fontSize: 18 }} />
-          Share Tracking Link
+          Copy incident brief
         </button>
 
         <div className={styles.resolveActions}>
-          <button className={styles.resolveBtn} onClick={onResolve}>
-            Mark Resolved
+          <button
+            type="button"
+            className={styles.resolveBtn}
+            onClick={() => onResolve(alert)}
+            disabled={isResolving || isDismissing}
+          >
+            {isResolving ? 'Resolving…' : 'Mark resolved'}
           </button>
-          <button className={styles.dismissBtn} onClick={onDismiss}>
-            Dismiss Alert
+          <button
+            type="button"
+            className={styles.dismissBtn}
+            onClick={() => onDismiss(alert)}
+            disabled={isResolving || isDismissing}
+          >
+            {isDismissing ? 'Dismissing…' : 'Dismiss alert'}
           </button>
         </div>
       </div>

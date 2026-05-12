@@ -20,6 +20,16 @@ export const storageService = {
     return await AsyncStorage.getItem(STORAGE_KEYS.DEVICE_ID);
   },
 
+  // Get device user ID (the parent/owner userId linked to this device)
+  async getDeviceUserId() {
+    return await AsyncStorage.getItem(STORAGE_KEYS.DEVICE_USER_ID);
+  },
+
+  // Set device user ID
+  async setDeviceUserId(userId) {
+    await AsyncStorage.setItem(STORAGE_KEYS.DEVICE_USER_ID, String(userId));
+  },
+
   // Get upload token
   async getUploadToken() {
     return await AsyncStorage.getItem(STORAGE_KEYS.UPLOAD_TOKEN);

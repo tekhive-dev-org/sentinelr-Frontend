@@ -14,7 +14,6 @@ export const ENDPOINTS = {
   INTRUDER_REPORT: "/alerts/intruder/report", // POST — report intruder attempt
   GEOFENCES: "/geofences", // GET — fetch all geofences for this device
   GEOFENCE_EVENT: "/geofences/event", // POST — report a geofence entry/exit event
-  PARENTAL_STATUS: "/parental-controls/device-status", // GET — fetch parental control status for this device
 };
 
 // App Constants
@@ -31,6 +30,7 @@ export const LOCATION_CONFIG = {
 // Storage Keys
 export const STORAGE_KEYS = {
   DEVICE_ID: "@sentinelr/device_id",
+  DEVICE_USER_ID: "@sentinelr/device_user_id",
   UPLOAD_TOKEN: "@sentinelr/upload_token",
   AUTH_TOKEN: "@sentinelr/auth_token",
   IS_PAIRED: "@sentinelr/is_paired",

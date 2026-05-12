@@ -18,6 +18,11 @@ import { useTheme } from '../context/ThemeContext';
 import NavigationHeader from '../components/NavigationHeader';
 import GlassCard from '../components/GlassCard';
 import { APP_NAME } from '../utils/constants';
+import {
+  isAndroidAccessibilityEnabled,
+  isAndroidParentalEnforcementAvailable,
+  openAndroidAccessibilitySettings,
+} from '../services/androidParentalEnforcement';
 
 const isExpoGoAndroid = Platform.OS === 'android' && isRunningInExpoGo();
 
@@ -81,6 +86,9 @@ export default function PermissionsScreen({ navigation }) {
   const [locationStatus, setLocationStatus] = useState('pending');
   const [notificationStatus, setNotificationStatus] = useState('pending');
   const [backgroundStatus, setBackgroundStatus] = useState('pending');
+  const [accessibilityStatus, setAccessibilityStatus] = useState(
+    Platform.OS === 'android' ? 'pending' : 'unavailable'
+  );
   const [showBgDisclosure, setShowBgDisclosure] = useState(false);
 
   useEffect(() => { checkPermissions(); }, []);
@@ -104,7 +112,42 @@ export default function PermissionsScreen({ navigation }) {
       setNotificationStatus(
         notification === 'granted' ? 'granted' : notification === 'unavailable' ? 'unavailable' : 'denied',
       );
+
+      if (Platform.OS === 'android') {
+        if (!isAndroidParentalEnforcementAvailable()) {
+          setAccessibilityStatus(isExpoGoAndroid ? 'unavailable' : 'denied');
+        } else {
+          setAccessibilityStatus(isAndroidAccessibilityEnabled() ? 'granted' : 'denied');
+        }
+      }
     } catch {}
+  };
+
+  const requestAccessibilityPermission = async () => {
+    if (Platform.OS !== 'android') {
+      setAccessibilityStatus('unavailable');
+      return;
+    }
+    if (!isAndroidParentalEnforcementAvailable()) {
+      setAccessibilityStatus('unavailable');
+      Alert.alert(
+        'Development Build Required',
+        'Real Android parental-control enforcement requires a native development build or release APK. Expo Go cannot enable the enforcement service.',
+      );
+      return;
+    }
+
+    const opened = openAndroidAccessibilitySettings();
+    if (!opened) {
+      Alert.alert('Accessibility Service', 'Unable to open accessibility settings on this device.');
+      return;
+    }
+
+    Alert.alert(
+      'Enable Sentinelr Protection',
+      'In Accessibility settings, enable Sentinelr Parental Controls so the app can block restricted apps during freeze, bedtime, and app-blocking periods.',
+      [{ text: 'OK' }],
+    );
   };
 
   const requestLocationPermission = async () => {
@@ -172,8 +215,12 @@ export default function PermissionsScreen({ navigation }) {
   };
 
   // Progress count
-  const grantedCount = [locationStatus, backgroundStatus, notificationStatus].filter(s => s === 'granted').length;
-  const totalRequired = 3;
+  const requiredStatuses = [locationStatus, backgroundStatus, notificationStatus];
+  if (Platform.OS === 'android') {
+    requiredStatuses.push(accessibilityStatus);
+  }
+  const grantedCount = requiredStatuses.filter(s => s === 'granted').length;
+  const totalRequired = requiredStatuses.length;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -246,6 +293,21 @@ export default function PermissionsScreen({ navigation }) {
             onDisable={() => openSettingsToDisable('Notifications')}
             colors={colors}
           />
+          {Platform.OS === 'android' && (
+            <PermissionRow
+              icon="shield-half-outline"
+              title="Parental Control Access"
+              description={
+                isExpoGoAndroid
+                  ? 'Requires development build on Android'
+                  : 'Required for real app blocking, freeze, and bedtime enforcement'
+              }
+              status={accessibilityStatus}
+              onEnable={requestAccessibilityPermission}
+              onDisable={requestAccessibilityPermission}
+              colors={colors}
+            />
+          )}
 
           {/* ── Open Settings ─────────────────────────────────────────────── */}
           <TouchableOpacity

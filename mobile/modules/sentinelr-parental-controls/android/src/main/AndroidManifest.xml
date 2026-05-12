@@ -1,0 +1,19 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="expo.modules.sentinelrparentalcontrols">
+  <application>
+    <service
+      android:name=".SentinelrAccessibilityService"
+      android:enabled="true"
+      android:exported="false"
+      android:label="Sentinelr Parental Controls"
+      android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+      <intent-filter>
+        <action android:name="android.accessibilityservice.AccessibilityService" />
+      </intent-filter>
+
+      <meta-data
+        android:name="android.accessibilityservice"
+        android:resource="@xml/sentinelr_accessibility_service" />
+    </service>
+  </application>
+</manifest>

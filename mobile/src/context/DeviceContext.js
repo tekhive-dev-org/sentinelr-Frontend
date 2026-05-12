@@ -3,6 +3,10 @@ import { Alert, AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiService } from "../services/api";
 import { getSupabase } from "../services/supabaseClient";
+import {
+  applyAndroidParentalControls,
+  clearAndroidParentalControls,
+} from "../services/androidParentalEnforcement";
 
 const DeviceContext = createContext(null);
 
@@ -25,6 +29,20 @@ export function DeviceProvider({ children }) {
   const [connectionStatus, setConnectionStatus] = useState("offline");
   const hasRegisteredAuthHandler = useRef(false);
   const pairCheckInterval = useRef(null);
+
+  const syncParentalControls = useCallback(async () => {
+    if (!isPaired) {
+      await clearAndroidParentalControls();
+      return;
+    }
+
+    try {
+      const data = await apiService.getParentalStatus();
+      await applyAndroidParentalControls(data?.controls || null);
+    } catch (error) {
+      console.warn("[DeviceContext] parental control sync failed:", error?.message || error);
+    }
+  }, [isPaired]);
 
   // Query the database directly for the device's current pairStatus
   const checkPairStatusInDb = useCallback(async (id) => {
@@ -82,6 +100,10 @@ export function DeviceProvider({ children }) {
     setBatteryLevel(null);
     setLastPingTime(null);
     setConnectionStatus("offline");
+
+    try {
+      await clearAndroidParentalControls();
+    } catch {}
 
     if (showAlert) {
       Alert.alert(
@@ -233,6 +255,32 @@ export function DeviceProvider({ children }) {
 
     return () => { cancelled = true; };
   }, [isPaired, deviceId, isLoading, checkPairStatusInDb, forceUnpair]);
+
+  useEffect(() => {
+    if (!isPaired) {
+      clearAndroidParentalControls().catch(() => {});
+      return;
+    }
+
+    syncParentalControls();
+    const interval = setInterval(() => {
+      syncParentalControls();
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [isPaired, syncParentalControls]);
+
+  useEffect(() => {
+    if (!isPaired) return;
+
+    const subscription = AppState.addEventListener("change", (nextState) => {
+      if (nextState === "active") {
+        syncParentalControls();
+      }
+    });
+
+    return () => subscription.remove();
+  }, [isPaired, syncParentalControls]);
 
   const completePairing = async (newDeviceId, newToken) => {
     if (!newDeviceId) {

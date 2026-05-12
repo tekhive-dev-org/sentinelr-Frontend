@@ -6,6 +6,9 @@
  * the service returns realistic mock data so the UI can be previewed.
  */
 
+import { familyService } from './familyService';
+import { devicesService } from './devicesService';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const getAuthToken = () => {
@@ -118,12 +121,12 @@ const MOCK_ACTIVITIES = {
   ],
 };
 
-/** Try a real API call; on 404 return mock data (backend not ready yet). */
+/** Try a real API call; on 404, 401, or 500 return mock data (backend not ready yet). */
 async function apiRequestWithFallback(endpoint, options, mockData) {
   try {
     return await apiRequest(endpoint, options);
   } catch (err) {
-    if (mockData && /404/.test(err.message)) {
+    if (mockData && (/404/.test(err.message) || /401/.test(err.message) || /500/.test(err.message))) {
       console.info(`[ParentalControls] Endpoint not ready, using demo data: ${endpoint}`);
       return mockData;
     }
@@ -133,19 +136,76 @@ async function apiRequestWithFallback(endpoint, options, mockData) {
 
 export const parentalControlService = {
   /**
-   * Get family members available for parental controls
+   * Get family members with their paired devices using the family + devices APIs.
    */
   async getMembers() {
-    return apiRequestWithFallback('/parental-controls/members', {}, MOCK_MEMBERS);
+    try {
+      const res = await familyService.getFamilyMembers();
+      const family = res?.family;
+      const rawMembers = family?.members || res?.members || [];
+
+      // Fetch paired family devices once, then group them by assigned user.
+      let allDevices = [];
+      try {
+        const devRes = await devicesService.getFamilyDevices({
+          pairStatus: 'Paired',
+          limit: 100,
+        });
+        allDevices = (devRes?.devices || []).filter(
+          (device) => device.pairStatus === 'Paired' || device.pairStatus === 'paired',
+        );
+      } catch {
+        // devices unavailable — members will have empty device lists
+      }
+
+      const members = rawMembers.map((m) => {
+        const user = m.user || m;
+        const userId = user.id || m.userId || m.memberUserId || m.id;
+        const memberDevices = allDevices
+          .filter((d) => {
+            const deviceUserId =
+              d.assignedUser?.id ||
+              d.assignedUserId ||
+              d.userId ||
+              d.memberUserId;
+            return String(deviceUserId) === String(userId);
+          })
+          .map((d) => ({
+            deviceId: String(d.id || d.deviceId),
+            name: d.deviceName || d.name || 'Unknown Device',
+            type: d.deviceType || d.type || 'ANDROID',
+            status: d.status || 'offline',
+            batteryLevel: d.batteryLevel ?? null,
+          }));
+        return {
+          userId,
+          name: user.userName || user.name || m.userName || m.name || 'Unknown',
+          avatar: user.avatar || m.avatar || null,
+          devices: memberDevices,
+        };
+      });
+
+      return { success: true, members };
+    } catch (err) {
+      if (/404|401/.test(err.message)) {
+        console.info('[ParentalControls] Family endpoint not ready, using demo data');
+        return MOCK_MEMBERS;
+      }
+      throw err;
+    }
   },
 
   /**
    * Get parental controls for a specific user
    * @param {number} userId
-   * @param {string} [deviceId]
+   * @param {string|number} deviceId
    */
   async getControls(userId, deviceId) {
-    const params = deviceId ? `?deviceId=${encodeURIComponent(deviceId)}` : '';
+    if (!deviceId) {
+      throw new Error('A paired device must be selected before loading parental controls.');
+    }
+
+    const params = `?deviceId=${encodeURIComponent(deviceId)}`;
     return apiRequestWithFallback(
       `/parental-controls/${encodeURIComponent(userId)}${params}`,
       {},
@@ -156,10 +216,11 @@ export const parentalControlService = {
   /**
    * Update screen time limit settings
    * @param {number} userId
+   * @param {string|number} deviceId
    * @param {object} settings - { enabled, dailyLimit, schedule: { weekdays, weekends } }
    */
-  async updateScreenTime(userId, settings) {
-    return apiRequestWithFallback(`/parental-controls/${encodeURIComponent(userId)}/screen-time`, {
+  async updateScreenTime(userId, deviceId, settings) {
+    return apiRequestWithFallback(`/parental-controls/${encodeURIComponent(userId)}/screentime/${encodeURIComponent(deviceId)}`, {
       method: 'PUT',
       body: JSON.stringify(settings),
     }, { success: true, message: 'Screen time settings updated (demo)' });
@@ -168,10 +229,11 @@ export const parentalControlService = {
   /**
    * Update app blocking settings
    * @param {number} userId
+   * @param {string|number} deviceId
    * @param {object} settings - { enabled, blockedApps, categoryBlocked }
    */
-  async updateAppBlocking(userId, settings) {
-    return apiRequestWithFallback(`/parental-controls/${encodeURIComponent(userId)}/app-blocking`, {
+  async updateAppBlocking(userId, deviceId, settings) {
+    return apiRequestWithFallback(`/parental-controls/${encodeURIComponent(userId)}/app-blocking/${encodeURIComponent(deviceId)}`, {
       method: 'PUT',
       body: JSON.stringify(settings),
     }, { success: true, message: 'App blocking settings updated (demo)' });
@@ -180,11 +242,12 @@ export const parentalControlService = {
   /**
    * Toggle a category block on/off
    * @param {number} userId
+   * @param {string|number} deviceId
    * @param {string} category
    * @param {boolean} enabled
    */
-  async toggleCategoryBlock(userId, category, enabled) {
-    return apiRequestWithFallback(`/parental-controls/${encodeURIComponent(userId)}/app-blocking/category`, {
+  async toggleCategoryBlock(userId, deviceId, category, enabled) {
+    return apiRequestWithFallback(`/parental-controls/${encodeURIComponent(userId)}/app-blocking/category/${encodeURIComponent(deviceId)}`, {
       method: 'PATCH',
       body: JSON.stringify({ category, enabled }),
     }, { success: true, message: 'Category blocking updated (demo)', category, enabled });
@@ -193,11 +256,12 @@ export const parentalControlService = {
   /**
    * Toggle a specific app block on/off
    * @param {number} userId
+   * @param {string|number} deviceId
    * @param {string} packageName
    * @param {boolean} isBlocked
    */
-  async toggleAppBlock(userId, packageName, isBlocked) {
-    return apiRequestWithFallback(`/parental-controls/${encodeURIComponent(userId)}/app-blocking/app`, {
+  async toggleAppBlock(userId, deviceId, packageName, isBlocked) {
+    return apiRequestWithFallback(`/parental-controls/${encodeURIComponent(userId)}/app-blocking/app/${encodeURIComponent(deviceId)}`, {
       method: 'PATCH',
       body: JSON.stringify({ packageName, isBlocked }),
     }, { success: true, message: 'App block status updated (demo)' });
@@ -206,10 +270,11 @@ export const parentalControlService = {
   /**
    * Update web filtering settings
    * @param {number} userId
+   * @param {string|number} deviceId
    * @param {object} settings
    */
-  async updateWebFiltering(userId, settings) {
-    return apiRequestWithFallback(`/parental-controls/${encodeURIComponent(userId)}/web-filtering`, {
+  async updateWebFiltering(userId, deviceId, settings) {
+    return apiRequestWithFallback(`/parental-controls/${encodeURIComponent(userId)}/web-filtering/${encodeURIComponent(deviceId)}`, {
       method: 'PUT',
       body: JSON.stringify(settings),
     }, { success: true, message: 'Web filtering settings updated (demo)' });
@@ -218,10 +283,11 @@ export const parentalControlService = {
   /**
    * Add a website to the blocked list
    * @param {number} userId
+   * @param {string|number} deviceId
    * @param {string} url
    */
-  async addBlockedSite(userId, url) {
-    return apiRequestWithFallback(`/parental-controls/${encodeURIComponent(userId)}/web-filtering/site`, {
+  async addBlockedSite(userId, deviceId, url) {
+    return apiRequestWithFallback(`/parental-controls/${encodeURIComponent(userId)}/web-filtering/blocked-websites/${encodeURIComponent(deviceId)}`, {
       method: 'POST',
       body: JSON.stringify({ url }),
     }, { success: true, message: 'Website added (demo)' });
@@ -230,10 +296,11 @@ export const parentalControlService = {
   /**
    * Remove a website from the blocked list
    * @param {number} userId
+   * @param {string|number} deviceId
    * @param {string} url
    */
-  async removeBlockedSite(userId, url) {
-    return apiRequestWithFallback(`/parental-controls/${encodeURIComponent(userId)}/web-filtering/site`, {
+  async removeBlockedSite(userId, deviceId, url) {
+    return apiRequestWithFallback(`/parental-controls/${encodeURIComponent(userId)}/web-filtering/blocked-websites/${encodeURIComponent(deviceId)}`, {
       method: 'DELETE',
       body: JSON.stringify({ url }),
     }, { success: true, message: 'Website removed (demo)' });

@@ -35,6 +35,7 @@ const BASE_MAP_OPTIONS = {
 
 export default function LiveLocationMap() {
   const mapRef = useRef(null);
+  const realtimeDisabledRef = useRef(false);
 
   const [devices, setDevices]           = useState([]);
   const [selectedId, setSelectedId]     = useState('');
@@ -76,6 +77,7 @@ export default function LiveLocationMap() {
   useEffect(() => {
     if (!selectedId) return;
     let cancelled = false;
+    let channel = null;
 
     // 1. Fetch the most recent location immediately so the map isn't blank
     const fetchInitial = async () => {
@@ -101,47 +103,61 @@ export default function LiveLocationMap() {
     setLocationData(null);
     fetchInitial();
 
+    const pollingInterval = window.setInterval(() => {
+      fetchInitial();
+    }, 30000);
+
     // 2. Subscribe to every new INSERT on device_locations for this device
-    const channel = supabase
-      .channel(`live-location:${selectedId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'Locations',
-          filter: `deviceId=eq.${selectedId}`,
-        },
-        (payload) => {
-          if (cancelled) return;
-          const row = payload.new;
-          // Merge the realtime row with any extra fields (e.g. userName) already
-          // held in state so the InfoWindow stays populated.
-          setLocationData((prev) => ({
-            ...prev,
-            latitude: row.latitude,
-            longitude: row.longitude,
-            accuracy: row.accuracy,
-            altitude: row.altitude,
-            speed: row.speed,
-            heading: row.heading,
-            battery_level: row.battery_level,
-            timestamp: row.timestamp ?? row.created_at,
-          }));
-          setError(null);
-          setLastUpdated(new Date());
-          panToLocation(row.latitude, row.longitude);
-        },
-      )
-      .subscribe((status) => {
-        if (status === 'CHANNEL_ERROR') {
-          console.error('[LiveLocationMap] Realtime subscription error');
-        }
-      });
+    if (!realtimeDisabledRef.current) {
+      try {
+        channel = supabase
+          .channel(`live-location:${selectedId}`)
+          .on(
+            'postgres_changes',
+            {
+              event: 'INSERT',
+              schema: 'public',
+              table: 'Locations',
+              filter: `deviceId=eq.${selectedId}`,
+            },
+            (payload) => {
+              if (cancelled) return;
+              const row = payload.new;
+              // Merge the realtime row with any extra fields (e.g. userName) already
+              // held in state so the InfoWindow stays populated.
+              setLocationData((prev) => ({
+                ...prev,
+                latitude: row.latitude,
+                longitude: row.longitude,
+                accuracy: row.accuracy,
+                altitude: row.altitude,
+                speed: row.speed,
+                heading: row.heading,
+                battery_level: row.battery_level,
+                timestamp: row.timestamp ?? row.created_at,
+              }));
+              setError(null);
+              setLastUpdated(new Date());
+              panToLocation(row.latitude, row.longitude);
+            },
+          )
+          .subscribe((status) => {
+            if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+              realtimeDisabledRef.current = true;
+              setError((currentError) => currentError || 'Live updates unavailable. Refreshing with periodic polling instead.');
+            }
+          });
+      } catch {
+        realtimeDisabledRef.current = true;
+      }
+    }
 
     return () => {
       cancelled = true;
-      supabase.removeChannel(channel);
+      window.clearInterval(pollingInterval);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, [selectedId, panToLocation]);
 

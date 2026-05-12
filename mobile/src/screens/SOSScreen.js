@@ -203,15 +203,14 @@ export default function SOSScreen() {
         accuracy: Location.Accuracy.High,
       });
 
-      await apiService.triggerSOS({
+      const result = await apiService.triggerSOS({
         latitude: loc.coords.latitude,
         longitude: loc.coords.longitude,
-        accuracy: loc.coords.accuracy,
-        timestamp: new Date().toISOString(),
         message: 'Emergency SOS triggered',
       });
 
-      showToast('Alert sent to all family members.', 'success');
+      const toastMsg = result?.message || 'Alert sent to all family members.';
+      showToast(toastMsg, 'success');
     } catch (err) {
       console.error('[SOS] trigger error:', err);
       setTriggered(false);

@@ -40,7 +40,7 @@ function getActiveId(pathname) {
   return segment || 'dashboard';
 }
 
-export default function BottomAppBar() {
+export default function BottomAppBar({ activeAlertCount = 0 }) {
   const router = useRouter();
   const [showMore, setShowMore] = useState(false);
   const activeId = useMemo(() => getActiveId(router.pathname), [router.pathname]);
@@ -89,7 +89,14 @@ export default function BottomAppBar() {
             className={`${styles.tab} ${activeId === id ? styles.tabActive : ''}`}
             onClick={() => handleNav(path)}
           >
-            <Icon className={styles.tabIcon} />
+            <span className={styles.tabIconWrapper}>
+              <Icon className={styles.tabIcon} />
+              {id === 'alerts' && activeAlertCount > 0 && (
+                <span className={styles.tabBadge}>
+                  {activeAlertCount > 9 ? '9+' : activeAlertCount}
+                </span>
+              )}
+            </span>
             <span className={styles.tabLabel}>{label}</span>
           </button>
         ))}

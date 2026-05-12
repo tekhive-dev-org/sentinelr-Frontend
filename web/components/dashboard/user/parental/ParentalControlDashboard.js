@@ -108,32 +108,29 @@ export default function ParentalControlDashboard() {
       const data = await parentalControlService.getMembers().catch(() => ({ members: [] }));
       const mems = data.members || [];
       setMembers(mems);
-      if (mems.length > 0 && !selectedMember) {
-        setSelectedMember(mems[0]);
-        if (mems[0].devices?.length > 0) {
-          setSelectedDevice(mems[0].devices[0]);
-        }
-      }
+      // Don't auto-select — user must manually pick a member and device
     } catch {
       showToast('Failed to load family members', 'error');
+    } finally {
+      setLoading(false);
     }
   }, []);
 
   // ── Fetch Controls ───────────────────────────────────────────────────────
   const fetchControls = useCallback(async () => {
-    if (!selectedMember) return;
+    if (!selectedMember || !selectedDevice) return;
     try {
       setLoading(true);
       const data = await parentalControlService.getControls(
         selectedMember.userId,
-        selectedDevice?.deviceId
+        selectedDevice.deviceId
       );
       setControls(data.controls || null);
 
       // Fetch activity
       const actData = await parentalControlService.getActivity(
         selectedMember.userId,
-        selectedDevice?.deviceId,
+        selectedDevice.deviceId,
         10
       ).catch(() => ({ activities: [] }));
       setActivities(actData.activities || []);
@@ -145,7 +142,7 @@ export default function ParentalControlDashboard() {
   }, [selectedMember, selectedDevice]);
 
   useEffect(() => { fetchMembers(); }, [fetchMembers]);
-  useEffect(() => { if (selectedMember) fetchControls(); }, [fetchControls]);
+  useEffect(() => { if (selectedMember && selectedDevice) fetchControls(); }, [fetchControls]);
 
   function showToast(message, type = 'success') {
     setToast({ message, type });
@@ -155,7 +152,9 @@ export default function ParentalControlDashboard() {
   // ── Handlers ─────────────────────────────────────────────────────────────
   const handleSelectMember = (member) => {
     setSelectedMember(member);
-    setSelectedDevice(member.devices?.[0] || null);
+    setSelectedDevice(null);
+    setControls(null);
+    setActivities([]);
     setShowChildDropdown(false);
   };
 
@@ -185,6 +184,7 @@ export default function ParentalControlDashboard() {
     try {
       await parentalControlService.toggleCategoryBlock(
         selectedMember.userId,
+        selectedDevice?.deviceId,
         category,
         !currentEnabled
       );
@@ -208,6 +208,7 @@ export default function ParentalControlDashboard() {
     try {
       await parentalControlService.toggleAppBlock(
         selectedMember.userId,
+        selectedDevice?.deviceId,
         packageName,
         !currentBlocked
       );
@@ -272,7 +273,7 @@ export default function ParentalControlDashboard() {
     e.preventDefault();
     if (!newSiteUrl.trim() || !selectedMember) return;
     try {
-      const result = await parentalControlService.addBlockedSite(selectedMember.userId, newSiteUrl.trim());
+      const result = await parentalControlService.addBlockedSite(selectedMember.userId, selectedDevice?.deviceId, newSiteUrl.trim());
       setControls(prev => ({
         ...prev,
         webFiltering: {
@@ -291,7 +292,7 @@ export default function ParentalControlDashboard() {
   const handleRemoveSite = async (url) => {
     if (!selectedMember) return;
     try {
-      const result = await parentalControlService.removeBlockedSite(selectedMember.userId, url);
+      const result = await parentalControlService.removeBlockedSite(selectedMember.userId, selectedDevice?.deviceId, url);
       setControls(prev => ({
         ...prev,
         webFiltering: {
@@ -346,6 +347,37 @@ export default function ParentalControlDashboard() {
           <p className={styles.emptySubtitle}>
             Add family members and pair their devices to start managing parental controls.
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── No Selection State ───────────────────────────────────────────────────
+  if (!selectedMember || !selectedDevice) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.emptyState}>
+          <div className={styles.emptyIcon}><PeopleAltRoundedIcon sx={{ fontSize: 56, color: '#d1d5db' }} /></div>
+          <h3 className={styles.emptyTitle}>Select a Device</h3>
+          <p className={styles.emptySubtitle}>Choose a family member and their device to view parental controls.</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 20, minWidth: 260 }}>
+            {members.map((member) => (
+              <div key={member.userId} style={{ background: '#fff', borderRadius: 10, padding: '12px 16px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
+                <div style={{ fontWeight: 600, marginBottom: 8 }}>{member.name}</div>
+                {member.devices?.length > 0 ? member.devices.map((device) => (
+                  <button
+                    key={device.deviceId}
+                    onClick={() => { setSelectedMember(member); setSelectedDevice(device); }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 12px', marginBottom: 4, borderRadius: 8, border: '1px solid #e5e7eb', background: '#f9fafb', cursor: 'pointer', fontSize: 14 }}
+                  >
+                    📱 {device.name}
+                  </button>
+                )) : (
+                  <span style={{ fontSize: 13, color: '#9ca3af' }}>No paired devices</span>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -639,7 +671,7 @@ export default function ParentalControlDashboard() {
             <div className={styles.childSelectorInfo}>
               <span className={styles.childSelectorName}>{selectedMember?.name}</span>
               <span className={styles.childSelectorEmail}>
-                {selectedMember?.devices?.[0]?.name || 'No device'}
+                {selectedDevice?.name || 'Select a paired device'}
               </span>
             </div>
             <ChevronRightRoundedIcon sx={{ fontSize: 20, color: '#9ca3af' }} />

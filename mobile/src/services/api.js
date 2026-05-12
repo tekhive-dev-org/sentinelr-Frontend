@@ -8,6 +8,39 @@ import { storageService } from "./storageService";
 // Global callback invoked on 401/404 auth failures
 let authFailureCallback = null;
 
+// Helper for alert endpoints that require the device token
+async function alertApiRequest(endpoint, data = {}) {
+  const deviceToken = await storageService.getUploadToken();
+  const url = `${API_BASE_URL}${ENDPOINTS[endpoint]}`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(deviceToken && { Authorization: `Bearer ${deviceToken}` }),
+      ...(deviceToken && { "x-device-token": deviceToken }),
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({}));
+    const error = new Error(
+      errorBody.message || `API Error: ${response.status}`,
+    );
+    error.status = response.status;
+    error.code = errorBody.code;
+
+    if (response.status === 401 && authFailureCallback) {
+      authFailureCallback(error);
+    }
+
+    throw error;
+  }
+
+  return response.json();
+}
+
 // Helper for authenticated API calls
 async function apiRequest(endpoint, data = {}) {
   const token = await storageService.getUploadToken();
@@ -17,7 +50,10 @@ async function apiRequest(endpoint, data = {}) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
+      ...(token && {
+        Authorization: `Bearer ${token}`,
+        "x-device-token": token,
+      }),
     },
     body: JSON.stringify(data),
   });
@@ -103,11 +139,24 @@ export const apiService = {
       deviceToken: token,
     };
 
-    // Store the device token for future authenticated requests
+    // Extract userId directly from the response (returned as deviceUserId)
+    const userId = data.deviceUserId || data.userId || data.user_id;
+
+    // Store the device token and userId for future requests
     if (normalizedData.deviceToken) {
       await storageService.setUploadToken(normalizedData.deviceToken);
       await storageService.setIsPaired(true);
     }
+    if (userId) {
+      await storageService.setDeviceUserId(userId);
+    }
+
+    // console.log('[API] Device paired successfully:', {
+    //   deviceId: normalizedData.deviceId,
+    //   userId,
+    //   hasToken: !!normalizedData.deviceToken,
+    //   rawResponse: data,
+    // });
 
     return normalizedData;
   },
@@ -180,11 +229,62 @@ export const apiService = {
   /**
    * Trigger an SOS emergency alert.
    * Sends the device's current location to notify all family members.
-   * @param {object} data - { latitude, longitude, accuracy, timestamp }
+   * @param {object} data - { latitude, longitude, message }
+   * @returns {Promise<{
+   *   success: boolean,
+   *   message: string,
+   *   alert: {
+   *     id: number,
+   *     type: string,
+   *     status: string,
+   *     priority: string,
+   *     deviceId: number,
+   *     userId: number,
+   *     location: { latitude: number, longitude: number }
+   *   }
+   * }>}
+   */
+  async triggerSOS({ latitude, longitude, message = '' }) {
+    const deviceId = await storageService.getDeviceId();
+    const deviceUserId = await storageService.getDeviceUserId();
+
+    if (!deviceUserId) {
+      throw new Error('User ID not available. Please ensure the device is paired.');
+    }
+
+    const params = new URLSearchParams();
+    if (deviceId) params.append('deviceId', deviceId);
+    params.append('deviceUserId', deviceUserId);
+    const url = `${API_BASE_URL}${ENDPOINTS.SOS_TRIGGER}?${params.toString()}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        location: { latitude, longitude },
+        message,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      const error = new Error(
+        errorBody.message || `API Error: ${response.status}`,
+      );
+      error.status = response.status;
+      error.code = errorBody.code;
+      throw error;
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Report an intruder attempt (wrong PIN capture, etc.).
+   * @param {object} data - { attemptType, attemptCount, photo, timestamp }
    * @returns {Promise<{ success: boolean }>}
    */
-  async triggerSOS(data) {
-    return apiRequest("SOS_TRIGGER", data);
+  async reportIntruderAttempt(data) {
+    return alertApiRequest("INTRUDER_REPORT", data);
   },
 
   /**
@@ -199,7 +299,10 @@ export const apiService = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(token && {
+          Authorization: `Bearer ${token}`,
+          "x-device-token": token,
+        }),
       },
     });
 
@@ -233,18 +336,27 @@ export const apiService = {
   },
 
   /**
-   * Get parental control status for the current device
+   * Get parental control status for the current device.
+   * Calls GET /parental-controls/{userId}?deviceId={deviceId}
    * @returns {Promise<{ success: boolean, controls: object, activities: array }>}
    */
   async getParentalStatus() {
     const token = await storageService.getUploadToken();
-    const url = `${API_BASE_URL}${ENDPOINTS.PARENTAL_STATUS}`;
+    const deviceId = await storageService.getDeviceId();
+    const userId = await storageService.getDeviceUserId();
+
+    const params = new URLSearchParams();
+    if (deviceId) params.append("deviceId", deviceId);
+    const url = `${API_BASE_URL}/parental-controls/${encodeURIComponent(userId)}?${params.toString()}`;
 
     const response = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(token && {
+          Authorization: `Bearer ${token}`,
+          "x-device-token": token,
+        }),
       },
     });
 

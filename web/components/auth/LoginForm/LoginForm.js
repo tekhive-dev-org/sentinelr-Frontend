@@ -264,6 +264,29 @@ export default function LoginForm() {
             </svg>
             Continue with Apple
           </button> */}
+
+          {/* Get it on Google Play */}
+          <div className={styles.appDownloadSection}>
+            <p className={styles.appDownloadLabel}>Get The Mobile App</p>
+            <a
+              href="https://play.google.com/store/apps/details?id=com.techhive.sentinelr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.playStoreButton}
+            >
+              <Image
+                src="/assets/icons/playstore.png"
+                alt="Google Play"
+                width={24}
+                height={24}
+                className={styles.playStoreIcon}
+              />
+              <div className={styles.playStoreText}>
+                <span className={styles.playStoreLabel}>GET IT ON</span>
+                <span className={styles.playStoreName}>Google Play</span>
+              </div>
+            </a>
+          </div>
           </form>
         </div>
       </div>

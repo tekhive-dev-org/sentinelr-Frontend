@@ -173,6 +173,37 @@
   @apply bg-gray-400 cursor-not-allowed;
 }
 
+/* App Download Section */
+.appDownloadSection {
+  @apply flex flex-col items-center mt-2 pt-4 border-t border-gray-200;
+}
+
+.appDownloadLabel {
+  @apply text-xs text-gray-400 mb-3 uppercase tracking-wider font-medium;
+}
+
+.playStoreButton {
+  @apply flex items-center gap-3 bg-[#011721] text-white rounded-xl px-5 py-3 transition-all hover:bg-[#0C3D54] hover:shadow-md active:scale-95;
+  text-decoration: none;
+}
+
+.playStoreIcon {
+  @apply w-6 h-6 object-contain flex-shrink-0;
+
+}
+
+.playStoreText {
+  @apply flex flex-col leading-tight;
+}
+
+.playStoreLabel {
+  @apply text-[10px] font-normal tracking-widest uppercase opacity-80;
+}
+
+.playStoreName {
+  @apply text-[16px] font-semibold;
+}
+
 /* Welcome Screen Styles */
 .welcomeContainer {
   @apply flex flex-col items-center justify-center h-screen text-center bg-gray-50;

@@ -117,6 +117,7 @@ export default function Insights() {
             .insights-page {
               padding: 0 32px 40px;
               max-width: 1200px;
+              margin: 0 auto;
             }
             @media (max-width: 1024px) {
               .insights-page {

@@ -46,7 +46,7 @@
     0 1px 3px rgba(0, 0, 0, 0.06),
     inset 0 0 0 1px rgba(255, 255, 255, 0.6);
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border-radius: 30px;
   font-size: 13px;
   color: #374151;
   cursor: pointer;
@@ -56,6 +56,8 @@
   transition: all 0.15s;
   white-space: nowrap;
   flex-shrink: 0;
+  min-width: 145px;
+  justify-content: space-between;
 }
 
 .pillTrigger:hover {
@@ -181,6 +183,7 @@
 
   .datePickerWrapper {
     flex: 0 0 auto;
+
   }
 
   .exportGroup {
@@ -192,4 +195,3 @@
     justify-content: center;
   }
 }
-

@@ -1,0 +1,3 @@
+<resources>
+  <string name="sentinelr_accessibility_service_description">Sentinelr monitors the foreground app and blocks restricted apps during freeze, bedtime, and app blocking periods.</string>
+</resources>

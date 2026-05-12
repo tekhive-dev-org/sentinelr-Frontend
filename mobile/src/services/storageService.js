@@ -20,6 +20,16 @@ export const storageService = {
     return await AsyncStorage.getItem(STORAGE_KEYS.DEVICE_ID);
   },
 
+  // Get device user ID (the parent/owner userId linked to this device)
+  async getDeviceUserId() {
+    return await AsyncStorage.getItem(STORAGE_KEYS.DEVICE_USER_ID);
+  },
+
+  // Set device user ID
+  async setDeviceUserId(userId) {
+    await AsyncStorage.setItem(STORAGE_KEYS.DEVICE_USER_ID, String(userId));
+  },
+
   // Get upload token
   async getUploadToken() {
     return await AsyncStorage.getItem(STORAGE_KEYS.UPLOAD_TOKEN);
@@ -28,6 +38,16 @@ export const storageService = {
   // Set upload token
   async setUploadToken(token) {
     await AsyncStorage.setItem(STORAGE_KEYS.UPLOAD_TOKEN, token);
+  },
+
+  // Get auth token (user JWT)
+  async getAuthToken() {
+    return await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+  },
+
+  // Set auth token (user JWT)
+  async setAuthToken(token) {
+    await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
   },
 
   // Check if device is paired
@@ -57,6 +77,7 @@ export const storageService = {
     await AsyncStorage.multiRemove([
       STORAGE_KEYS.DEVICE_ID,
       STORAGE_KEYS.UPLOAD_TOKEN,
+      STORAGE_KEYS.AUTH_TOKEN,
       STORAGE_KEYS.IS_PAIRED,
       STORAGE_KEYS.TRACKING_ENABLED,
     ]);

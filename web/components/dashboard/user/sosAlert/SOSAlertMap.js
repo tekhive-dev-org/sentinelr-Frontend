@@ -1,51 +1,99 @@
-/**
- * SOSAlertMap
- * Displays the map section for the active SOS alert location.
- * Uses dynamic import for the Google Maps component (no SSR).
- */
-
-import React from 'react';
-import dynamic from 'next/dynamic';
+import React, { useMemo } from 'react';
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import styles from './SOSAlert.module.css';
 
-const LiveLocationMap = dynamic(
-  () => import('../LiveLocationMap'),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        style={{
-          height: '420px',
-          background: '#eef2f6',
-          borderRadius: '12px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#9ca3af',
-          fontSize: '13px',
-        }}
-      >
-        Loading map…
-      </div>
-    ),
-  }
-);
+const MAP_CONTAINER_STYLE = { width: '100%', height: '100%' };
 
-export default function SOSAlertMap({ alert }) {
-  const address = alert?.location?.address || 'Unknown location';
+const MAP_OPTIONS = {
+  disableDefaultUI: false,
+  fullscreenControl: false,
+  mapTypeControl: false,
+  clickableIcons: false,
+  streetViewControl: false,
+  gestureHandling: 'greedy',
+};
+
+function formatDateTime(dateValue) {
+  if (!dateValue) return 'Awaiting sync';
+
+  const parsedDate = new Date(dateValue);
+  if (Number.isNaN(parsedDate.getTime())) return 'Awaiting sync';
+
+  return parsedDate.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
+
+export default function SOSAlertMap({ alert, onOpenMap, onViewDetails }) {
+  const latitude = alert?.location?.latitude;
+  const longitude = alert?.location?.longitude;
+  const hasCoordinates = typeof latitude === 'number' && typeof longitude === 'number';
+
+  const center = useMemo(() => {
+    if (!hasCoordinates) {
+      return { lat: 0, lng: 0 };
+    }
+
+    return { lat: latitude, lng: longitude };
+  }, [hasCoordinates, latitude, longitude]);
+
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+  });
 
   return (
     <div className={styles.mapSection}>
       <div className={styles.mapOverlay}>
         <LocationOnIcon />
-        {address}
+        <div>
+          <span className={styles.mapOverlayLabel}>Last known location</span>
+          <strong className={styles.mapOverlayValue}>{alert.locationLabel}</strong>
+        </div>
       </div>
-      <button className={styles.mapDetailsLink}>
-        Details &gt;
+
+      <button type="button" className={styles.mapDetailsLink} onClick={() => onOpenMap(alert)}>
+        Open in maps
       </button>
+
+      <div className={styles.mapInfoPanel}>
+        <div className={styles.mapInfoMetric}>
+          <span className={styles.mapInfoLabel}>Coordinates</span>
+          <strong className={styles.mapInfoValue}>{alert.coordinatesLabel}</strong>
+        </div>
+        <div className={styles.mapInfoMetric}>
+          <span className={styles.mapInfoLabel}>Last update</span>
+          <strong className={styles.mapInfoValue}>{formatDateTime(alert.lastUpdatedAt)}</strong>
+        </div>
+        <button type="button" className={styles.secondaryInlineButton} onClick={() => onViewDetails(alert)}>
+          <AccessTimeIcon style={{ fontSize: 16 }} />
+          View full timeline
+        </button>
+      </div>
+
       <div className={styles.mapWrapper}>
-        <LiveLocationMap />
+        {loadError ? (
+          <div className={styles.mapEmptyState}>Google Maps failed to load. Use the map action above to open this incident externally.</div>
+        ) : !isLoaded ? (
+          <div className={styles.mapEmptyState}>Loading incident map…</div>
+        ) : hasCoordinates ? (
+          <GoogleMap
+            mapContainerStyle={MAP_CONTAINER_STYLE}
+            center={center}
+            zoom={15}
+            options={MAP_OPTIONS}
+          >
+            <Marker position={center} title={`${alert.userName} · ${alert.incidentCode}`} />
+          </GoogleMap>
+        ) : (
+          <div className={styles.mapEmptyState}>
+            Awaiting a GPS fix from the protected device. The incident record remains available with the latest address summary.
+          </div>
+        )}
       </div>
     </div>
   );

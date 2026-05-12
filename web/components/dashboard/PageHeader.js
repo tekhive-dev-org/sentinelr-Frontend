@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
+import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
@@ -8,7 +9,7 @@ import Image from 'next/image';
 import styles from './PageHeader.module.css';
 import LogoutModal from './LogoutModal';
 
-export default function PageHeader({ title, subtitle, icon, user, onMenuClick, hasNotifications = true, isAdmin = false, onLogout }) {
+export default function PageHeader({ title, subtitle, icon, user, onMenuClick, activeAlertCount = 0, isAdmin = false, onLogout }) {
   const router = useRouter();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -137,9 +138,20 @@ export default function PageHeader({ title, subtitle, icon, user, onMenuClick, h
           )}
         </div>
         
-        <button className={styles.notificationBtn}>
-          <NotificationsNoneOutlinedIcon style={{ fontSize: '22px', color: '#6b7280' }} />
-          {hasNotifications && <span className={styles.notificationBadge}></span>}
+        <button className={styles.notificationBtn} aria-label={activeAlertCount > 0 ? `${activeAlertCount} active alert${activeAlertCount === 1 ? '' : 's'}` : 'Notifications'}>
+          {activeAlertCount > 0 ? (
+            <NotificationsActiveOutlinedIcon
+              style={{ fontSize: '22px' }}
+              className={styles.notificationBellActive}
+            />
+          ) : (
+            <NotificationsNoneOutlinedIcon style={{ fontSize: '22px', color: '#6b7280' }} />
+          )}
+          {activeAlertCount > 0 && (
+            <span className={styles.notificationBadgeActive}>
+              {activeAlertCount > 9 ? '9+' : activeAlertCount}
+            </span>
+          )}
         </button>
       </div>
       </div>

@@ -18,6 +18,7 @@ export const ENDPOINTS = {
 
 // App Constants
 export const APP_NAME = "Sentinelr";
+export const APP_VERSION = Constants.expoConfig?.version ?? "1.0.0";
 export const PAIRING_CODE_LENGTH = 9;
 
 // Location Settings

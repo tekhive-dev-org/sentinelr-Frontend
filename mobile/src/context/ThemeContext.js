@@ -88,7 +88,7 @@ export const themes = {
 
 export function ThemeProvider({ children }) {
   const systemColorScheme = useColorScheme();
-  const [theme, setThemeState] = useState('dark');
+  const [theme, setThemeState] = useState('light');
   const [isLoading, setIsLoading] = useState(true);
 
   // Load saved theme preference
@@ -100,10 +100,10 @@ export function ThemeProvider({ children }) {
     try {
       const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
       if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light')) {
-        setThemeState(savedTheme);
+        // setThemeState(savedTheme);
       } else {
         // Use system preference as default
-        setThemeState(systemColorScheme || 'dark');
+        // setThemeState('light');
       }
     } catch (error) {
       console.error('Failed to load theme preference:', error);

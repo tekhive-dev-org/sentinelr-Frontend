@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Platform,
   ScrollView,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -71,7 +72,7 @@ export default function LandingScreen({ navigation }) {
         </View>
 
         {/* Feature list */}
-        <View style={styles.features}>
+        {/* <View style={styles.features}>
           {FEATURES.map((item) => (
             <View
               key={item.icon}
@@ -109,6 +110,73 @@ export default function LandingScreen({ navigation }) {
               </View>
             </View>
           ))}
+        </View> */}
+
+        {/* Setup steps */}
+        <View
+          style={[
+            styles.stepsCard,
+            {
+              backgroundColor: colors.card,
+              borderColor: isDark ? 'rgba(255,255,255,0.06)' : colors.border,
+              shadowColor: colors.neuDark,
+            },
+          ]}
+        >
+          <Text style={[styles.stepsHeading, { color: colors.text }]}>
+            Get started in 3 steps
+          </Text>
+
+          {[
+            {
+              step: '1',
+              icon: 'person-add',
+              title: 'Create an account',
+              description: 'Sign up at sentinelr.app to access the parent dashboard.',
+            },
+            {
+              step: '2',
+              icon: 'people',
+              title: 'Add a family member',
+              description: 'In the dashboard, create and add family members.',
+            },
+            {
+              step: '3',
+              icon: 'phone-portrait',
+              title: 'Add a device',
+              description: 'Register a member\'s device to generate a pairing code, then pair it below.',
+            },
+          ].map((s) => (
+            <View key={s.step} style={styles.stepRow}>
+              <View
+                style={[
+                  styles.stepBadge,
+                  { backgroundColor: colors.accentSoft },
+                ]}
+              >
+                <Ionicons name={s.icon} size={18} color={colors.accent} />
+              </View>
+              <View style={styles.stepText}>
+                <Text style={[styles.stepTitle, { color: colors.text }]}>
+                  {s.title}
+                </Text>
+                <Text style={[styles.stepDesc, { color: colors.textMuted }]}>
+                  {s.description}
+                </Text>
+              </View>
+            </View>
+          ))}
+
+          <TouchableOpacity
+            style={[styles.dashboardBtn, { borderColor: colors.accent }]}
+            onPress={() => Linking.openURL('https://sentinelr.app')}
+            activeOpacity={0.75}
+          >
+            <Ionicons name="globe-outline" size={16} color={colors.accent} style={styles.btnIcon} />
+            <Text style={[styles.dashboardBtnText, { color: colors.accent }]}>
+              Open sentinelr.app
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* CTA */}
@@ -128,7 +196,7 @@ export default function LandingScreen({ navigation }) {
           </TouchableOpacity>
 
           <Text style={[styles.hint, { color: colors.textMuted }]}>
-            You'll need the pairing code shown on the parent dashboard.
+            Enter the pairing code generated from the dashboard after adding a device.
           </Text>
         </View>
       </ScrollView>
@@ -246,5 +314,62 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     lineHeight: 17,
+  },
+
+  /* ── Setup steps ──────────────────────────────── */
+  stepsCard: {
+    borderRadius: 18,
+    borderWidth: 1,
+    padding: 20,
+    marginBottom: 28,
+    gap: 16,
+    ...(Platform.OS === 'ios'
+      ? { shadowOffset: { width: 4, height: 4 }, shadowOpacity: 0.9, shadowRadius: 8 }
+      : { elevation: 4 }),
+  },
+  stepsHeading: {
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  stepRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  stepBadge: {
+    width: 38,
+    height: 38,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  stepText: {
+    flex: 1,
+  },
+  stepTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  stepDesc: {
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  dashboardBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderRadius: 12,
+    paddingVertical: 11,
+    marginTop: 4,
+    gap: 6,
+  },
+  dashboardBtnText: {
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: 0.2,
   },
 });

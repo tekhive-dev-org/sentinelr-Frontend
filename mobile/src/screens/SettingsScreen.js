@@ -16,7 +16,7 @@ import { useDevice } from "../context/DeviceContext";
 import { useTheme } from "../context/ThemeContext";
 import NavigationHeader from "../components/NavigationHeader";
 import GlassCard from "../components/GlassCard";
-import { APP_NAME } from "../utils/constants";
+import { APP_NAME, APP_VERSION } from "../utils/constants";
 
 // Maps icon name to a background tint for the colored icon pill
 const ICON_COLORS = {
@@ -216,7 +216,7 @@ export default function SettingsScreen({ navigation }) {
                 </View>
               </View>
               <View style={[setStyles.versionTag, { backgroundColor: colors.accentSoft }]}>
-                <Text style={[setStyles.versionTagText, { color: colors.accent }]}>v1.1.2</Text>
+                <Text style={[setStyles.versionTagText, { color: colors.accent }]}>v{APP_VERSION}</Text>
               </View>
             </View>
           </GlassCard>
@@ -397,7 +397,7 @@ export default function SettingsScreen({ navigation }) {
 
           {/* Footer */}
           <Text style={[setStyles.footer, { color: colors.textMuted }]}>
-            {APP_NAME} · v1.1.2 · © 2026 TechHive
+            {APP_NAME} · v{APP_VERSION}· © 2026 TechHive
           </Text>
         </ScrollView>
       </SafeAreaView>

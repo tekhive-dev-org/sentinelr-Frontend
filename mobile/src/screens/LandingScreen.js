@@ -138,7 +138,7 @@ export default function LandingScreen({ navigation }) {
               step: '2',
               icon: 'people',
               title: 'Add a family member',
-              description: 'In the dashboard, create and add family members.',
+              description: 'In the dashboard, create and add members.',
             },
             {
               step: '3',

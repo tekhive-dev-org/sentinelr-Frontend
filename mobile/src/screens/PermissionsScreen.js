@@ -114,10 +114,13 @@ export default function PermissionsScreen({ navigation }) {
       );
 
       if (Platform.OS === 'android') {
-        if (!isAndroidParentalEnforcementAvailable()) {
-          setAccessibilityStatus(isExpoGoAndroid ? 'unavailable' : 'denied');
-        } else {
+        if (isExpoGoAndroid) {
+          setAccessibilityStatus('unavailable');
+        } else if (isAndroidParentalEnforcementAvailable()) {
           setAccessibilityStatus(isAndroidAccessibilityEnabled() ? 'granted' : 'denied');
+        } else {
+          // Production build but native module not yet linked — keep as denied so Enable is shown
+          setAccessibilityStatus('denied');
         }
       }
     } catch {}
@@ -128,11 +131,26 @@ export default function PermissionsScreen({ navigation }) {
       setAccessibilityStatus('unavailable');
       return;
     }
-    if (!isAndroidParentalEnforcementAvailable()) {
+
+    if (isExpoGoAndroid) {
       setAccessibilityStatus('unavailable');
       Alert.alert(
         'Development Build Required',
-        'Real Android parental-control enforcement requires a native development build or release APK. Expo Go cannot enable the enforcement service.',
+        'Parental control enforcement is not available in Expo Go. Use a development or release build.',
+      );
+      return;
+    }
+
+    if (!isAndroidParentalEnforcementAvailable()) {
+      // Module not linked in this build — direct the user to open Accessibility settings
+      // (they should rebuild the app with the module included for full enforcement)
+      Alert.alert(
+        'Enable Accessibility Service',
+        'Go to Accessibility settings and enable Sentinelr Parental Controls to activate app blocking and freeze.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: () => Linking.openSettings() },
+        ],
       );
       return;
     }

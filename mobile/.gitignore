@@ -33,6 +33,9 @@ yarn-error.*
 # local env files
 .env*.local
 
+# Google Cloud / Firebase service account credentials
+expo-project-*.json
+
 # typescript
 *.tsbuildinfo
 

@@ -33,15 +33,15 @@ module.exports = (config) =>
         (a) => a.$?.['android:name'] === activityName,
       );
       if (existing) {
-        // Strip screenOrientation and add tools:replace so merger prefers our entry
+        // Strip screenOrientation and use tools:remove so merger drops the library's declaration
         const { 'android:screenOrientation': _removed, ...attrs } = existing.$;
-        existing.$ = { ...attrs, 'tools:replace': 'android:screenOrientation' };
+        existing.$ = { ...attrs, 'tools:remove': 'android:screenOrientation' };
       } else {
-        // No existing entry — inject one so the Gradle merge uses our attributes
+        // No existing entry — inject one so the Gradle merge drops the library's screenOrientation
         app.activity.push({
           $: {
             'android:name': activityName,
-            'tools:replace': 'android:screenOrientation',
+            'tools:remove': 'android:screenOrientation',
           },
         });
       }

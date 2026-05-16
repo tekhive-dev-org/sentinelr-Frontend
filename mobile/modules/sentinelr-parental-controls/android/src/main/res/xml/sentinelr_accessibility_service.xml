@@ -5,4 +5,5 @@
   android:accessibilityFlags="flagReportViewIds|flagRetrieveInteractiveWindows"
   android:canRetrieveWindowContent="false"
   android:description="@string/sentinelr_accessibility_service_description"
+  android:isAccessibilityTool="false"
   android:notificationTimeout="100" />

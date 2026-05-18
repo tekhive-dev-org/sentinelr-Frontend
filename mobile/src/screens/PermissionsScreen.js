@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   Alert,
+  AppState,
   Linking,
   StyleSheet,
   Platform,
@@ -92,6 +93,18 @@ export default function PermissionsScreen({ navigation }) {
   const [showBgDisclosure, setShowBgDisclosure] = useState(false);
 
   useEffect(() => { checkPermissions(); }, []);
+
+  // Re-check when user returns from Accessibility Settings (or any system settings screen)
+  const appStateRef = useRef(AppState.currentState);
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (nextState) => {
+      if (appStateRef.current !== 'active' && nextState === 'active') {
+        checkPermissions();
+      }
+      appStateRef.current = nextState;
+    });
+    return () => sub.remove();
+  }, []);
 
   const checkPermissions = async () => {
     try {

@@ -68,6 +68,12 @@ export default {
         },
       ],
     ],
+    updates: {
+      url: 'https://u.expo.dev/115f15f3-31c3-4815-8b68-864821bf83d9',
+    },
+    runtimeVersion: {
+      policy: 'appVersion',
+    },
     web: {
       favicon: './assets/favicon.png',
     },

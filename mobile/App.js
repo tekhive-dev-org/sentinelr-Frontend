@@ -172,9 +172,11 @@ function AppContent() {
   useEffect(() => {
     const prepare = async () => {
       if (!themeLoading && !deviceLoading) {
-        await locationService.ensureTrackingState();
-        await geofencingService.ensureGeofencingState();
-        // Hide native splash screen
+        // Fire-and-forget: restore background services without blocking the splash screen.
+        // These make network calls that can stall on app resume when the radio is waking up.
+        locationService.ensureTrackingState().catch(() => {});
+        geofencingService.ensureGeofencingState().catch(() => {});
+        // Hide native splash screen immediately — don't wait for network
         await SplashScreen.hideAsync();
         setAppReady(true);
       }

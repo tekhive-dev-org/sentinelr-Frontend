@@ -5,7 +5,7 @@ export default {
     name: 'Sentinelr',
     slug: 'sentinelr-mobile',
     version: '1.1.2',
-    orientation: 'portrait',
+    orientation: 'default',
     icon: './assets/icon.png',
     userInterfaceStyle: 'automatic',
     newArchEnabled: true,
@@ -32,7 +32,6 @@ export default {
         foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#000000',
       },
-      edgeToEdgeEnabled: true,
       permissions: [
         'ACCESS_FINE_LOCATION',
         'ACCESS_COARSE_LOCATION',
@@ -47,6 +46,7 @@ export default {
       ],
     },
     plugins: [
+      './plugins/withLargeScreenSupport',
       [
         'expo-location',
         {

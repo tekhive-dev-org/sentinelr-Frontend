@@ -91,6 +91,7 @@ export default function PermissionsScreen({ navigation }) {
     Platform.OS === 'android' ? 'pending' : 'unavailable'
   );
   const [showBgDisclosure, setShowBgDisclosure] = useState(false);
+  const [showAccessibilityDisclosure, setShowAccessibilityDisclosure] = useState(false);
 
   useEffect(() => { checkPermissions(); }, []);
 
@@ -139,12 +140,11 @@ export default function PermissionsScreen({ navigation }) {
     } catch {}
   };
 
-  const requestAccessibilityPermission = async () => {
+  const requestAccessibilityPermission = () => {
     if (Platform.OS !== 'android') {
       setAccessibilityStatus('unavailable');
       return;
     }
-
     if (isExpoGoAndroid) {
       setAccessibilityStatus('unavailable');
       Alert.alert(
@@ -153,32 +153,20 @@ export default function PermissionsScreen({ navigation }) {
       );
       return;
     }
+    // Show the mandatory two-button disclosure before directing to system settings
+    setShowAccessibilityDisclosure(true);
+  };
 
+  const proceedToAccessibilitySettings = () => {
+    setShowAccessibilityDisclosure(false);
     if (!isAndroidParentalEnforcementAvailable()) {
-      // Module not linked in this build — direct the user to open Accessibility settings
-      // (they should rebuild the app with the module included for full enforcement)
-      Alert.alert(
-        'Enable Accessibility Service',
-        'Go to Accessibility settings and enable Sentinelr Parental Controls to activate app blocking and freeze.',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Open Settings', onPress: () => Linking.openSettings() },
-        ],
-      );
+      Linking.openSettings();
       return;
     }
-
     const opened = openAndroidAccessibilitySettings();
     if (!opened) {
       Alert.alert('Accessibility Service', 'Unable to open accessibility settings on this device.');
-      return;
     }
-
-    Alert.alert(
-      'Enable Sentinelr Protection',
-      'In Accessibility settings, enable Sentinelr Parental Controls so the app can block restricted apps during freeze, bedtime, and app-blocking periods.',
-      [{ text: 'OK' }],
-    );
   };
 
   const requestLocationPermission = async () => {
@@ -351,6 +339,71 @@ export default function PermissionsScreen({ navigation }) {
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
+
+      {/* ── Accessibility Service Disclosure Modal ─────────────────────── */}
+      <Modal
+        visible={showAccessibilityDisclosure}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowAccessibilityDisclosure(false)}
+      >
+        <View style={s.modalOverlay}>
+          <View style={[s.modalSheet, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <View style={[s.modalHandle, { backgroundColor: colors.border }]} />
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <View style={[s.modalIconWrap, { backgroundColor: colors.dangerSoft }]}>
+                <Ionicons name="shield-half-outline" size={28} color={colors.danger} />
+              </View>
+              <Text style={[s.modalTitle, { color: colors.text }]}>
+                Accessibility Service Permission
+              </Text>
+              <Text style={[s.modalBody, { color: colors.textSecondary }]}>
+                {APP_NAME} requests access to Android's{' '}
+                <Text style={{ fontWeight: '700', color: colors.text }}>Accessibility Service</Text>{' '}
+                to enforce parental controls on this device. This is used exclusively for:
+              </Text>
+
+              {[
+                { icon: 'lock-closed', label: 'App blocking', detail: 'Prevents children from opening restricted apps during locked or frozen periods' },
+                { icon: 'moon', label: 'Bedtime enforcement', detail: 'Automatically blocks apps outside the hours set by the parent or guardian' },
+                { icon: 'timer', label: 'Screen time limits', detail: 'Enforces daily usage limits configured by the parent or guardian' },
+              ].map((item) => (
+                <View key={item.label} style={[s.modalBulletRow, { borderColor: colors.border }]}>
+                  <View style={[s.modalBulletIcon, { backgroundColor: colors.dangerSoft }]}>
+                    <Ionicons name={item.icon} size={15} color={colors.danger} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[s.modalBulletLabel, { color: colors.text }]}>{item.label}</Text>
+                    <Text style={[s.modalBulletDetail, { color: colors.textSecondary }]}>{item.detail}</Text>
+                  </View>
+                </View>
+              ))}
+
+              <Text style={[s.modalFootnote, { color: colors.textMuted }]}>
+                The Accessibility Service is used solely for parental control enforcement. It does not record audio, read personal messages, or transmit any personal data. You can disable it at any time in Android Accessibility Settings.
+              </Text>
+            </ScrollView>
+
+            <View style={s.modalActions}>
+              <TouchableOpacity
+                style={[s.modalBtnSecondary, { borderColor: colors.border }]}
+                onPress={() => setShowAccessibilityDisclosure(false)}
+                activeOpacity={0.7}
+              >
+                <Text style={[s.modalBtnText, { color: colors.textSecondary }]}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[s.modalBtnPrimary, { backgroundColor: colors.danger }]}
+                onPress={proceedToAccessibilitySettings}
+                activeOpacity={0.7}
+              >
+                <Text style={[s.modalBtnText, { color: '#fff' }]}>I Understand, Enable</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* ── Background Location Disclosure Modal ─────────────────────────── */}
       <Modal

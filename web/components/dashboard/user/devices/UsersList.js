@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import styles from "./DevicesAndUsers.module.css";
+import { TableSkeleton } from "../../../ui/loaders";
 import AddIcon from "@mui/icons-material/Add";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -15,6 +16,10 @@ export default function UsersList({
   isAtMemberLimit = false,
   maxMembers = null,
 }) {
+  if (loading) {
+    return <TableSkeleton rows={5} columns={6} />;
+  }
+
   if (users.length === 0) {
     return (
       <div className={styles.emptyState}>

@@ -1,5 +1,5 @@
-import { CircularProgress } from '@mui/material';
 import styles from './UserSubscription.module.css';
+import { ButtonLoader } from '../../../ui/loaders';
 
 export default function PaypalPayment({ isProcessing, totalAmount, onSubmit }) {
   return (
@@ -7,17 +7,13 @@ export default function PaypalPayment({ isProcessing, totalAmount, onSubmit }) {
       <p style={{ textAlign: 'center', color: '#666', marginBottom: 16 }}>
         You will be redirected to PayPal to complete your payment securely.
       </p>
-      <button 
+      <ButtonLoader 
         className={styles.payButton} 
         onClick={onSubmit}
-        disabled={isProcessing}
+        loading={isProcessing}
       >
-        {isProcessing ? (
-          <><CircularProgress size={20} color="inherit" /> Redirecting...</>
-        ) : (
-          `Continue to PayPal - $${totalAmount.toFixed(2)}`
-        )}
-      </button>
+        {`Continue to PayPal - $${totalAmount.toFixed(2)}`}
+      </ButtonLoader>
     </div>
   );
 }

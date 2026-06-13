@@ -10,7 +10,7 @@ import { InsightsService } from '../../components/dashboard/user/insights/Insigh
 
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import { FullPageLoader } from '../../components/ui/loaders';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -102,7 +102,7 @@ export default function Insights() {
   }, [user, activePeriod]);
 
   if (authLoading) {
-    return <LoadingSpinner fullScreen />;
+    return <FullPageLoader message="Loading insights…" />;
   }
 
   if (!user) {

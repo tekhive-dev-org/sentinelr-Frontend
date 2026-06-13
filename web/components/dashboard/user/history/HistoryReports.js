@@ -331,7 +331,7 @@ export default function HistoryReports() {
         {/* Left column */}
         <div className={styles.leftColumn}>
           {/* Stat cards */}
-          <HistoryStatCards stats={stats} />
+          <HistoryStatCards stats={stats} loading={loading} />
 
           {/* Live Location Map */}
           {/* <div className={styles.mapSection}>

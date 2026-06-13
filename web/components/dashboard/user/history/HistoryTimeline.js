@@ -10,6 +10,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { format } from 'date-fns';
 import styles from './HistoryReports.module.css';
+import { CardSkeleton } from '../../../ui/loaders';
 
 /**
  * Expected event shapes:
@@ -172,9 +173,7 @@ export default function HistoryTimeline({ events = [], loading = false, error = 
       <h3 className={styles.timelineTitle}>Timeline</h3>
       <div className={styles.timelineScroll}>
         {loading ? (
-          <p style={{ fontSize: 13, color: '#9ca3af', textAlign: 'center', marginTop: 24 }}>
-            Loading location history…
-          </p>
+          <CardSkeleton variant="compact" count={4} />
         ) : error ? (
           <p style={{ fontSize: 13, color: '#dc2626', textAlign: 'center', marginTop: 24 }}>
             {error}

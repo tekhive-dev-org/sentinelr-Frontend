@@ -1,0 +1,177 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ChartSkeleton.module.css — Chart / analytics skeleton loader
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.container {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  padding: 20px;
+  animation: fadeInChart 0.35s ease-out both;
+}
+
+@keyframes fadeInChart {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Title ─────────────────────────────────────────────────────────────── */
+
+.titleLine {
+  height: 14px;
+  width: 120px;
+  border-radius: 7px;
+  margin-bottom: 24px;
+}
+
+/* ── Chart area ────────────────────────────────────────────────────────── */
+
+.chartArea {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Y-axis labels ─────────────────────────────────────────────────────── */
+
+.yAxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 4px 0;
+  width: 28px;
+  flex-shrink: 0;
+}
+
+.yLabel {
+  height: 8px;
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* ── Bar chart area ────────────────────────────────────────────────────── */
+
+.barsContainer {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 8px;
+  border-left: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 0 12px 0 8px;
+}
+
+.barWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.bar {
+  width: 100%;
+  max-width: 36px;
+  border-radius: 6px 6px 2px 2px;
+}
+
+/* Bar heights — varied for visual interest */
+.barH1 { height: 55%; }
+.barH2 { height: 75%; }
+.barH3 { height: 45%; }
+.barH4 { height: 85%; }
+.barH5 { height: 60%; }
+.barH6 { height: 70%; }
+.barH7 { height: 40%; }
+
+/* ── X-axis labels ─────────────────────────────────────────────────────── */
+
+.xLabel {
+  height: 8px;
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* ── Line chart variant ────────────────────────────────────────────────── */
+
+.lineChartArea {
+  flex: 1;
+  border-left: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 8px 12px 12px 8px;
+  position: relative;
+}
+
+.linePath {
+  position: absolute;
+  inset: 8px 12px 12px 8px;
+  overflow: hidden;
+}
+
+.linePathSvg {
+  width: 100%;
+  height: 100%;
+}
+
+.lineStroke {
+  fill: none;
+  stroke: #e2e8f0;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 500;
+  stroke-dashoffset: 500;
+  animation: drawLine 2s ease-in-out infinite alternate;
+}
+
+@keyframes drawLine {
+  from { stroke-dashoffset: 500; }
+  to   { stroke-dashoffset: 0; }
+}
+
+.lineArea {
+  fill: url(#lineGradient);
+  opacity: 0.3;
+}
+
+/* ── X-axis row ────────────────────────────────────────────────────────── */
+
+.xAxisRow {
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 12px 0 36px;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .container {
+    padding: 14px;
+  }
+
+  .bar {
+    max-width: 24px;
+  }
+
+  .yAxis {
+    width: 20px;
+  }
+}
+
+/* ── Accessibility ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .container {
+    animation: none;
+  }
+
+  .lineStroke {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}

@@ -1,0 +1,74 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ButtonLoader.module.css — Inline button loading indicator
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.buttonLoading {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Content visibility toggle ─────────────────────────────────────────── */
+
+.content {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.15s ease;
+}
+
+.contentHidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* ── Dot container ─────────────────────────────────────────────────────── */
+
+.dots {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+/* ── Individual dots ───────────────────────────────────────────────────── */
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  animation: dotPulse 1.2s ease-in-out infinite;
+}
+
+.dot:nth-child(1) { animation-delay: 0s; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotPulse {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.7); }
+  40%           { opacity: 1;   transform: scale(1); }
+}
+
+/* ── Accessibility ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    animation: none;
+    opacity: 0.6;
+    transform: scale(1);
+  }
+
+  .dot:nth-child(2) { opacity: 0.8; }
+  .dot:nth-child(3) { opacity: 1; }
+}

@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import LoadingSpinner from '../../../ui/LoadingSpinner';
 import styles from './AppsList.module.css';
+import { CardSkeleton } from '../../../ui/loaders';
 
 /** Parse "3h 45m", "2h 15m" etc. into total minutes for relative bar widths. */
 function parseMinutes(timeStr) {
@@ -26,7 +26,7 @@ export default function AppsList({ apps, loading }) {
 
       <div className={styles.list}>
         {loading ? (
-          <LoadingSpinner />
+          <CardSkeleton variant="compact" count={4} />
         ) : (
           apps?.map((app, index) => {
             const pct = Math.round((parseMinutes(app.time) / maxMinutes) * 100);

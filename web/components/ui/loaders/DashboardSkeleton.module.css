@@ -1,0 +1,211 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   DashboardSkeleton.module.css — Full dashboard page skeleton layout
+   Mirrors UserDashboardOverview layout.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.container {
+  @apply mobile:!px-4;
+  padding: 24px;
+  min-height: 100dvh;
+  animation: fadeInDash 0.3s ease-out both;
+}
+
+@keyframes fadeInDash {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Map section skeleton ──────────────────────────────────────────────── */
+
+.mapSection {
+  margin-bottom: 24px;
+}
+
+.mapHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.mapTitleLine {
+  height: 14px;
+  width: 110px;
+  border-radius: 7px;
+}
+
+.mapActionLine {
+  height: 12px;
+  width: 80px;
+  border-radius: 6px;
+}
+
+/* ── Stats grid ────────────────────────────────────────────────────────── */
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* ── Main content grid ─────────────────────────────────────────────────── */
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Charts row ────────────────────────────────────────────────────────── */
+
+.chartsRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+/* ── Activity card skeleton ────────────────────────────────────────────── */
+
+.activityCard {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.activityTitle {
+  height: 14px;
+  width: 180px;
+  border-radius: 7px;
+}
+
+.activityItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.activityItem:last-child {
+  border-bottom: none;
+}
+
+.activityDot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.activityLines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.activityLine1 {
+  height: 10px;
+  width: 80%;
+  border-radius: 5px;
+}
+
+.activityLine2 {
+  height: 8px;
+  width: 50%;
+  border-radius: 4px;
+}
+
+/* ── Screen time card skeleton ─────────────────────────────────────────── */
+
+.screenTimeCard {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.screenTimeTitle {
+  height: 14px;
+  width: 100px;
+  border-radius: 7px;
+}
+
+.screenTimeRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.screenTimeRow:last-child {
+  border-bottom: none;
+}
+
+.screenTimeLabel {
+  height: 10px;
+  width: 100px;
+  border-radius: 5px;
+}
+
+.screenTimeValue {
+  height: 10px;
+  width: 40px;
+  border-radius: 5px;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .chartsRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Accessibility ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .container {
+    animation: none;
+  }
+}

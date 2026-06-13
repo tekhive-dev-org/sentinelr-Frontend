@@ -160,11 +160,11 @@
 }
 
 .codeInputs {
-  @apply flex gap-4 mb-6;
+  @apply flex gap-4 mb-6 justify-center flex-wrap;
 }
 
 .codeInput {
-  @apply w-16 h-16 text-center text-2xl font-semibold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E4B68] focus:border-[#0E4B68] outline-none transition-all;
+  @apply w-12 h-12 text-center text-2xl font-semibold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E4B68] focus:border-[#0E4B68] outline-none transition-all;
 }
 
 .verifyButton {
@@ -193,7 +193,7 @@
 
 /* Success State Styles */
 .successIconCircle {
-  @apply !w-24 !h-24 rounded-full bg-[#0E4B68] flex items-center justify-center relative;
+  @apply !w-24 !h-24 rounded-full bg-[#0E4B68] flex mx-auto items-center justify-center relative;
 }
 
 .successIconCircle::before {

@@ -3,6 +3,7 @@ import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import styles from './SOSAlert.module.css';
+import { MapSkeleton } from '../../../ui/loaders';
 
 const MAP_CONTAINER_STYLE = { width: '100%', height: '100%' };
 
@@ -79,7 +80,7 @@ export default function SOSAlertMap({ alert, onOpenMap, onViewDetails }) {
         {loadError ? (
           <div className={styles.mapEmptyState}>Google Maps failed to load. Use the map action above to open this incident externally.</div>
         ) : !isLoaded ? (
-          <div className={styles.mapEmptyState}>Loading incident map…</div>
+          <MapSkeleton height="100%" />
         ) : hasCoordinates ? (
           <GoogleMap
             mapContainerStyle={MAP_CONTAINER_STYLE}

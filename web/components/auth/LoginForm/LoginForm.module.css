@@ -68,15 +68,16 @@
 }
 
 .rightSection {
-  @apply w-full md:w-1/2 flex flex-col justify-center items-center sm:px-6 sm:py-10 mobile:pt-20 bg-white mobile:bg-[#0E4B68];
+  @apply w-full md:h-dvh md:overflow-y-scroll md:w-1/2 flex flex-col  justify-start items-center sm:px-6 sm:py-10  mobile:pt-16 bg-white mobile:bg-[#0E4B68];
+  scrollbar-width: none; /* Firefox */
 }
 
 .formContainer {
-  @apply w-full max-w-[400px] mobile:flex mobile:flex-col mobile:justify-center mobile:bg-white mobile:h-full mobile:rounded-tl-[100px] mobile:rounded-lg  mobile:p-6 mobile:shadow-lg;
+  @apply w-full max-w-[400px] mobile:flex mobile:flex-col mobile:justify-center my-auto mobile:bg-white mobile:h-full mobile:rounded-tl-[100px] mobile:rounded-lg  mobile:p-6 mobile:pb-10 mobile:shadow-lg;
 }
 
 .logoWrapper {
-  @apply flex justify-center mb-16;
+  @apply flex justify-center mb-10;
 }
 
 .logo {

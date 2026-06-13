@@ -10,6 +10,7 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import styles from './HistoryReports.module.css';
+import { CardSkeleton } from '../../../ui/loaders';
 
 const STATS_CONFIG = [
   {
@@ -42,7 +43,7 @@ const STATS_CONFIG = [
   },
 ];
 
-export default function HistoryStatCards({ stats = {} }) {
+export default function HistoryStatCards({ stats = {}, loading = false }) {
   const [openMenu, setOpenMenu] = useState(null);
   const menuRef = useRef(null);
 
@@ -55,6 +56,10 @@ export default function HistoryStatCards({ stats = {} }) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  if (loading) {
+    return <CardSkeleton variant="stat" count={4} className={styles.statsGrid} />;
+  }
 
   return (
     <div className={styles.statsGrid}>

@@ -16,6 +16,7 @@ import {
 } from "@mui/icons-material";
 import styles from "./DashboardOverview.module.css";
 import adminService from "../../../services/adminService";
+import { CardSkeleton, ChartSkeleton, TableSkeleton } from "../../ui/loaders";
 
 export default function DashboardOverview() {
   const [userData, setUserData] = useState({
@@ -29,6 +30,7 @@ export default function DashboardOverview() {
   const [activeTab, setActiveTab] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
 
   const formatDate = (value) => {
     if (!value) return "-";
@@ -57,6 +59,7 @@ export default function DashboardOverview() {
 
   const fetchStats = async () => {
     try {
+      setIsLoadingStats(true);
       const [allRes, blockedRes, verifiedRes, unverifiedRes] = await Promise.all([
         adminService.getAllUsers(),
         adminService.getBlockedUsers(),
@@ -77,6 +80,8 @@ export default function DashboardOverview() {
         blockedAccounts: 0,
         flaggedUsers: 0,
       });
+    } finally {
+      setIsLoadingStats(false);
     }
   };
 
@@ -162,101 +167,112 @@ export default function DashboardOverview() {
   return (
     <div className={styles.dashboardOverview}>
       {/* Stats Cards */}
-      <div className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <h3 className={styles.statLabel}>All Users</h3>
-          <p className={styles.statValue}>{userData.allUsers}</p>
+      {isLoadingStats ? (
+        <CardSkeleton variant="stat" count={4} className={styles.statsGrid} />
+      ) : (
+        <div className={styles.statsGrid}>
+          <div className={styles.statCard}>
+            <h3 className={styles.statLabel}>All Users</h3>
+            <p className={styles.statValue}>{userData.allUsers}</p>
+          </div>
+          <div className={styles.statCard}>
+            <h3 className={styles.statLabel}>Approved Accounts</h3>
+            <p className={styles.statValue}>{userData.approvedAccounts}</p>
+          </div>
+          <div className={styles.statCard}>
+            <h3 className={styles.statLabel}>Blocked Accounts</h3>
+            <p className={styles.statValue}>{userData.blockedAccounts}</p>
+          </div>
+          <div className={styles.statCard}>
+            <h3 className={styles.statLabel}>Flagged Users</h3>
+            <p className={styles.statValue}>{userData.flaggedUsers}</p>
+          </div>
         </div>
-        <div className={styles.statCard}>
-          <h3 className={styles.statLabel}>Approved Accounts</h3>
-          <p className={styles.statValue}>{userData.approvedAccounts}</p>
-        </div>
-        <div className={styles.statCard}>
-          <h3 className={styles.statLabel}>Blocked Accounts</h3>
-          <p className={styles.statValue}>{userData.blockedAccounts}</p>
-        </div>
-        <div className={styles.statCard}>
-          <h3 className={styles.statLabel}>Flagged Users</h3>
-          <p className={styles.statValue}>{userData.flaggedUsers}</p>
-        </div>
-      </div>
+      )}
 
       {/* Charts Section */}
-      <div className={styles.chartsGrid}>
-        <div className={styles.chartCard}>
-          <h3 className={styles.chartTitle}>Subscription</h3>
-          <div className={styles.chart}>
-            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-              <LineChart data={subscriptionData}>
-                <CartesianGrid
-                  strokeDasharray="0"
-                  stroke="#f0f0f0"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#64748b", fontSize: 12 }}
-                  dy={10}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#64748b", fontSize: 12 }}
-                  domain={[0, 800]}
-                  ticks={[0, 200, 400, 600, 800]}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#10b981"
-                  strokeWidth={2.5}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+      {isLoadingStats ? (
+        <div className={styles.chartsGrid}>
+          <ChartSkeleton variant="line" height="200px" />
+          <ChartSkeleton variant="line" height="200px" />
         </div>
+      ) : (
+        <div className={styles.chartsGrid}>
+          <div className={styles.chartCard}>
+            <h3 className={styles.chartTitle}>Subscription</h3>
+            <div className={styles.chart}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+                <LineChart data={subscriptionData}>
+                  <CartesianGrid
+                    strokeDasharray="0"
+                    stroke="#f0f0f0"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#64748b", fontSize: 12 }}
+                    dy={10}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#64748b", fontSize: 12 }}
+                    domain={[0, 800]}
+                    ticks={[0, 200, 400, 600, 800]}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#10b981"
+                    strokeWidth={2.5}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
 
-        <div className={styles.chartCard}>
-          <h3 className={styles.chartTitle}>
-            Analytics- Real-time device usage
-          </h3>
-          <div className={styles.chart}>
-            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-              <LineChart data={analyticsData}>
-                <CartesianGrid
-                  strokeDasharray="0"
-                  stroke="#f0f0f0"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#64748b", fontSize: 12 }}
-                  dy={10}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#64748b", fontSize: 12 }}
-                  domain={[0, 900]}
-                  ticks={[0, 250, 500, 750, 900]}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#10b981"
-                  strokeWidth={2.5}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className={styles.chartCard}>
+            <h3 className={styles.chartTitle}>
+              Analytics- Real-time device usage
+            </h3>
+            <div className={styles.chart}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+                <LineChart data={analyticsData}>
+                  <CartesianGrid
+                    strokeDasharray="0"
+                    stroke="#f0f0f0"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#64748b", fontSize: 12 }}
+                    dy={10}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#64748b", fontSize: 12 }}
+                    domain={[0, 900]}
+                    ticks={[0, 250, 500, 750, 900]}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#10b981"
+                    strokeWidth={2.5}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Users Table */}
       <div className={styles.tableSection}>
@@ -290,60 +306,64 @@ export default function DashboardOverview() {
           </div>
         </div>
 
-        <div className={styles.tableContainer}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Last active</th>
-                <th>Status</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>{user.phone}</td>
-                  <td>{user.lastActive}</td>
-                  <td>
-                    <span
-                      className={`${styles.statusBadge} ${
-                        styles[user.status.toLowerCase()]
-                      }`}
-                    >
-                      {user.status === 'Approved' && <CheckCircleIcon className={styles.statusIcon} />}
-                      {user.status === 'Flagged' && <BlockIcon className={styles.statusIcon} />}
-                      {user.status === 'Blocked' && <CancelIcon className={styles.statusIcon} />}
-                      {user.status}
-                    </span>
-                  </td>
-                  <td>
-                    <button
-                      className={`${styles.actionBtn} ${
-                        user.status === "Blocked" ? styles.unblockBtn : styles.blockBtn
-                      }`}
-                      onClick={() => handleToggleBlock(user)}
-                      disabled={isLoadingUsers}
-                    >
-                      {user.status === "Blocked" ? "Unblock" : "Block"}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {!isLoadingUsers && filteredUsers.length === 0 && (
+        {isLoadingUsers ? (
+          <TableSkeleton rows={5} columns={6} />
+        ) : (
+          <div className={styles.tableContainer}>
+            <table className={styles.table}>
+              <thead>
                 <tr>
-                  <td colSpan={6} style={{ textAlign: "center", padding: "16px" }}>
-                    No users found.
-                  </td>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone Number</th>
+                  <th>Last active</th>
+                  <th>Status</th>
+                  <th></th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filteredUsers.map((user) => (
+                  <tr key={user.id}>
+                    <td>{user.name}</td>
+                    <td>{user.email}</td>
+                    <td>{user.phone}</td>
+                    <td>{user.lastActive}</td>
+                    <td>
+                      <span
+                        className={`${styles.statusBadge} ${
+                          styles[user.status.toLowerCase()]
+                        }`}
+                      >
+                        {user.status === 'Approved' && <CheckCircleIcon className={styles.statusIcon} />}
+                        {user.status === 'Flagged' && <BlockIcon className={styles.statusIcon} />}
+                        {user.status === 'Blocked' && <CancelIcon className={styles.statusIcon} />}
+                        {user.status}
+                      </span>
+                    </td>
+                    <td>
+                      <button
+                        className={`${styles.actionBtn} ${
+                          user.status === "Blocked" ? styles.unblockBtn : styles.blockBtn
+                        }`}
+                        onClick={() => handleToggleBlock(user)}
+                        disabled={isLoadingUsers}
+                      >
+                        {user.status === "Blocked" ? "Unblock" : "Block"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {!isLoadingUsers && filteredUsers.length === 0 && (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: "center", padding: "16px" }}>
+                      No users found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

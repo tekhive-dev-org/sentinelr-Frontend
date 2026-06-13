@@ -1,6 +1,6 @@
-import { CircularProgress } from '@mui/material';
 import { ContentCopy as ContentCopyIcon, Info as InfoIcon } from '@mui/icons-material';
 import styles from './UserSubscription.module.css';
+import { CardSkeleton, ButtonLoader } from '../../../ui/loaders';
 
 export default function BankTransferForm({ 
   bankDetails, 
@@ -12,10 +12,7 @@ export default function BankTransferForm({
   if (!bankDetails) {
     return (
       <div className={styles.methodDetails}>
-        <div className={styles.loadingContainer}>
-          <CircularProgress size={24} />
-          <p>Generating transfer details...</p>
-        </div>
+        <CardSkeleton variant="info" count={1} />
       </div>
     );
   }
@@ -62,19 +59,14 @@ export default function BankTransferForm({
         </div>
       </div>
       
-      <button 
+      <ButtonLoader 
         className={styles.payButton} 
         onClick={onConfirm}
-        disabled={isProcessing || isExpired}
+        loading={isProcessing}
+        disabled={isExpired}
       >
-        {isProcessing ? (
-          <><CircularProgress size={20} color="inherit" /> Verifying...</>
-        ) : isExpired ? (
-          'Session Expired - Go Back'
-        ) : (
-          `I have sent ${bankDetails.amount}`
-        )}
-      </button>
+        {isExpired ? 'Session Expired - Go Back' : `I have sent ${bankDetails.amount}`}
+      </ButtonLoader>
     </div>
   );
 }

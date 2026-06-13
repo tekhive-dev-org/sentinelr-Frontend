@@ -9,17 +9,14 @@ import DevicesIcon from '@mui/icons-material/Devices';
 import SosIcon from '@mui/icons-material/Sos';
 import styles from './UserDashboardOverview.module.css';
 import { devicesService } from '../../../services/devicesService';
+import MapSkeleton from '../../ui/loaders/MapSkeleton';
 
 // Google Maps requires the DOM — disable SSR for this component
 const LiveLocationMap = dynamic(
   () => import('./LiveLocationMap'),
   {
     ssr: false,
-    loading: () => (
-      <div style={{ height: '200px', background: '#eef2f6', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '13px' }}>
-        Loading map…
-      </div>
-    ),
+    loading: () => <MapSkeleton height="200px" />,
   }
 );
 
@@ -44,6 +41,7 @@ export default function UserDashboardOverview() {
   const router = useRouter();
   const [devices, setDevices] = useState([]);
   const [deviceMenuOpen, setDeviceMenuOpen] = useState(false);
+  const [showMapDetails, setShowMapDetails] = useState(true);
   const deviceMenuRef = useRef(null);
 
   // Close menu when clicking outside
@@ -87,10 +85,12 @@ export default function UserDashboardOverview() {
       <div className={styles.mapSection}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Live Location</h2>
-          <span className={styles.detailsLink}>Details &gt;</span>
+          <button className={styles.detailsLink} onClick={() => setShowMapDetails(!showMapDetails)}>
+            {showMapDetails ? 'Hide Details' : 'Show Details'}
+          </button>
         </div>
         <div className={styles.mapPlaceholder}>
-          <LiveLocationMap />
+          <LiveLocationMap showDetails={showMapDetails} />
         </div>
       </div>
 

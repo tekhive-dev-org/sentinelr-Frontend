@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import SearchIcon from '@mui/icons-material/Search';
 import styles from './SOSAlert.module.css';
+import { TableSkeleton } from '../../../ui/loaders';
 
 const STATUS_CLASSES = {
   resolved: styles.statusResolved,
@@ -128,7 +129,7 @@ export default function SOSAlertHistory({
 
       <div className={styles.tableCard}>
         {loading ? (
-          <div className={styles.loadingWrapper}>Loading incidents…</div>
+          <TableSkeleton rows={5} columns={7} />
         ) : filteredAlerts.length === 0 ? (
           <div className={styles.emptyState}>
             {search ? 'No incidents match the current search.' : 'No incident history is available yet.'}

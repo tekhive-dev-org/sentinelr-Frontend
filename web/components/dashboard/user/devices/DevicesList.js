@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import styles from "./DevicesAndUsers.module.css";
+import { TableSkeleton } from "../../../ui/loaders";
 import AddIcon from "@mui/icons-material/Add";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -31,32 +32,7 @@ export default function DevicesList({
   maxDevices = null,
 }) {
   if (loading) {
-    return (
-      <div
-        className={styles.loadingContainer}
-        style={{ padding: "40px", display: "flex", justifyContent: "center" }}
-      >
-        <div
-          style={{
-            width: "30px",
-            height: "30px",
-            border: "3px solid #E5E7EB",
-            borderTopColor: "#1F2937",
-            borderRadius: "50%",
-            animation: "spin 1s linear infinite",
-          }}
-        ></div>
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-          @keyframes spin {
-            to { transform: rotate(360deg); }
-          }
-        `,
-          }}
-        />
-      </div>
-    );
+    return <TableSkeleton rows={5} columns={6} />;
   }
 
   if (devices.length === 0) {

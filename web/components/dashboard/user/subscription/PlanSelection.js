@@ -1,6 +1,6 @@
-import { CircularProgress } from '@mui/material';
 import styles from './UserSubscription.module.css';
 import PlanCard from './PlanCard';
+import { CardSkeleton } from '../../../ui/loaders';
 
 export default function PlanSelection({ 
   plans, 
@@ -37,10 +37,7 @@ export default function PlanSelection({
       </div>
 
       {plansLoading ? (
-        <div className={styles.loadingContainer}>
-          <CircularProgress />
-          <p>Loading plans...</p>
-        </div>
+        <CardSkeleton variant="stat" count={3} className={styles.plansGrid} />
       ) : (
         <div className={styles.plansGrid}>
           {plans.map((plan) => (

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
 import Sidebar from './Sidebar';
@@ -87,6 +87,7 @@ export default function DashboardLayout({ children }) {
     if (typeof window !== 'undefined') return window.innerWidth <= 768;
     return false;
   });
+  const prevIsMobileRef = useRef(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
   const showSidebar = isAdmin || !isMobile;
   
   let currentPage = pageConfig[router.pathname] || pageConfig['/dashboard'];
@@ -138,22 +139,23 @@ export default function DashboardLayout({ children }) {
     return () => { cancelled = true; window.clearInterval(interval); };
   }, [user]);
 
-  // Close sidebar on mobile by default
+  // Auto-close sidebar on mobile, auto-open when returning to desktop
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
+      const wasMobile = prevIsMobileRef.current;
+      prevIsMobileRef.current = mobile;
       setIsMobile(mobile);
-      if (mobile) {
-        setIsSidebarOpen(false);
-      } else {
+      if (wasMobile && !mobile) {
+        // Transitioning mobile → desktop: restore sidebar
         setIsSidebarOpen(true);
+      } else if (!wasMobile && mobile) {
+        // Transitioning desktop → mobile: hide sidebar
+        setIsSidebarOpen(false);
       }
+      // No change when resizing within the same category (preserves manual toggle)
     };
 
-    // Set initial state
-    handleResize();
-
-    // Add event listener
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);

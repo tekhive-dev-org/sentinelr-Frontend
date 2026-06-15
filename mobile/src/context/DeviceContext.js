@@ -27,19 +27,47 @@ export function DeviceProvider({ children }) {
   const [batteryLevel, setBatteryLevel] = useState(null);
   const [lastPingTime, setLastPingTime] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState("offline");
+  // Last successfully synced parental controls — read by ParentalControlScreen
+  const [parentalControls, setParentalControls] = useState(null);
+  const [parentalActivities, setParentalActivities] = useState([]);
+  const [parentalSyncError, setParentalSyncError] = useState(null);
   const hasRegisteredAuthHandler = useRef(false);
   const pairCheckInterval = useRef(null);
 
   const syncParentalControls = useCallback(async () => {
     if (!isPaired) {
       await clearAndroidParentalControls();
+      setParentalControls(null);
+      setParentalActivities([]);
+      setParentalSyncError(null);
       return;
     }
 
     try {
-      const data = await apiService.getParentalStatus();
-      await applyAndroidParentalControls(data?.controls || null);
+      const [statusRes, activityRes] = await Promise.allSettled([
+        apiService.getParentalStatus(deviceId),
+        apiService.getParentalActivity(deviceId, 10),
+      ]);
+
+      if (statusRes.status === 'fulfilled') {
+        const data = statusRes.value;
+        if (data?.authError) {
+          // Device token not accepted — keep existing state, mark error
+          setParentalSyncError('auth');
+        } else {
+          setParentalControls(data?.controls || null);
+          setParentalSyncError(null);
+          await applyAndroidParentalControls(data?.controls || null);
+        }
+      } else {
+        setParentalSyncError('network');
+      }
+
+      if (activityRes.status === 'fulfilled' && !activityRes.value?.authError) {
+        setParentalActivities(activityRes.value?.activities || []);
+      }
     } catch (error) {
+      setParentalSyncError('network');
       console.warn("[DeviceContext] parental control sync failed:", error?.message || error);
     }
   }, [isPaired]);
@@ -406,6 +434,12 @@ export function DeviceProvider({ children }) {
     batteryLevel,
     lastPingTime,
     connectionStatus,
+
+    // Parental controls (synced via device token + backend; read-only for child device)
+    parentalControls,
+    parentalActivities,
+    parentalSyncError,
+    syncParentalControls,
 
     // Actions
     completePairing,

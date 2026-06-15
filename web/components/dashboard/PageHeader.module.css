@@ -1,9 +1,12 @@
 .header {
   margin-bottom: 32px;
   padding: 16px 16px 0px;
-  background: transparent; /* Transparent to let glassmorphism work on container if needed, or moved to container */
-  position: relative;
-  z-index: 10; 
+  background: transparent;
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
 }
 
 .headerContainer {
@@ -68,7 +71,7 @@
 }
 
 .menuBtn {
-  display: none;
+  display: flex;
   width: 44px;
   height: 44px;
   border-radius: 12px;

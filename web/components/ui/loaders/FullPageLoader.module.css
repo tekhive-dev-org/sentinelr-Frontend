@@ -1,0 +1,112 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   FullPageLoader.module.css — Premium branded full-page loading overlay
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.overlayHidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ── Logo container with glow ring ─────────────────────────────────────── */
+
+.logoContainer {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.logoMark {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  box-shadow:
+    0 4px 14px rgba(15, 60, 95, 0.15),
+    0 1px 3px rgba(15, 60, 95, 0.08);
+  animation: glowPulse 2.4s ease-in-out infinite;
+  overflow: hidden;
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 4px 14px rgba(15, 60, 95, 0.2), 0 0 0 0 rgba(15, 60, 95, 0.15); }
+  50%      { box-shadow: 0 4px 14px rgba(15, 60, 95, 0.2), 0 0 0 14px rgba(15, 60, 95, 0); }
+}
+
+/* ── Orbiting spinner arc ──────────────────────────────────────────────── */
+
+.spinnerRing {
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2.5px solid transparent;
+  border-top-color: #F6C102;
+  border-right-color: rgba(246, 193, 2, 0.3);
+  animation: brandSpin 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes brandSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Status message ────────────────────────────────────────────────────── */
+
+.message {
+  font-family: 'Lato', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  letter-spacing: 0.01em;
+  animation: fadeInText 0.6s ease 0.2s both;
+}
+
+@keyframes fadeInText {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Accessibility ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .logoMark {
+    animation: none;
+    box-shadow: 0 4px 14px rgba(15, 60, 95, 0.2);
+  }
+
+  .spinnerRing {
+    animation: none;
+    border-top-color: #F6C102;
+    border-right-color: #F6C102;
+    border-bottom-color: rgba(246, 193, 2, 0.3);
+    border-left-color: rgba(246, 193, 2, 0.3);
+  }
+
+  .message {
+    animation: none;
+    opacity: 1;
+  }
+}

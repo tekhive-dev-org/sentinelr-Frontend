@@ -28,27 +28,12 @@ import GeofenceActivity from './GeofenceActivity';
 import GeofenceFormModal from './GeofenceFormModal';
 import Toast from '../../../common/Toast';
 import styles from './Geofencing.module.css';
+import { MapSkeleton, CardSkeleton } from '../../../ui/loaders';
 
 // Dynamic import for the map — no SSR
 const GeofenceMap = dynamic(() => import('./GeofenceMap'), {
   ssr: false,
-  loading: () => (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        minHeight: '500px',
-        background: '#eef2f6',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#9ca3af',
-        fontSize: '13px',
-      }}
-    >
-      Loading map…
-    </div>
-  ),
+  loading: () => <MapSkeleton height="500px" />,
 });
 
 export default function GeofencingDashboard() {
@@ -183,9 +168,7 @@ export default function GeofencingDashboard() {
           </div>
 
           {loading ? (
-            <div className={styles.loadingWrapper}>
-              <span style={{ color: '#9ca3af', fontSize: 14 }}>Loading zones…</span>
-            </div>
+            <CardSkeleton variant="compact" count={3} />
           ) : geofences.length === 0 ? (
             <div className={styles.emptyZones}>
               <div className={styles.emptyZonesIcon}>

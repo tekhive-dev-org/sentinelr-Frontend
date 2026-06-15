@@ -1,0 +1,132 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   LoaderAnimations.module.css — Shared animations & utility classes
+   for the Sentinelr premium loading state system.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Keyframes ─────────────────────────────────────────────────────────── */
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes brandSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes dotPulse {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.7); }
+  40%           { opacity: 1;   transform: scale(1); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(15, 60, 95, 0.25); }
+  50%      { box-shadow: 0 0 0 12px rgba(15, 60, 95, 0); }
+}
+
+/* ── Shimmer block ─────────────────────────────────────────────────────── */
+
+.shimmerBlock {
+  background: linear-gradient(
+    90deg,
+    #e2e8f0 0%,
+    #f1f5f9 40%,
+    #f8fafc 50%,
+    #f1f5f9 60%,
+    #e2e8f0 100%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ── Pulse block ───────────────────────────────────────────────────────── */
+
+.pulseBlock {
+  background: #e2e8f0;
+  animation: pulse 2s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ── Glassmorphism card (matches existing dashboard card style) ─────── */
+
+.glassCard {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+}
+
+/* ── Fade-in container ─────────────────────────────────────────────────── */
+
+.fadeIn {
+  animation: fadeIn 0.35s ease-out both;
+}
+
+/* ── Shimmer circle (for icon placeholders) ────────────────────────────── */
+
+.shimmerCircle {
+  composes: shimmerBlock;
+  border-radius: 50%;
+}
+
+/* ── Shimmer line (for text placeholders) ──────────────────────────────── */
+
+.shimmerLine {
+  composes: shimmerBlock;
+  height: 12px;
+  border-radius: 6px;
+}
+
+.shimmerLineSmall {
+  composes: shimmerLine;
+  height: 10px;
+}
+
+.shimmerLineLarge {
+  composes: shimmerLine;
+  height: 16px;
+}
+
+/* ── Stagger delay utilities ───────────────────────────────────────────── */
+
+.delay1 { animation-delay: 0.05s; }
+.delay2 { animation-delay: 0.1s; }
+.delay3 { animation-delay: 0.15s; }
+.delay4 { animation-delay: 0.2s; }
+.delay5 { animation-delay: 0.25s; }
+.delay6 { animation-delay: 0.3s; }
+.delay7 { animation-delay: 0.35s; }
+
+/* ── Accessibility: Reduced motion ─────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmerBlock,
+  .pulseBlock,
+  .shimmerCircle,
+  .shimmerLine,
+  .shimmerLineSmall,
+  .shimmerLineLarge {
+    animation: none;
+    background: #e2e8f0;
+  }
+
+  .fadeIn {
+    animation: none;
+  }
+}

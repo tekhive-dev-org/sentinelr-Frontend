@@ -1,0 +1,155 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   CardSkeleton.module.css — Stat / info card skeleton loader
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.grid {
+  display: grid;
+  gap: 24px;
+}
+
+.gridThree {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.gridTwo {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.gridOne {
+  grid-template-columns: 1fr;
+}
+
+/* ── Card container ────────────────────────────────────────────────────── */
+
+.card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  padding: 20px;
+  animation: fadeInCard 0.35s ease-out both;
+}
+
+@keyframes fadeInCard {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Stat variant ──────────────────────────────────────────────────────── */
+
+.statHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.iconPlaceholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.titleLine {
+  height: 12px;
+  width: 80px;
+  border-radius: 6px;
+}
+
+.valueLine {
+  height: 22px;
+  width: 50px;
+  border-radius: 6px;
+  margin-left: auto;
+}
+
+/* ── Info variant ──────────────────────────────────────────────────────── */
+
+.infoBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.infoLine1 {
+  height: 12px;
+  width: 90%;
+  border-radius: 6px;
+}
+
+.infoLine2 {
+  height: 12px;
+  width: 65%;
+  border-radius: 6px;
+}
+
+.infoLine3 {
+  height: 12px;
+  width: 40%;
+  border-radius: 6px;
+}
+
+/* ── Compact variant ───────────────────────────────────────────────────── */
+
+.compactCard {
+  composes: card;
+  padding: 14px 16px;
+}
+
+.compactRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.compactIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.compactLines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.compactLine1 {
+  height: 10px;
+  width: 70%;
+  border-radius: 5px;
+}
+
+.compactLine2 {
+  height: 10px;
+  width: 45%;
+  border-radius: 5px;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .gridThree {
+    grid-template-columns: 1fr;
+  }
+
+  .gridTwo {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Accessibility ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .compactCard {
+    animation: none;
+  }
+}

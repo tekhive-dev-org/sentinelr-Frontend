@@ -1,6 +1,6 @@
-import { CircularProgress } from '@mui/material';
 import styles from './UserSubscription.module.css';
 import { formatCardNumber, formatExpiry } from './utils';
+import { ButtonLoader } from '../../../ui/loaders';
 
 export default function CardPaymentForm({ 
   cardDetails, 
@@ -79,17 +79,13 @@ export default function CardPaymentForm({
           {errors.cvv && <span className={styles.errorText}>{errors.cvv}</span>}
         </div>
       </div>
-      <button 
+      <ButtonLoader 
         className={styles.payButton} 
         onClick={onSubmit}
-        disabled={isProcessing}
+        loading={isProcessing}
       >
-        {isProcessing ? (
-          <><CircularProgress size={20} color="inherit" /> Processing...</>
-        ) : (
-          `Pay $${totalAmount.toFixed(2)}`
-        )}
-      </button>
+        {`Pay $${totalAmount.toFixed(2)}`}
+      </ButtonLoader>
     </div>
   );
 }

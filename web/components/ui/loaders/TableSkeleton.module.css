@@ -1,0 +1,149 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   TableSkeleton.module.css — Table / list skeleton loader
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.container {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.02),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  overflow: hidden;
+  animation: fadeInTable 0.35s ease-out both;
+}
+
+@keyframes fadeInTable {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Header row ────────────────────────────────────────────────────────── */
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  background: rgba(248, 250, 252, 0.5);
+}
+
+.headerCell {
+  height: 10px;
+  border-radius: 5px;
+  flex-shrink: 0;
+}
+
+.headerCellWide {
+  composes: headerCell;
+  flex: 2;
+}
+
+.headerCellMedium {
+  composes: headerCell;
+  flex: 1.2;
+}
+
+.headerCellSmall {
+  composes: headerCell;
+  flex: 0.8;
+}
+
+/* ── Data rows ─────────────────────────────────────────────────────────── */
+
+.dataRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.dataRow:last-child {
+  border-bottom: none;
+}
+
+.dataCell {
+  height: 12px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.dataCellWide {
+  composes: dataCell;
+  flex: 2;
+}
+
+.dataCellMedium {
+  composes: dataCell;
+  flex: 1.2;
+}
+
+.dataCellSmall {
+  composes: dataCell;
+  flex: 0.8;
+}
+
+/* ── Row stagger delays ────────────────────────────────────────────────── */
+
+.row0 .dataCell,
+.row0 .dataCellWide,
+.row0 .dataCellMedium,
+.row0 .dataCellSmall { animation-delay: 0s; }
+
+.row1 .dataCell,
+.row1 .dataCellWide,
+.row1 .dataCellMedium,
+.row1 .dataCellSmall { animation-delay: 0.08s; }
+
+.row2 .dataCell,
+.row2 .dataCellWide,
+.row2 .dataCellMedium,
+.row2 .dataCellSmall { animation-delay: 0.16s; }
+
+.row3 .dataCell,
+.row3 .dataCellWide,
+.row3 .dataCellMedium,
+.row3 .dataCellSmall { animation-delay: 0.24s; }
+
+.row4 .dataCell,
+.row4 .dataCellWide,
+.row4 .dataCellMedium,
+.row4 .dataCellSmall { animation-delay: 0.32s; }
+
+.row5 .dataCell,
+.row5 .dataCellWide,
+.row5 .dataCellMedium,
+.row5 .dataCellSmall { animation-delay: 0.4s; }
+
+.row6 .dataCell,
+.row6 .dataCellWide,
+.row6 .dataCellMedium,
+.row6 .dataCellSmall { animation-delay: 0.48s; }
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .headerRow,
+  .dataRow {
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  /* Hide medium and small cols on tiny screens */
+  .headerCellSmall,
+  .dataCellSmall {
+    display: none;
+  }
+}
+
+/* ── Accessibility ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .container {
+    animation: none;
+  }
+}

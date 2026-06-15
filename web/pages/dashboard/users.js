@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
 import { DashboardLayout } from '../../components/dashboard';
+import { FullPageLoader } from '../../components/ui/loaders';
 import ComingSoon from '../../components/common/ComingSoon';
 import GroupIcon from '@mui/icons-material/Group';
 
@@ -16,11 +17,7 @@ export default function Users() {
   }, [user, loading, router]);
 
   if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        Loading...
-      </div>
-    );
+    return <FullPageLoader message="Loading…" />;
   }
 
   if (!user) {

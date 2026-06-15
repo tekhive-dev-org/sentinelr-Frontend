@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,6 @@ import { useTheme } from '../context/ThemeContext';
 import { useDevice } from '../context/DeviceContext';
 import NavigationHeader from '../components/NavigationHeader';
 import GlassCard from '../components/GlassCard';
-import { apiService } from '../services/api';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function formatMinutes(mins) {
@@ -37,34 +36,16 @@ function timeAgo(timestamp) {
 
 export default function ParentalControlScreen() {
   const { colors } = useTheme();
-  const { deviceId } = useDevice();
-  const [controls, setControls] = useState(null);
-  const [activities, setActivities] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { parentalControls: controls, parentalActivities: activities, parentalSyncError, syncParentalControls, isPaired } = useDevice();
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchData = useCallback(async () => {
-    try {
-      const data = await apiService.getParentalStatus();
-      setControls(data.controls || null);
-      setActivities(data.activities || []);
-    } catch {
-      // Controls unavailable — show empty state
-      setControls(null);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    fetchData();
+    await syncParentalControls().catch(() => {});
+    setRefreshing(false);
   };
+
+  const loading = isPaired && controls === null && parentalSyncError === null;
 
   const st = controls?.screenTimeLimit;
   const bedtime = controls?.bedtime;
@@ -78,17 +59,22 @@ export default function ParentalControlScreen() {
     : 0;
 
   // ── Section Label ──────────────────────────────────────────────────────
-  const SectionLabel = ({ label, icon }) => (
+  const SectionLabel = ({ label }) => (
     <View style={s.sectionLabelRow}>
-      {icon && <Ionicons name={icon} size={14} color={colors.textMuted} style={{ marginRight: 4 }} />}
-      <Text style={[s.sectionLabel, { color: colors.textMuted }]}>{label}</Text>
+      <View style={s.sectionLabelBar} />
+      <Text style={s.sectionLabel}>{label}</Text>
     </View>
   );
 
   // ── Status Pill ────────────────────────────────────────────────────────
   const StatusPill = ({ active, label }) => (
-    <View style={[s.statusPill, { backgroundColor: active ? '#dcfce7' : '#fee2e2' }]}>
-      <View style={[s.statusDot, { backgroundColor: active ? '#22c55e' : '#ef4444' }]} />
+    <View style={[
+      s.statusPill,
+      active
+        ? { backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' }
+        : { backgroundColor: '#fef2f2', borderColor: '#fecaca' },
+    ]}>
+      <View style={[s.statusDot, { backgroundColor: active ? '#22c55e' : '#db323f' }]} />
       <Text style={[s.statusPillText, { color: active ? '#15803d' : '#b91c1c' }]}>{label}</Text>
     </View>
   );
@@ -113,11 +99,23 @@ export default function ParentalControlScreen() {
         <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
           <NavigationHeader title="Parental Controls" subtitle="Protection status" showMenu={false} />
           <View style={s.centered}>
-            <Ionicons name="shield-outline" size={56} color={colors.textMuted} />
-            <Text style={[s.emptyTitle, { color: colors.text }]}>No Controls Active</Text>
-            <Text style={[s.emptySubtitle, { color: colors.textSecondary }]}>
-              Parental controls haven&apos;t been set up for this device yet.
-            </Text>
+            {parentalSyncError === 'auth' ? (
+              <>
+                <Ionicons name="key-outline" size={56} color="#f59e0b" />
+                <Text style={[s.emptyTitle, { color: colors.text }]}>Session Expired</Text>
+                <Text style={[s.emptySubtitle, { color: colors.textSecondary }]}>
+                  Your device session has expired. Ask a parent to unpair and re-pair this device to restore parental control visibility.
+                </Text>
+              </>
+            ) : (
+              <>
+                <Ionicons name="shield-outline" size={56} color={colors.textMuted} />
+                <Text style={[s.emptyTitle, { color: colors.text }]}>No Controls Active</Text>
+                <Text style={[s.emptySubtitle, { color: colors.textSecondary }]}>
+                  Parental controls haven&apos;t been set up for this device yet.
+                </Text>
+              </>
+            )}
           </View>
         </SafeAreaView>
       </View>
@@ -138,13 +136,15 @@ export default function ParentalControlScreen() {
           {/* ── Device Frozen Banner ──────────────────────────────────────── */}
           {isFrozen && (
             <View style={s.frozenBanner}>
-              <Ionicons name="snow" size={20} color="#fff" />
+              <View style={s.frozenBannerIcon}>
+                <Ionicons name="snow" size={18} color="#fff" />
+              </View>
               <Text style={s.frozenBannerText}>Device is currently frozen</Text>
             </View>
           )}
 
           {/* ── Monitoring Status ─────────────────────────────────────────── */}
-          <SectionLabel label="STATUS" icon="shield-checkmark-outline" />
+          <SectionLabel label="STATUS" />
           <GlassCard>
             <View style={s.statusRow}>
               <Text style={[s.statusLabel, { color: colors.text }]}>Monitoring</Text>
@@ -155,7 +155,7 @@ export default function ParentalControlScreen() {
           {/* ── Screen Time ───────────────────────────────────────────────── */}
           {st?.enabled && (
             <>
-              <SectionLabel label="SCREEN TIME" icon="time-outline" />
+              <SectionLabel label="SCREEN TIME" />
               <GlassCard>
                 <View style={s.screenTimeHeader}>
                   <Text style={[s.bigValue, { color: colors.text }]}>{formatMinutes(st.usedToday)}</Text>
@@ -171,13 +171,16 @@ export default function ParentalControlScreen() {
                       s.progressFill,
                       {
                         width: `${usedPercent}%`,
-                        backgroundColor: usedPercent > 90 ? '#ef4444' : usedPercent > 70 ? '#f59e0b' : '#3b82f6',
+                        backgroundColor:
+                          usedPercent > 90 ? '#db323f'
+                          : usedPercent > 70 ? '#e6ad13'
+                          : '#3e0d10',
                       },
                     ]}
                   />
                 </View>
 
-                <Text style={[s.remainingText, { color: usedPercent > 90 ? '#ef4444' : '#f59e0b' }]}>
+                <Text style={[s.remainingText, { color: usedPercent > 90 ? '#db323f' : '#e6ad13' }]}>
                   {formatMinutes(st.remaining)} remaining
                 </Text>
 
@@ -201,21 +204,25 @@ export default function ParentalControlScreen() {
           {/* ── Bedtime ───────────────────────────────────────────────────── */}
           {bedtime?.enabled && (
             <>
-              <SectionLabel label="BEDTIME" icon="moon-outline" />
+              <SectionLabel label="BEDTIME" />
               <GlassCard>
                 <View style={s.bedtimeRow}>
                   <View style={s.bedtimeItem}>
-                    <Ionicons name="lock-closed" size={16} color="#6366f1" />
+                    <View style={[s.bedtimeIconBadge, { backgroundColor: 'rgba(99,102,241,0.1)' }]}>
+                      <Ionicons name="lock-closed" size={14} color="#6366f1" />
+                    </View>
                     <Text style={[s.bedtimeLabel, { color: colors.textSecondary }]}>Start lock</Text>
-                    <View style={[s.bedtimeBadge, { backgroundColor: colors.neuInset }]}>
-                      <Text style={[s.bedtimeValue, { color: colors.text }]}>{bedtime.startTime}</Text>
+                    <View style={s.bedtimeBadge}>
+                      <Text style={s.bedtimeValue}>{bedtime.startTime}</Text>
                     </View>
                   </View>
                   <View style={s.bedtimeItem}>
-                    <Ionicons name="lock-open" size={16} color="#22c55e" />
+                    <View style={[s.bedtimeIconBadge, { backgroundColor: 'rgba(22,163,74,0.1)' }]}>
+                      <Ionicons name="lock-open" size={14} color="#16a34a" />
+                    </View>
                     <Text style={[s.bedtimeLabel, { color: colors.textSecondary }]}>End lock</Text>
-                    <View style={[s.bedtimeBadge, { backgroundColor: colors.neuInset }]}>
-                      <Text style={[s.bedtimeValue, { color: colors.text }]}>{bedtime.endTime}</Text>
+                    <View style={s.bedtimeBadge}>
+                      <Text style={s.bedtimeValue}>{bedtime.endTime}</Text>
                     </View>
                   </View>
                 </View>
@@ -226,7 +233,7 @@ export default function ParentalControlScreen() {
           {/* ── App Restrictions ──────────────────────────────────────────── */}
           {appBlocking?.enabled && (
             <>
-              <SectionLabel label="APP RESTRICTIONS" icon="apps-outline" />
+              <SectionLabel label="APP RESTRICTIONS" />
               <GlassCard noPadding>
                 {(appBlocking.categoryBlocked || []).map((cat, idx) => (
                   <View
@@ -240,7 +247,7 @@ export default function ParentalControlScreen() {
                     ]}
                   >
                     <View style={s.appCategoryLeft}>
-                      <View style={[s.categoryDot, { backgroundColor: cat.enabled ? '#ef4444' : '#22c55e' }]} />
+                      <View style={[s.categoryDot, { backgroundColor: cat.enabled ? '#db323f' : '#16a34a' }]} />
                       <View>
                         <Text style={[s.categoryName, { color: colors.text }]}>{cat.category}</Text>
                         <Text style={[s.categoryMeta, { color: colors.textMuted }]}>
@@ -248,8 +255,8 @@ export default function ParentalControlScreen() {
                         </Text>
                       </View>
                     </View>
-                    <View style={[s.categoryStatusBadge, { backgroundColor: cat.enabled ? '#fee2e2' : '#dcfce7' }]}>
-                      <Text style={{ fontSize: 11, fontWeight: '700', color: cat.enabled ? '#dc2626' : '#16a34a' }}>
+                    <View style={[s.categoryStatusBadge, { backgroundColor: cat.enabled ? '#fef2f2' : '#f0fdf4' }]}>
+                      <Text style={{ fontSize: 11, fontWeight: '800', color: cat.enabled ? '#db323f' : '#16a34a', letterSpacing: 0.3 }}>
                         {cat.enabled ? 'BLOCKED' : 'OK'}
                       </Text>
                     </View>
@@ -262,7 +269,7 @@ export default function ParentalControlScreen() {
           {/* ── Web Filtering ─────────────────────────────────────────────── */}
           {webFilter?.enabled && webFilter.blockedSites?.length > 0 && (
             <>
-              <SectionLabel label="BLOCKED WEBSITES" icon="globe-outline" />
+              <SectionLabel label="BLOCKED WEBSITES" />
               <GlassCard noPadding>
                 {webFilter.blockedSites.map((site, idx) => (
                   <View
@@ -275,7 +282,7 @@ export default function ParentalControlScreen() {
                       },
                     ]}
                   >
-                    <Ionicons name="ban" size={16} color="#ef4444" />
+                    <Ionicons name="ban" size={16} color="#db323f" />
                     <Text style={[s.blockedSiteText, { color: colors.text }]}>{site}</Text>
                   </View>
                 ))}
@@ -286,7 +293,7 @@ export default function ParentalControlScreen() {
           {/* ── Recent Activity ───────────────────────────────────────────── */}
           {activities.length > 0 && (
             <>
-              <SectionLabel label="RECENT ACTIVITY" icon="pulse-outline" />
+              <SectionLabel label="RECENT ACTIVITY" />
               <GlassCard noPadding>
                 {activities.map((act, idx) => (
                   <View
@@ -334,10 +341,10 @@ function getActivityIcon(type) {
 
 function getActivityColor(type) {
   const map = {
-    app_install: '#22c55e',
-    web_blocked: '#ef4444',
-    screen_time_limit: '#6366f1',
-    app_blocked: '#f59e0b',
+    app_install: '#16a34a',
+    web_blocked: '#db323f',
+    screen_time_limit: '#3e0d10',
+    app_blocked: '#e6ad13',
   };
   return map[type] || '#6b7280';
 }
@@ -369,19 +376,33 @@ const s = StyleSheet.create({
 
   // Frozen banner
   frozenBanner: {
-    backgroundColor: '#ef4444',
+    backgroundColor: '#db323f',
     borderRadius: 14,
-    padding: 14,
+    padding: 15,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
     marginBottom: 16,
+    shadowColor: '#db323f',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  frozenBannerIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   frozenBannerText: {
     color: '#fff',
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '800',
+    letterSpacing: 0.2,
   },
 
   // Status
@@ -392,15 +413,16 @@ const s = StyleSheet.create({
   },
   statusLabel: {
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   statusPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 13,
+    paddingVertical: 7,
     borderRadius: 20,
+    borderWidth: 1.5,
   },
   statusDot: {
     width: 8,
@@ -416,14 +438,22 @@ const s = StyleSheet.create({
   sectionLabelRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 8,
-    paddingLeft: 4,
+    marginTop: 26,
+    marginBottom: 10,
+    paddingLeft: 2,
+    gap: 7,
+  },
+  sectionLabelBar: {
+    width: 3,
+    height: 14,
+    borderRadius: 2,
+    backgroundColor: '#3e0d10',
   },
   sectionLabel: {
     fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.2,
+    fontWeight: '800',
+    letterSpacing: 1.3,
+    color: '#3e0d10',
   },
 
   // Screen time
@@ -434,8 +464,9 @@ const s = StyleSheet.create({
     marginBottom: 4,
   },
   bigValue: {
-    fontSize: 32,
-    fontWeight: '800',
+    fontSize: 34,
+    fontWeight: '900',
+    letterSpacing: -1,
   },
   targetLabel: {
     fontSize: 13,
@@ -443,7 +474,7 @@ const s = StyleSheet.create({
   },
   progressTrack: {
     width: '100%',
-    height: 8,
+    height: 9,
     borderRadius: 10,
     overflow: 'hidden',
     marginTop: 8,
@@ -454,49 +485,69 @@ const s = StyleSheet.create({
   },
   remainingText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
     marginTop: 6,
     marginBottom: 12,
   },
   breakdownRow: {
     flexDirection: 'row',
     gap: 20,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#f0ece9',
+    marginTop: 4,
   },
   breakdownItem: {},
   breakdownLabel: {
     fontSize: 10,
-    fontWeight: '600',
+    fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 0.6,
   },
   breakdownValue: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
     marginTop: 2,
   },
 
   // Bedtime
   bedtimeRow: {
-    gap: 12,
+    gap: 10,
   },
   bedtimeItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    backgroundColor: '#f6f3f2',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: '#f0ece9',
+  },
+  bedtimeIconBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   bedtimeLabel: {
     fontSize: 13,
-    fontWeight: '500',
+    fontWeight: '600',
     flex: 1,
   },
   bedtimeBadge: {
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 8,
+    backgroundColor: '#3e0d10',
   },
   bedtimeValue: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#ffffff',
+    letterSpacing: -0.3,
   },
 
   // App restrictions
@@ -511,6 +562,7 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    flex: 1,
   },
   categoryDot: {
     width: 10,
@@ -519,16 +571,16 @@ const s = StyleSheet.create({
   },
   categoryName: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   categoryMeta: {
     fontSize: 11,
-    marginTop: 1,
+    marginTop: 2,
   },
   categoryStatusBadge: {
     paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
+    paddingVertical: 5,
+    borderRadius: 7,
   },
 
   // Blocked sites
@@ -548,24 +600,30 @@ const s = StyleSheet.create({
   activityRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 12,
-    paddingVertical: 12,
+    gap: 13,
+    paddingVertical: 13,
     paddingHorizontal: 16,
   },
   activityDot: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 2,
+    marginTop: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.12,
+    shadowRadius: 3,
+    elevation: 2,
   },
   activityText: {
     fontSize: 13,
-    lineHeight: 18,
+    lineHeight: 19,
   },
   activityTime: {
     fontSize: 11,
-    marginTop: 2,
+    marginTop: 3,
+    fontWeight: '500',
   },
 });

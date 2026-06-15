@@ -8,6 +8,28 @@ import { storageService } from "./storageService";
 // Global callback invoked on 401/404 auth failures
 let authFailureCallback = null;
 
+function requireApiBaseUrl() {
+  if (!API_BASE_URL) {
+    throw new Error(
+      "Missing mobile API base URL. Set API_BASE_URL for Expo (app.config.js extra.apiBaseUrl).",
+    );
+  }
+  return API_BASE_URL;
+}
+
+function buildDeviceAuthHeaders(token, useRawAuthorization = false) {
+  if (!token) {
+    return { "Content-Type": "application/json" };
+  }
+
+  return {
+    "Content-Type": "application/json",
+    Authorization: useRawAuthorization ? token : `Bearer ${token}`,
+    "x-device-token": token,
+    "x-access-token": token,
+  };
+}
+
 // Helper for alert endpoints that require the device token
 async function alertApiRequest(endpoint, data = {}) {
   const deviceToken = await storageService.getUploadToken();
@@ -108,7 +130,7 @@ export const apiService = {
 
     // Attempt to extract deviceId from the JWT token
     // The backend returns the deviceId inside the deviceToken
-    const token = data.deviceToken || data.device_token || data.token;
+    const token = data.deviceToken || data.device_token || data.upload_token || data.token;
     if (!deviceId && token) {
       try {
         // Simple JWT decode without external library
@@ -336,32 +358,39 @@ export const apiService = {
   },
 
   /**
-   * Get parental control status for the current device.
-   * Calls GET /parental-controls/{userId}?deviceId={deviceId}
-   * @returns {Promise<{ success: boolean, controls: object, activities: array }>}
+   * Get full parental control status for the current device.
+   * Primary: GET /parental-controls/{userId}/device-status/{deviceId}
+   * Fallback: GET /parental-controls/{userId}?deviceId={deviceId}
+   * @returns {Promise<{ success: boolean, controls: object }>}
    */
-  async getParentalStatus() {
+  async getParentalStatus(deviceId) {
     const token = await storageService.getUploadToken();
-    const deviceId = await storageService.getDeviceId();
-    const userId = await storageService.getDeviceUserId();
+    console.log("[API] getParentalStatus — hasToken:", !!token);
 
-    const params = new URLSearchParams();
-    if (deviceId) params.append("deviceId", deviceId);
-    const url = `${API_BASE_URL}/parental-controls/${encodeURIComponent(userId)}?${params.toString()}`;
+    const url = `${requireApiBaseUrl()}/parental-controls/device-status/${deviceId}`;
+    console.log("[API] getParentalStatus — url:", url);
 
-    const response = await fetch(url, {
+    let response = await fetch(url, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token && {
-          Authorization: `Bearer ${token}`,
-          "x-device-token": token,
-        }),
-      },
+      headers: buildDeviceAuthHeaders(token, false),
     });
+
+    if ((response.status === 401 || response.status === 403) && token) {
+      console.log("[API] getParentalStatus — retrying with raw Authorization header");
+      response = await fetch(url, {
+        method: "GET",
+        headers: buildDeviceAuthHeaders(token, true),
+      });
+    }
+
+    console.log("[API] getParentalStatus — HTTP", response.status);
 
     if (!response.ok) {
       const errorBody = await response.json().catch(() => ({}));
+      console.warn("[API] getParentalStatus error body:", errorBody);
+      if (response.status === 401 || response.status === 403) {
+        return { success: false, controls: null, authError: true };
+      }
       const error = new Error(
         errorBody.message || `API Error: ${response.status}`,
       );
@@ -369,7 +398,52 @@ export const apiService = {
       throw error;
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log("[API] getParentalStatus response:", JSON.stringify(data, null, 2));
+    return data;
+  },
+
+  /**
+   * Get recent parental control activity for the current device.
+   * GET /parental-controls/{userId}/activity?deviceId={deviceId}&limit={limit}
+   * @param {number} [limit=10]
+   * @returns {Promise<{ success: boolean, activities: array }>}
+   */
+  async getParentalActivity(deviceId, limit = 10) {
+    const token = await storageService.getUploadToken();
+
+    const params = new URLSearchParams({ limit: String(limit) });
+    const url = `${requireApiBaseUrl()}/parental-controls/devices/${encodeURIComponent(deviceId)}/activity?${params.toString()}`;
+    console.log("[API] getParentalActivity — url:", url);
+
+    let response = await fetch(url, {
+      method: "GET",
+      headers: buildDeviceAuthHeaders(token, false),
+    });
+
+    if ((response.status === 401 || response.status === 403) && token) {
+      console.log("[API] getParentalActivity — retrying with raw Authorization header");
+      response = await fetch(url, {
+        method: "GET",
+        headers: buildDeviceAuthHeaders(token, true),
+      });
+    }
+
+    console.log("[API] getParentalActivity — HTTP", response.status);
+
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      console.warn("[API] getParentalActivity error body:", errorBody);
+      if (response.status === 401 || response.status === 403) {
+        return { success: false, activities: [], authError: true };
+      }
+      return { success: false, activities: [] };
+    }
+
+    const data = await response.json();
+    const activities = data?.activities || [];
+    console.log("[API] getParentalActivity response (count):", activities.length);
+    return { success: true, activities };
   },
 
   /**
@@ -382,15 +456,20 @@ export const apiService = {
     if (!token) return false;
 
     try {
-      const url = `${API_BASE_URL}${ENDPOINTS.HEARTBEAT}`;
-      const response = await fetch(url, {
+      const url = `${requireApiBaseUrl()}${ENDPOINTS.HEARTBEAT}`;
+      let response = await fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: buildDeviceAuthHeaders(token, false),
         body: JSON.stringify({ timestamp: new Date().toISOString() }),
       });
+
+      if (response.status === 401 || response.status === 403) {
+        response = await fetch(url, {
+          method: "POST",
+          headers: buildDeviceAuthHeaders(token, true),
+          body: JSON.stringify({ timestamp: new Date().toISOString() }),
+        });
+      }
 
       // Only treat 401/403 as definitively invalid
       if (response.status === 401 || response.status === 403) {

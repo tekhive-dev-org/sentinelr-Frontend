@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
 import { DashboardLayout } from '../../components/dashboard';
 import { DevicesAndUsers } from '../../components/dashboard/user/devices';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import { FullPageLoader } from '../../components/ui/loaders';
 
 export default function Devices() {
   const router = useRouter();
@@ -16,7 +16,7 @@ export default function Devices() {
   }, [user, loading, router]);
 
   if (loading) {
-    return <LoadingSpinner fullScreen />;
+    return <FullPageLoader message="Loading devices…" />;
   }
 
   if (!user) {

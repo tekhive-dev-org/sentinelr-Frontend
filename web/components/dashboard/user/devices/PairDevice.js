@@ -164,7 +164,7 @@ export default function PairDevice({
       const platformValue =
         deviceType === "Phone"
           ? smartphoneOS === "ios"
-            ? "iOS"
+            ? "IOS"
             : "Android"
           : null;
 

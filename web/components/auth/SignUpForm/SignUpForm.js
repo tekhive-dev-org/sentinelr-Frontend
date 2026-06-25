@@ -109,7 +109,7 @@ export default function SignUpForm() {
           <div className={styles.logoWrapper}>
             <Image src="/logo.png" alt="Sentinelr" width={80} height={80} className={styles.logo} />
           </div>
-          <h1 className={styles.title}>Sign up to Sentinelr Security App</h1>
+          <h1 className={styles.title}>Create Account</h1>
 
           {/* Form */}
           <form onSubmit={formik.handleSubmit}>

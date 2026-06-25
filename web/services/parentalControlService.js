@@ -6,8 +6,8 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const getAuthToken = () => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('token');
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("token");
   }
   return null;
 };
@@ -17,10 +17,10 @@ async function apiRequest(endpoint, options = {}) {
 
   const config = {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...(token && {
         Authorization: `Bearer ${token}`,
-        'x-access-token': token,
+        "x-access-token": token,
       }),
       ...options.headers,
     },
@@ -31,12 +31,15 @@ async function apiRequest(endpoint, options = {}) {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    if (response.status === 401 && typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+    if (response.status === 401 && typeof window !== "undefined") {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
     }
-    throw new Error(error.message || `API Error ${response.status} on ${options.method || 'GET'} ${endpoint}`);
+    throw new Error(
+      error.message ||
+        `API Error ${response.status} on ${options.method || "GET"} ${endpoint}`,
+    );
   }
 
   return response.json();
@@ -53,7 +56,12 @@ function toNormalizedMembers(rawMembers = []) {
       return {
         ...member,
         userId,
-        name: user?.userName || user?.name || member?.userName || member?.name || 'Unknown',
+        name:
+          user?.userName ||
+          user?.name ||
+          member?.userName ||
+          member?.name ||
+          "Unknown",
         avatar: user?.avatar || member?.avatar || null,
         devices: rawDevices
           .map((device) => {
@@ -62,7 +70,7 @@ function toNormalizedMembers(rawMembers = []) {
             return {
               ...device,
               deviceId: String(deviceId),
-              name: device?.name || device?.deviceName || 'Unnamed Device',
+              name: device?.name || device?.deviceName || "Unnamed Device",
             };
           })
           .filter(Boolean),
@@ -73,11 +81,11 @@ function toNormalizedMembers(rawMembers = []) {
 
 function extractMembersFromResponse(response) {
   return (
-    response?.members
-    || response?.data?.members
-    || response?.family?.members
-    || response?.data?.family?.members
-    || []
+    response?.members ||
+    response?.data?.members ||
+    response?.family?.members ||
+    response?.data?.family?.members ||
+    []
   );
 }
 
@@ -89,12 +97,19 @@ export const parentalControlService = {
    */
   async getMembers() {
     try {
-      const res = await apiRequest('/parental-controls/members', { method: 'GET' });
+      const res = await apiRequest("/parental-controls/members", {
+        method: "GET",
+      });
       // console.log('[ParentalControls] /parental-controls/members raw response:', res);
-      const primaryMembers = toNormalizedMembers(extractMembersFromResponse(res));
+      const primaryMembers = toNormalizedMembers(
+        extractMembersFromResponse(res),
+      );
       return { success: true, members: primaryMembers };
     } catch (err) {
-      console.warn('[ParentalControls] /parental-controls/members failed:', err.message);
+      console.warn(
+        "[ParentalControls] /parental-controls/members failed:",
+        err.message,
+      );
       throw err;
     }
   },
@@ -109,13 +124,13 @@ export const parentalControlService = {
     try {
       const response = await apiRequest(
         `/parental-controls/${encodeURIComponent(userId)}/device-status/${encodeURIComponent(deviceId)}`,
-        { method: 'GET' },
+        { method: "GET" },
       );
       // console.log("[parentalControlService] getDeviceStatus response:", response);
       return response;
     } catch (err) {
       console.error("[parentalControlService] getDeviceStatus error:", err);
-      if (err.message.includes('404')) {
+      if (err.message.includes("404")) {
         return {
           success: true,
           controls: {
@@ -128,30 +143,30 @@ export const parentalControlService = {
               usedToday: 0,
               remaining: 0,
               breakdown: {},
-              schedule: { weekdays: 0, weekends: 0 }
+              schedule: { weekdays: 0, weekends: 0 },
             },
             appBlocking: {
               enabled: false,
               blockedApps: [],
               categoryBlocked: [],
-              appOverrides: []
+              appOverrides: [],
             },
             webFiltering: {
               enabled: false,
               blockedSites: [],
               safeSearchEnabled: false,
-              categoryBlocked: []
+              categoryBlocked: [],
             },
             bedtime: {
               enabled: false,
-              startTime: '21:30',
-              endTime: '07:00'
+              startTime: "21:30",
+              endTime: "07:00",
             },
             quickPause: {
               isDeviceFrozen: false,
-              frozenAt: null
-            }
-          }
+              frozenAt: null,
+            },
+          },
         };
       }
       throw err;
@@ -165,7 +180,9 @@ export const parentalControlService = {
    */
   async getControls(userId, deviceId) {
     if (!deviceId) {
-      throw new Error('A paired device must be selected before loading parental controls.');
+      throw new Error(
+        "A paired device must be selected before loading parental controls.",
+      );
     }
 
     const params = `?deviceId=${encodeURIComponent(deviceId)}`;
@@ -175,7 +192,7 @@ export const parentalControlService = {
         {},
       );
     } catch (err) {
-      if (err.message.includes('404')) {
+      if (err.message.includes("404")) {
         return {
           success: true,
           controls: {
@@ -188,30 +205,30 @@ export const parentalControlService = {
               usedToday: 0,
               remaining: 0,
               breakdown: {},
-              schedule: { weekdays: 0, weekends: 0 }
+              schedule: { weekdays: 0, weekends: 0 },
             },
             appBlocking: {
               enabled: false,
               blockedApps: [],
               categoryBlocked: [],
-              appOverrides: []
+              appOverrides: [],
             },
             webFiltering: {
               enabled: false,
               blockedSites: [],
               safeSearchEnabled: false,
-              categoryBlocked: []
+              categoryBlocked: [],
             },
             bedtime: {
               enabled: false,
-              startTime: '21:30',
-              endTime: '07:00'
+              startTime: "21:30",
+              endTime: "07:00",
             },
             quickPause: {
               isDeviceFrozen: false,
-              frozenAt: null
-            }
-          }
+              frozenAt: null,
+            },
+          },
         };
       }
       throw err;
@@ -225,10 +242,16 @@ export const parentalControlService = {
    * @param {object} settings - { enabled, dailyLimit, schedule: { weekdays, weekends } }
    */
   async updateScreenTime(userId, deviceId, settings) {
-    return apiRequest(`/parental-controls/${encodeURIComponent(userId)}/screentime/${encodeURIComponent(deviceId)}`, {
-      method: 'PUT',
-      body: JSON.stringify({ ...settings, ...(deviceId ? { deviceId } : {}) }),
-    });
+    return apiRequest(
+      `/parental-controls/${encodeURIComponent(userId)}/screentime/${encodeURIComponent(deviceId)}`,
+      {
+        method: "PUT",
+        body: JSON.stringify({
+          ...settings,
+          ...(deviceId ? { deviceId } : {}),
+        }),
+      },
+    );
   },
 
   /**
@@ -238,10 +261,16 @@ export const parentalControlService = {
    * @param {object} settings - { enabled, blockedApps, categoryBlocked }
    */
   async updateAppBlocking(userId, deviceId, settings) {
-    return apiRequest(`/parental-controls/${encodeURIComponent(userId)}/app-blocking`, {
-      method: 'PUT',
-      body: JSON.stringify({ ...settings, ...(deviceId ? { deviceId } : {}) }),
-    });
+    return apiRequest(
+      `/parental-controls/${encodeURIComponent(userId)}/app-blocking`,
+      {
+        method: "PUT",
+        body: JSON.stringify({
+          ...settings,
+          ...(deviceId ? { deviceId } : {}),
+        }),
+      },
+    );
   },
 
   /**
@@ -252,10 +281,17 @@ export const parentalControlService = {
    * @param {boolean} enabled
    */
   async toggleCategoryBlock(userId, deviceId, category, enabled) {
-    return apiRequest(`/parental-controls/${encodeURIComponent(userId)}/app-blocking/category/${encodeURIComponent(deviceId)}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ category, enabled, ...(deviceId ? { deviceId } : {}) }),
-    });
+    return apiRequest(
+      `/parental-controls/${encodeURIComponent(userId)}/app-blocking/category/${encodeURIComponent(deviceId)}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({
+          category,
+          enabled,
+          ...(deviceId ? { deviceId } : {}),
+        }),
+      },
+    );
   },
 
   /**
@@ -266,10 +302,17 @@ export const parentalControlService = {
    * @param {boolean} isBlocked
    */
   async toggleAppBlock(userId, deviceId, packageName, isBlocked) {
-    return apiRequest(`/parental-controls/${encodeURIComponent(userId)}/app-blocking/app/${encodeURIComponent(deviceId)}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ packageName, isBlocked, ...(deviceId ? { deviceId } : {}) }),
-    });
+    return apiRequest(
+      `/parental-controls/${encodeURIComponent(userId)}/app-blocking/app/${encodeURIComponent(deviceId)}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({
+          packageName,
+          isBlocked,
+          ...(deviceId ? { deviceId } : {}),
+        }),
+      },
+    );
   },
 
   /**
@@ -279,10 +322,16 @@ export const parentalControlService = {
    * @param {object} settings
    */
   async updateWebFiltering(userId, deviceId, settings) {
-    return apiRequest(`/parental-controls/${encodeURIComponent(userId)}/web-filtering/${encodeURIComponent(deviceId)}`, {
-      method: 'PUT',
-      body: JSON.stringify({ ...settings, ...(deviceId ? { deviceId } : {}) }),
-    });
+    return apiRequest(
+      `/parental-controls/${encodeURIComponent(userId)}/web-filtering/${encodeURIComponent(deviceId)}`,
+      {
+        method: "PUT",
+        body: JSON.stringify({
+          ...settings,
+          ...(deviceId ? { deviceId } : {}),
+        }),
+      },
+    );
   },
 
   /**
@@ -292,10 +341,13 @@ export const parentalControlService = {
    * @param {string} url
    */
   async addBlockedSite(userId, deviceId, url) {
-    return apiRequest(`/parental-controls/${encodeURIComponent(userId)}/web-filtering/blocked-websites/${encodeURIComponent(deviceId)}`, {
-      method: 'POST',
-      body: JSON.stringify({ url, ...(deviceId ? { deviceId } : {}) }),
-    });
+    return apiRequest(
+      `/parental-controls/${encodeURIComponent(userId)}/web-filtering/blocked-websites/${encodeURIComponent(deviceId)}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ url, ...(deviceId ? { deviceId } : {}) }),
+      },
+    );
   },
 
   /**
@@ -305,10 +357,13 @@ export const parentalControlService = {
    * @param {string} url
    */
   async removeBlockedSite(userId, deviceId, url) {
-    return apiRequest(`/parental-controls/${encodeURIComponent(userId)}/web-filtering/blocked-websites/${encodeURIComponent(deviceId)}`, {
-      method: 'DELETE',
-      body: JSON.stringify({ url, ...(deviceId ? { deviceId } : {}) }),
-    });
+    return apiRequest(
+      `/parental-controls/${encodeURIComponent(userId)}/web-filtering/blocked-websites/${encodeURIComponent(deviceId)}`,
+      {
+        method: "DELETE",
+        body: JSON.stringify({ url, ...(deviceId ? { deviceId } : {}) }),
+      },
+    );
   },
 
   /**
@@ -321,7 +376,13 @@ export const parentalControlService = {
   async updateBedtime(userId, deviceId, settings) {
     return apiRequest(
       `/parental-controls/${encodeURIComponent(userId)}/bedtime/${encodeURIComponent(deviceId)}`,
-      { method: 'PUT', body: JSON.stringify({ ...settings, ...(deviceId ? { deviceId } : {}) }) },
+      {
+        method: "PUT",
+        body: JSON.stringify({
+          ...settings,
+          ...(deviceId ? { deviceId } : {}),
+        }),
+      },
     );
   },
 
@@ -334,7 +395,7 @@ export const parentalControlService = {
   async freezeDevice(userId, deviceId) {
     return apiRequest(
       `/parental-controls/${encodeURIComponent(userId)}/freeze/${encodeURIComponent(deviceId)}`,
-      { method: 'POST', body: JSON.stringify({ deviceId }) },
+      { method: "POST", body: JSON.stringify({ deviceId }) },
     );
   },
 
@@ -347,7 +408,7 @@ export const parentalControlService = {
   async unfreezeDevice(userId, deviceId) {
     return apiRequest(
       `/parental-controls/${encodeURIComponent(userId)}/unfreeze/${encodeURIComponent(deviceId)}`,
-      { method: 'POST', body: JSON.stringify({ deviceId }) },
+      { method: "POST", body: JSON.stringify({ deviceId }) },
     );
   },
 
@@ -358,10 +419,13 @@ export const parentalControlService = {
    * @param {number} minutes
    */
   async grantBonusTime(userId, deviceId, minutes = 60) {
-    return apiRequest(`/parental-controls/${encodeURIComponent(userId)}/bonus-time`, {
-      method: 'POST',
-      body: JSON.stringify({ deviceId, minutes }),
-    });
+    return apiRequest(
+      `/parental-controls/${encodeURIComponent(userId)}/bonus-time`,
+      {
+        method: "POST",
+        body: JSON.stringify({ deviceId, minutes }),
+      },
+    );
   },
 
   /**
@@ -372,14 +436,14 @@ export const parentalControlService = {
    */
   async getActivity(userId, deviceId, limit = 10) {
     const params = new URLSearchParams({ limit: String(limit) });
-    if (deviceId) params.set('deviceId', deviceId);
+    if (deviceId) params.set("deviceId", deviceId);
     try {
       return await apiRequest(
         `/parental-controls/${encodeURIComponent(userId)}/activity?${params}`,
         {},
       );
     } catch (err) {
-      if (err.message.includes('404')) {
+      if (err.message.includes("404")) {
         return { success: true, activities: [] };
       }
       throw err;
@@ -393,10 +457,13 @@ export const parentalControlService = {
    * @param {string} deviceId
    */
   async toggleMonitoring(userId, enabled, deviceId) {
-    return apiRequest(`/parental-controls/${encodeURIComponent(userId)}/monitoring`, {
-      method: 'PATCH',
-      body: JSON.stringify({ enabled, deviceId }),
-    });
+    return apiRequest(
+      `/parental-controls/${encodeURIComponent(userId)}/monitoring`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({ enabled, deviceId }),
+      },
+    );
   },
 
   /**
@@ -406,11 +473,11 @@ export const parentalControlService = {
    */
   async getInstalledApps(deviceId, filters = {}) {
     const params = new URLSearchParams();
-    if (filters.category) params.set('category', filters.category);
-    if (filters.search) params.set('search', filters.search);
+    if (filters.category) params.set("category", filters.category);
+    if (filters.search) params.set("search", filters.search);
     const qs = params.toString();
     return apiRequest(
-      `/devices/${encodeURIComponent(deviceId)}/installed-apps${qs ? `?${qs}` : ''}`,
+      `/devices/${encodeURIComponent(deviceId)}/installed-apps${qs ? `?${qs}` : ""}`,
       {},
     );
   },
@@ -421,17 +488,23 @@ export const parentalControlService = {
    * @param {string} deviceToken
    */
   async getMobileDeviceStatus(deviceToken) {
-    const response = await fetch(`${API_BASE_URL}/parental-controls/device-status`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${deviceToken}`,
-        'x-device-token': deviceToken,
+    const response = await fetch(
+      `${API_BASE_URL}/parental-controls/device-status`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${deviceToken}`,
+          "x-device-token": deviceToken,
+        },
       },
-    });
+    );
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      throw new Error(error.message || `API Error ${response.status} on GET /parental-controls/device-status`);
+      throw new Error(
+        error.message ||
+          `API Error ${response.status} on GET /parental-controls/device-status`,
+      );
     }
     return response.json();
   },
@@ -443,17 +516,23 @@ export const parentalControlService = {
    * @param {number} limit
    */
   async getMobileDeviceActivity(deviceToken, limit = 10) {
-    const response = await fetch(`${API_BASE_URL}/parental-controls/device-status?limit=${limit}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${deviceToken}`,
-        'x-device-token': deviceToken,
+    const response = await fetch(
+      `${API_BASE_URL}/parental-controls/device-status?limit=${limit}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${deviceToken}`,
+          "x-device-token": deviceToken,
+        },
       },
-    });
+    );
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      throw new Error(error.message || `API Error ${response.status} on GET /parental-controls/device-status`);
+      throw new Error(
+        error.message ||
+          `API Error ${response.status} on GET /parental-controls/device-status`,
+      );
     }
     return response.json();
   },
@@ -466,17 +545,20 @@ export const parentalControlService = {
    */
   async sendMobileHeartbeat(deviceToken, status) {
     const response = await fetch(`${API_BASE_URL}/device/heartbeat`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${deviceToken}`,
-        'x-device-token': deviceToken,
+        "x-device-token": deviceToken,
       },
       body: JSON.stringify(status),
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      throw new Error(error.message || `API Error ${response.status} on POST /device/heartbeat`);
+      throw new Error(
+        error.message ||
+          `API Error ${response.status} on POST /device/heartbeat`,
+      );
     }
     return response.json();
   },
@@ -489,17 +571,20 @@ export const parentalControlService = {
    */
   async sendMobilePing(deviceToken, location) {
     const response = await fetch(`${API_BASE_URL}/location/update`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${deviceToken}`,
-        'x-device-token': deviceToken,
+        "x-device-token": deviceToken,
       },
       body: JSON.stringify(location),
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      throw new Error(error.message || `API Error ${response.status} on POST /location/update`);
+      throw new Error(
+        error.message ||
+          `API Error ${response.status} on POST /location/update`,
+      );
     }
     return response.json();
   },

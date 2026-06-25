@@ -106,7 +106,14 @@ export default function ForgotPassword() {
                 formik.isSubmitting ? styles.submitButtonDisabled : styles.submitButtonEnabled
               }`}
             >
-              {formik.isSubmitting ? 'Sending...' : 'Reset Password'}
+              {formik.isSubmitting ? (
+                <>
+                  <span className={styles.loadingSpinner} aria-hidden="true" />
+                  <span className={styles.srOnly}>Sending reset link</span>
+                </>
+              ) : (
+                'Reset Password'
+              )}
             </button>
           </form>
 

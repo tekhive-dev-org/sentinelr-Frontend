@@ -57,12 +57,32 @@ export const alertsService = {
    */
   async getSOSAlerts() {
     try {
-      return await apiRequest('/alerts?type=sos');
+      // First try the dedicated /sos-alerts endpoint
+      return await apiRequest('/sos-alerts');
     } catch (error) {
+      console.warn('[alertsService] getSOSAlerts (/sos-alerts) failed, trying /alerts?type=sos:', error.message);
       try {
-        return await apiRequest('/sos-alerts');
-      } catch {
-        return apiRequest('/alerts/sos');
+        // Fallback to filtering by type=sos on alerts list
+        return await apiRequest('/alerts?type=sos');
+      } catch (fallbackError) {
+        console.warn('[alertsService] getSOSAlerts (/alerts?type=sos) failed:', fallbackError.message);
+        // Last resort fallback: Fetch all alerts and filter client-side for type 'sos'
+        try {
+          const allAlerts = await apiRequest('/alerts');
+          if (allAlerts && allAlerts.alerts) {
+            const filtered = allAlerts.alerts.filter(
+              (alert) => String(alert?.type).toLowerCase() === 'sos'
+            );
+            return {
+              ...allAlerts,
+              alerts: filtered,
+            };
+          }
+          return allAlerts;
+        } catch (clientFilterError) {
+          console.error('[alertsService] getSOSAlerts client-side fallback failed:', clientFilterError.message);
+          throw clientFilterError;
+        }
       }
     }
   },

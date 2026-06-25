@@ -1,6 +1,6 @@
 /* Signup Form Component Styles */
 .container {
-  @apply min-h-[100dvh] flex overflow-auto;
+  @apply h-full flex overflow-auto;
 }
 
 .leftSection {

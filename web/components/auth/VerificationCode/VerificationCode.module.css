@@ -244,3 +244,155 @@
 .reverifyButton {
   @apply w-full bg-[#0E4B68] text-white py-3 rounded-lg transition-all text-[15px] font-medium hover:bg-[#0C3D54];
 }
+
+/* Neumorphic auth treatment */
+.container {
+  background:
+    radial-gradient(circle at 18% 14%, rgba(92, 138, 58, 0.12), transparent 30%),
+    radial-gradient(circle at 86% 82%, rgba(14, 75, 104, 0.14), transparent 34%),
+    #e9eef1;
+}
+
+.leftSection {
+  background: #e9eef1;
+  box-shadow: inset 18px 18px 38px #c6cdd2, inset -18px -18px 38px #ffffff;
+}
+
+.lockImageWrapper {
+  @apply m-10 rounded-[32px] overflow-hidden;
+  box-shadow: 18px 18px 34px #c5ccd1, -18px -18px 34px #ffffff;
+}
+
+.rightSection {
+  background: transparent;
+}
+
+.formContainer {
+  @apply rounded-[28px] px-8 py-10;
+  background: rgba(233, 238, 241, 0.92);
+  box-shadow: 20px 20px 44px #c7ced4, -20px -20px 44px #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+}
+
+.logo {
+  filter: drop-shadow(6px 8px 10px rgba(145, 156, 166, 0.35));
+}
+
+.iconWrapper {
+  @apply bg-transparent mx-auto;
+  color: #0e4b68;
+  box-shadow: 10px 10px 20px #c5ccd1, -10px -10px 20px #ffffff;
+}
+
+.icon {
+  @apply text-[#0E4B68];
+}
+
+.title,
+.successTitle,
+.failedTitle {
+  @apply text-[#102d3b];
+}
+
+.subtitle,
+.successSubtitle,
+.failedSubtitle,
+.resendText {
+  @apply text-slate-600;
+}
+
+.timerContainer {
+  @apply border-0 rounded-2xl;
+  background: #e9eef1;
+  box-shadow: inset 7px 7px 14px #cbd2d8, inset -7px -7px 14px #ffffff;
+}
+
+.timerWarning {
+  background: #f2eadb;
+  box-shadow: inset 7px 7px 14px #ddd6c8, inset -7px -7px 14px #ffffff;
+}
+
+.timerUrgent {
+  background: #f4e4e6;
+  box-shadow: inset 7px 7px 14px #dccdd0, inset -7px -7px 14px #ffffff;
+}
+
+.timerExpired {
+  background: #dde3e7;
+  box-shadow: inset 7px 7px 14px #c7cdd1, inset -7px -7px 14px #ffffff;
+}
+
+.codeInput {
+  @apply border-0 bg-transparent rounded-2xl text-[#102d3b];
+  box-shadow: inset 7px 7px 14px #cbd2d8, inset -7px -7px 14px #ffffff;
+}
+
+.codeInput:focus {
+  box-shadow: inset 5px 5px 10px #c8cfd5, inset -5px -5px 10px #ffffff, 0 0 0 3px rgba(14, 75, 104, 0.16);
+}
+
+.verifyButton,
+.homeButton,
+.reverifyButton {
+  @apply rounded-2xl;
+  background: #0e4b68;
+  box-shadow: 10px 10px 20px #bdc6cc, -10px -10px 20px #ffffff;
+}
+
+.verifyButtonEnabled:hover,
+.homeButton:hover,
+.reverifyButton:hover {
+  background: #0c3d54;
+  transform: translateY(-1px);
+}
+
+.verifyButtonDisabled {
+  @apply text-slate-500;
+  background: #d9e0e5;
+  box-shadow: inset 6px 6px 12px #c5ccd2, inset -6px -6px 12px #ffffff;
+}
+
+.resendLink {
+  @apply text-[#0E4B68];
+}
+
+.successIconCircle {
+  background: #0e4b68;
+  box-shadow: 10px 10px 20px #bdc6cc, -10px -10px 20px #ffffff;
+}
+
+.successIconCircle::before {
+  background: #0e4b68;
+}
+
+.failedIconCircle {
+  background: #ef4444;
+  box-shadow: 10px 10px 20px #bdc6cc, -10px -10px 20px #ffffff;
+}
+
+.failedIconCircle::before {
+  background: #ef4444;
+}
+
+@media (max-width: 767px) {
+  .container {
+    background: #e9eef1;
+  }
+
+  .rightSection {
+    @apply px-5 py-8;
+    background: transparent;
+  }
+
+  .formContainer {
+    @apply h-auto rounded-[28px] p-6;
+  }
+
+  .codeInputs {
+    @apply gap-2;
+  }
+
+  .codeInput {
+    @apply w-11 h-11;
+  }
+}

@@ -221,3 +221,128 @@
 .logoutButton {
   @apply bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors;
 }
+
+/* Neumorphic auth treatment */
+.container {
+  background:
+    radial-gradient(circle at 18% 14%, rgba(92, 138, 58, 0.12), transparent 30%),
+    radial-gradient(circle at 86% 82%, rgba(14, 75, 104, 0.14), transparent 34%),
+    #e9eef1;
+}
+
+.leftBackground {
+  background: #e9eef1;
+  box-shadow: 18px 0 36px rgba(174, 185, 194, 0.7);
+}
+
+.leftSection {
+  background: #e9eef1;
+  box-shadow: inset 18px 18px 38px #c6cdd2, inset -18px -18px 38px #ffffff;
+}
+
+.lockImageWrapper {
+  @apply m-10 rounded-[32px] overflow-hidden;
+  box-shadow: 18px 18px 34px #c5ccd1, -18px -18px 34px #ffffff;
+}
+
+.rightSection {
+  background: transparent;
+}
+
+.formContainer {
+  @apply rounded-[28px] px-8 py-10;
+  background: rgba(233, 238, 241, 0.92);
+  box-shadow: 20px 20px 44px #c7ced4, -20px -20px 44px #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+}
+
+.logo {
+  filter: drop-shadow(6px 8px 10px rgba(145, 156, 166, 0.35));
+}
+
+.title {
+  @apply text-[#102d3b];
+}
+
+.subtitle,
+.label {
+  @apply text-slate-600;
+}
+
+.signupLink,
+.forgotPasswordLink {
+  @apply text-[#0E4B68];
+}
+
+.input {
+  @apply border-0 bg-transparent rounded-2xl text-slate-800;
+  box-shadow: inset 7px 7px 14px #cbd2d8, inset -7px -7px 14px #ffffff;
+}
+
+.input:focus {
+  box-shadow: inset 5px 5px 10px #c8cfd5, inset -5px -5px 10px #ffffff, 0 0 0 3px rgba(14, 75, 104, 0.16);
+}
+
+.inputError {
+  box-shadow: inset 6px 6px 12px #d6bdc0, inset -6px -6px 12px #ffffff, 0 0 0 2px rgba(239, 68, 68, 0.32);
+}
+
+.togglePasswordButton {
+  @apply rounded-full p-1 text-slate-500;
+  box-shadow: 4px 4px 8px #c8cfd5, -4px -4px 8px #ffffff;
+}
+
+.socialButton,
+.playStoreButton {
+  @apply border-0 rounded-2xl bg-transparent text-slate-700;
+  box-shadow: 9px 9px 18px #c6cdd3, -9px -9px 18px #ffffff;
+}
+
+.socialButton:hover,
+.playStoreButton:hover {
+  background: #edf2f5;
+  box-shadow: 6px 6px 12px #c6cdd3, -6px -6px 12px #ffffff;
+}
+
+.dividerLine,
+.appDownloadSection {
+  border-color: rgba(148, 163, 184, 0.38);
+}
+
+.submitButton {
+  @apply rounded-2xl;
+  background: #0e4b68;
+  box-shadow: 10px 10px 20px #bdc6cc, -10px -10px 20px #ffffff;
+}
+
+.submitButtonEnabled:hover {
+  background: #0c3d54;
+  transform: translateY(-1px);
+}
+
+.submitButtonDisabled {
+  @apply text-slate-500;
+  background: #d9e0e5;
+  box-shadow: inset 6px 6px 12px #c5ccd2, inset -6px -6px 12px #ffffff;
+}
+
+.formError {
+  @apply border-0 rounded-2xl;
+  background: #f4e4e6;
+  box-shadow: inset 5px 5px 10px #dccdd0, inset -5px -5px 10px #ffffff;
+}
+
+@media (max-width: 767px) {
+  .container {
+    background: #e9eef1;
+  }
+
+  .rightSection {
+    @apply px-5 py-8;
+    background: transparent;
+  }
+
+  .formContainer {
+    @apply h-auto rounded-[28px] p-6;
+  }
+}

@@ -160,7 +160,7 @@ export default function PairDevice({
     setError(null);
 
     try {
-      // Ensure platform uses Title Case for backend compatibility
+      // Ensure platform uses Title Case for backend compatibility!
       const platformValue =
         deviceType === "Phone"
           ? smartphoneOS === "ios"

@@ -238,6 +238,7 @@ export default function PairDevice({
     }
   };
 
+  
   // Render device form step
   const renderFormStep = () => (
     <div className={styles.pairingCard}>

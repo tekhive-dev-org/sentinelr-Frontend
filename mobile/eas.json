@@ -12,7 +12,8 @@
       },
       "ios": {
         "buildConfiguration": "Debug"
-      }
+      },
+      "channel": "development"
     },
     "preview": {
       "distribution": "internal",
@@ -21,7 +22,8 @@
       },
       "ios": {
         "simulator": true
-      }
+      },
+      "channel": "preview"
     },
     "production": {
       "android": {
@@ -29,12 +31,17 @@
         "autoIncrement": true
       },
       "ios": {
-        "buildConfiguration": "Release"
-      }
+        "buildConfiguration": "Release",
+        "autoIncrement": true
+      },
+      "channel": "production"
     }
   },
   "submit": {
     "production": {
+       "ios": {
+      "ascAppId": "6783405827"
+    },
       "android": {
         "track": "production",
         "releaseStatus": "completed"

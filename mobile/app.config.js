@@ -4,6 +4,7 @@ export default {
   expo: {
     name: 'Sentinelr',
     slug: 'sentinelr-mobile',
+    owner: 'techchive-llc',
     version: '1.1.2',
     orientation: 'default',
     icon: './assets/icon.png',
@@ -48,6 +49,13 @@ export default {
     plugins: [
       './plugins/withLargeScreenSupport',
       [
+        'expo-camera',
+        {
+          cameraPermission:
+            'Allow Sentinelr to use your camera to scan QR codes when pairing a device.',
+        },
+      ],
+      [
         'expo-location',
         {
           locationAlwaysAndWhenInUsePermission:
@@ -69,7 +77,7 @@ export default {
       ],
     ],
     updates: {
-      url: 'https://u.expo.dev/115f15f3-31c3-4815-8b68-864821bf83d9',
+      url: 'https://u.expo.dev/2542921c-4083-4d6d-83eb-1fbcfa79d891',
     },
     runtimeVersion: {
       policy: 'appVersion',
@@ -82,7 +90,7 @@ export default {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
       eas: {
-        projectId: '115f15f3-31c3-4815-8b68-864821bf83d9',
+        projectId: '2542921c-4083-4d6d-83eb-1fbcfa79d891',
       },
     },
   },

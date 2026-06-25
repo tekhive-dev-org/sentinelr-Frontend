@@ -365,9 +365,10 @@ export const apiService = {
    */
   async getParentalStatus(deviceId) {
     const token = await storageService.getUploadToken();
+    const userId = await storageService.getDeviceUserId();
     console.log("[API] getParentalStatus — hasToken:", !!token);
-
-    const url = `${requireApiBaseUrl()}/parental-controls/device-status/${deviceId}`;
+    console.log("[API] getParentalStatus — userId:", userId);
+    const url = `${requireApiBaseUrl()}/parental-controls/${userId}/device-status/${deviceId}`;
     console.log("[API] getParentalStatus — url:", url);
 
     let response = await fetch(url, {
@@ -411,9 +412,10 @@ export const apiService = {
    */
   async getParentalActivity(deviceId, limit = 10) {
     const token = await storageService.getUploadToken();
+    const userId = await storageService.getDeviceUserId();
 
     const params = new URLSearchParams({ limit: String(limit) });
-    const url = `${requireApiBaseUrl()}/parental-controls/devices/${encodeURIComponent(deviceId)}/activity?${params.toString()}`;
+    const url = `${requireApiBaseUrl()}/parental-controls/${encodeURIComponent(userId)}/activity?${params.toString()}`;
     console.log("[API] getParentalActivity — url:", url);
 
     let response = await fetch(url, {

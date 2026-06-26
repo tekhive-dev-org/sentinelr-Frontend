@@ -113,7 +113,7 @@ export default function AddMemberModal({
         <div className={styles.modalHeader}>
           <h2 className={styles.modalTitle}>Add New Family Member</h2>
           <button className={styles.modalClose} onClick={onClose}>
-            <CloseIcon style={{ fontSize: 20 }} />
+            <CloseIcon className={styles.modalCloseIcon} />
           </button>
         </div>
 
@@ -149,11 +149,10 @@ export default function AddMemberModal({
             {/* Phone Number */}
             <div className={styles.formGroup}>
               <label className={styles.formLabel}>Phone Number</label>
-              <div style={{ display: "flex", gap: "8px" }}>
+              <div className={styles.phoneInputGroup}>
                 <select
                   name="countryCode"
-                  className={styles.formSelect}
-                  style={{ width: "100px" }}
+                  className={`${styles.formSelect} ${styles.countryCodeSelect}`}
                   value={formData.countryCode}
                   onChange={handleChange}
                 >
@@ -192,16 +191,7 @@ export default function AddMemberModal({
             </div>
 
             {error && (
-              <div
-                style={{
-                  padding: "12px",
-                  marginBottom: "20px",
-                  borderRadius: "8px",
-                  backgroundColor: "#ffe1e4",
-                  color: "#a92731",
-                  fontSize: "14px",
-                }}
-              >
+              <div className={styles.formError}>
                 {error}
               </div>
             )}

@@ -67,6 +67,10 @@
   opacity: 0.48;
 }
 
+.closeIcon {
+  font-size: 18px;
+}
+
 .modalHeader {
   display: flex;
   align-items: center;

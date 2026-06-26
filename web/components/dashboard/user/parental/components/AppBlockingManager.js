@@ -10,14 +10,14 @@ import SmartphoneRoundedIcon from '@mui/icons-material/SmartphoneRounded';
 import styles from '../ParentalControl.module.css';
 
 const CATEGORY_CONFIG = {
-  Gaming: { icon: <SportsEsportsRoundedIcon sx={{ fontSize: 20 }} />, bg: '#fff0f1', color: '#dc323f' },
-  'Social Media': { icon: <GroupRoundedIcon sx={{ fontSize: 20 }} />, bg: '#fff8e8', color: '#e6ae12' },
-  Entertainment: { icon: <MovieRoundedIcon sx={{ fontSize: 20 }} />, bg: '#fff8e8', color: '#e6ae12' },
-  TikTok: { icon: <MusicNoteRoundedIcon sx={{ fontSize: 20 }} />, bg: '#f5f1ff', color: '#3d09d0' },
-  Facebook: { icon: <FacebookRoundedIcon sx={{ fontSize: 20 }} />, bg: '#f5f1ff', color: '#3d09d0' },
-  WhatsApp: { icon: <ChatRoundedIcon sx={{ fontSize: 20 }} />, bg: '#fff8e8', color: '#e6ae12' },
+  Gaming: { icon: <SportsEsportsRoundedIcon />, className: 'categoryIconRed' },
+  'Social Media': { icon: <GroupRoundedIcon />, className: 'categoryIconYellow' },
+  Entertainment: { icon: <MovieRoundedIcon />, className: 'categoryIconYellow' },
+  TikTok: { icon: <MusicNoteRoundedIcon />, className: 'categoryIconPurple' },
+  Facebook: { icon: <FacebookRoundedIcon />, className: 'categoryIconPurple' },
+  WhatsApp: { icon: <ChatRoundedIcon />, className: 'categoryIconYellow' },
 };
-const DEFAULT_CATEGORY = { icon: <SmartphoneRoundedIcon sx={{ fontSize: 20 }} />, bg: '#f3f4f6', color: '#6b7280' };
+const DEFAULT_CATEGORY = { icon: <SmartphoneRoundedIcon />, className: 'categoryIconNeutral' };
 
 export default function AppBlockingManager({
   appBlocking = null,
@@ -29,7 +29,7 @@ export default function AppBlockingManager({
   return (
     <div className={styles.appBlockingContainer}>
       <h3 className={styles.sectionTitle}>
-        <SecurityRoundedIcon sx={{ fontSize: 20, color: '#6b7280' }} />
+        <SecurityRoundedIcon />
         App Category Blocking
       </h3>
       
@@ -40,7 +40,7 @@ export default function AppBlockingManager({
           return (
             <div key={cat.category} className={styles.categoryItem}>
               <div className={styles.categoryInfo}>
-                <div className={styles.categoryIcon} style={{ background: config.bg, color: config.color }}>
+                <div className={`${styles.categoryIcon} ${styles[config.className]}`}>
                   {config.icon}
                 </div>
                 <div className={styles.categoryDetails}>
@@ -67,7 +67,7 @@ export default function AppBlockingManager({
           return (
             <div key={app.packageName} className={styles.categoryItem}>
               <div className={styles.categoryInfo}>
-                <div className={styles.categoryIcon} style={{ background: config.bg, color: config.color }}>
+                <div className={`${styles.categoryIcon} ${styles[config.className]}`}>
                   {config.icon}
                 </div>
                 <div className={styles.categoryDetails}>

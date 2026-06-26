@@ -27,8 +27,8 @@ export default function WebFilteringManager({
     <div className={styles.card}>
       <div className={styles.cardHeader}>
         <span className={styles.cardTitle}>
-          <span className={styles.cardTitleIcon} style={{ background: '#fff8e8', color: '#e6ae12' }}>
-            <LanguageRoundedIcon sx={{ fontSize: 18 }} />
+          <span className={`${styles.cardTitleIcon} ${styles.iconYellow}`}>
+            <LanguageRoundedIcon />
           </span>
           Web Filtering
         </span>
@@ -51,7 +51,7 @@ export default function WebFilteringManager({
 
       <div className={styles.searchWrapper}>
         <span className={styles.searchIcon}>
-          <SearchRoundedIcon sx={{ fontSize: 16, color: '#9ca3af' }} />
+          <SearchRoundedIcon />
         </span>
         <input
           className={styles.searchInput}
@@ -63,7 +63,7 @@ export default function WebFilteringManager({
 
       <div className={styles.blockedSitesList}>
         {filteredSites.length === 0 ? (
-          <span style={{ fontSize: 12, color: 'var(--clr-text-4)', textAlign: 'center', padding: 24, fontWeight: 600 }}>
+          <span className={styles.emptyListText}>
             No blocked sites matching query
           </span>
         ) : (
@@ -71,7 +71,7 @@ export default function WebFilteringManager({
             <div key={site} className={styles.blockedSiteItem}>
               <div className={styles.blockedSiteInfo}>
                 <span className={styles.siteIcon}>
-                  <LockRoundedIcon sx={{ fontSize: 14, color: '#6b7280' }} />
+                  <LockRoundedIcon />
                 </span>
                 <span className={styles.siteName}>{site}</span>
               </div>
@@ -80,7 +80,7 @@ export default function WebFilteringManager({
                 onClick={() => handleRemoveSite(site)}
                 title="Remove"
               >
-                <DeleteOutlineRoundedIcon sx={{ fontSize: 16 }} />
+                <DeleteOutlineRoundedIcon />
               </button>
             </div>
           ))

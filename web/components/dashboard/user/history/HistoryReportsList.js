@@ -62,7 +62,7 @@ export default function HistoryReportsList({ reports = [], onSeeAll }) {
     <div className={styles.reportsCard}>
       <div className={styles.reportsHeader}>
         <h3 className={styles.sectionTitle}>
-          <span style={{ marginRight: 6 }}>📊</span>
+          <span className={styles.reportTitleIcon} aria-hidden="true" />
           Reports
         </h3>
         <button className={styles.seeAllBtn} onClick={onSeeAll}>
@@ -78,7 +78,7 @@ export default function HistoryReportsList({ reports = [], onSeeAll }) {
       {/* Report rows */}
       <div className={styles.reportsList}>
         {reports.length === 0 ? (
-          <p style={{ fontSize: 13, color: '#9ca3af', textAlign: 'center', padding: '12px 0' }}>
+          <p className={styles.emptyReports}>
             No reports available
           </p>
         ) : (

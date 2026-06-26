@@ -8,13 +8,13 @@ import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
 import styles from '../ParentalControl.module.css';
 
 const ACTIVITY_CONFIG = {
-  app_install: { icon: <GetAppRoundedIcon sx={{ fontSize: 16, color: '#e6ae12' }} />, bg: '#fff0cf', color: '#e6ae12' },
-  web_blocked: { icon: <BlockRoundedIcon sx={{ fontSize: 16, color: '#dc323f' }} />, bg: '#ffe1e4', color: '#dc323f' },
-  screen_time_limit: { icon: <TimerRoundedIcon sx={{ fontSize: 16, color: '#4f46e5' }} />, bg: '#ede7ff', color: '#4f46e5' },
-  geofence: { icon: <PlaceRoundedIcon sx={{ fontSize: 16, color: '#ca8a04' }} />, bg: '#fef9c3', color: '#ca8a04' },
-  app_blocked: { icon: <LockRoundedIcon sx={{ fontSize: 16, color: '#db2777' }} />, bg: '#fce7f3', color: '#db2777' },
+  app_install: { icon: <GetAppRoundedIcon />, className: 'activityIconYellow' },
+  web_blocked: { icon: <BlockRoundedIcon />, className: 'activityIconRed' },
+  screen_time_limit: { icon: <TimerRoundedIcon />, className: 'activityIconPurple' },
+  geofence: { icon: <PlaceRoundedIcon />, className: 'activityIconOrange' },
+  app_blocked: { icon: <LockRoundedIcon />, className: 'activityIconRed' },
 };
-const DEFAULT_ACTIVITY = { icon: <AssignmentRoundedIcon sx={{ fontSize: 16, color: '#6b7280' }} />, bg: '#f3f4f6', color: '#6b7280' };
+const DEFAULT_ACTIVITY = { icon: <AssignmentRoundedIcon />, className: 'activityIconNeutral' };
 
 function timeAgo(timestamp) {
   const parsed = new Date(timestamp).getTime();
@@ -93,7 +93,7 @@ export default function AlertsOverview({
       <div className={`${styles.activityCard} ${loading ? styles.loadingOpacity : ''}`}>
         <div className={styles.activityList}>
           {activities.length === 0 ? (
-            <span style={{ fontSize: 13, color: 'var(--clr-text-4)', padding: '24px 0', textAlign: 'center', fontWeight: 600 }}>
+            <span className={styles.activityEmptyText}>
               No recent notifications or security activity logs found.
             </span>
           ) : (
@@ -102,7 +102,7 @@ export default function AlertsOverview({
               const activityTime = act.timestamp || act.createdAt || act.updatedAt || act.time;
               return (
                 <div key={act.id} className={styles.activityItem}>
-                  <div className={styles.activityIcon} style={{ background: cfg.bg }}>
+                  <div className={`${styles.activityIcon} ${styles[cfg.className]}`}>
                     {cfg.icon}
                   </div>
                   <div className={styles.activityContent}>

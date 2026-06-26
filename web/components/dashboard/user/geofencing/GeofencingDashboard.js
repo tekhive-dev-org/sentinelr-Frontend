@@ -153,18 +153,47 @@ export default function GeofencingDashboard() {
   };
 
   const activeCount = geofences.filter((z) => z.isActive).length;
+  const inactiveCount = Math.max(geofences.length - activeCount, 0);
+  const dangerCount = geofences.filter((z) => z.type === 'danger_zone').length;
 
   return (
     <div className={styles.container}>
+      <div className={styles.pageHero}>
+        <div>
+          <span className={styles.heroEyebrow}>Location Safety</span>
+          <h1 className={styles.heroTitle}>Geofencing</h1>
+          <p className={styles.heroCopy}>
+            Manage safe zones, danger zones, radius rules, and recent location events.
+          </p>
+        </div>
+        <div className={styles.heroStats}>
+          <div className={styles.heroStat}>
+            <span className={styles.heroStatValue}>{geofences.length}</span>
+            <span className={styles.heroStatLabel}>Total zones</span>
+          </div>
+          <div className={styles.heroStat}>
+            <span className={styles.heroStatValue}>{activeCount}</span>
+            <span className={styles.heroStatLabel}>Active</span>
+          </div>
+          <div className={styles.heroStat}>
+            <span className={styles.heroStatValue}>{dangerCount}</span>
+            <span className={styles.heroStatLabel}>Danger</span>
+          </div>
+        </div>
+      </div>
+
       <div className={styles.mainLayout}>
         {/* ── Left Panel ─────────────────────────────────────────────────── */}
         <div className={styles.leftPanel}>
           <div className={styles.panelHeader}>
-            <span className={styles.panelTitle}>Active Zones</span>
-            <span className={styles.activeCount}>
+            <div>
+              <span className={styles.panelTitle}>Zone Registry</span>
+              <span className={styles.panelSubtitle}>{inactiveCount} inactive zones</span>
+            </div>
+            <div className={styles.activeCount}>
               <span className={styles.activeCountDot} />
               {activeCount} Active
-            </span>
+            </div>
           </div>
 
           {loading ? (
@@ -198,10 +227,16 @@ export default function GeofencingDashboard() {
 
         {/* ── Map Section ────────────────────────────────────────────────── */}
         <div className={styles.mapSection}>
-          <button className={styles.newGeofenceBtn} onClick={handleNewGeofence}>
-            New Geofence
-            <AddLocationAltIcon />
-          </button>
+          <div className={styles.mapToolbar}>
+            <div>
+              <span className={styles.mapLabel}>Zone Map</span>
+              <span className={styles.mapMeta}>{activeCount} active overlays</span>
+            </div>
+            <button className={styles.newGeofenceBtn} onClick={handleNewGeofence}>
+              New Geofence
+              <AddLocationAltIcon />
+            </button>
+          </div>
           <div className={styles.mapWrapper}>
             <GeofenceMap geofences={geofences} selectedZoneId={selectedZoneId} />
           </div>

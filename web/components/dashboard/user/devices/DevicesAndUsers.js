@@ -88,19 +88,7 @@ export default function DevicesAndUsers() {
         <div className={styles.headerActions}>
           {activeTab === "devices" ? (
             maxMembers != null && devices.length >= maxMembers ? (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  fontSize: "12px",
-                  color: "#b98b0e",
-                  backgroundColor: "#fff8e8",
-                  border: "1px solid #f3d476",
-                  borderRadius: "8px",
-                  padding: "6px 14px",
-                }}
-              >
+              <div className={styles.limitBadge}>
                 Device limit reached ({devices.length}/{maxMembers})
               </div>
             ) : (
@@ -113,19 +101,7 @@ export default function DevicesAndUsers() {
               </button>
             )
           ) : maxMembers != null && users.length >= maxMembers ? (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                fontSize: "12px",
-                color: "#b98b0e",
-                backgroundColor: "#fff8e8",
-                border: "1px solid #f3d476",
-                borderRadius: "8px",
-                padding: "6px 14px",
-              }}
-            >
+            <div className={styles.limitBadge}>
               Member limit reached ({users.length}/{maxMembers})
             </div>
           ) : (
@@ -279,7 +255,7 @@ export default function DevicesAndUsers() {
             className={styles.warningClose}
             onClick={() => setShowWarning(false)}
           >
-            <CloseIcon style={{ fontSize: 18 }} />
+            <CloseIcon className={styles.warningCloseIcon} />
           </button>
         </div>
       )}

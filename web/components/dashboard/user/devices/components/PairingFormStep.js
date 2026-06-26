@@ -37,16 +37,7 @@ export default function PairingFormStep({
       </p>
 
       {error && (
-        <div
-          className={styles.errorMessage}
-          style={{
-            color: "#dc323f",
-            backgroundColor: "#ffe1e4",
-            padding: "12px",
-            borderRadius: "8px",
-            marginBottom: "16px",
-          }}
-        >
+        <div className={styles.errorMessage}>
           {error}
         </div>
       )}
@@ -85,7 +76,7 @@ export default function PairingFormStep({
                   onClick={() => setDeviceType(type.id)}
                   disabled={isDisabled || isGeneratingCode}
                 >
-                  <Icon style={{ fontSize: 24 }} />
+                  <Icon className={styles.deviceTypeIcon} />
                   <span>{type.label}</span>
                 </button>
               );
@@ -94,54 +85,18 @@ export default function PairingFormStep({
 
           {/* Smartphone OS Selection */}
           {deviceType === "Phone" && (
-            <div
-              style={{
-                marginTop: "16px",
-                padding: "16px",
-                backgroundColor: "#F9FAFB",
-                borderRadius: "8px",
-                border: "1px solid #E5E7EB",
-              }}
-            >
-              <label
-                className={styles.formLabel}
-                style={{ marginBottom: "12px", fontSize: "13px" }}
-              >
+            <div className={styles.osSelection}>
+              <label className={`${styles.formLabel} ${styles.osLabel}`}>
                 Select Mobile Operating System
               </label>
-              <div style={{ display: "flex", gap: "12px" }}>
+              <div className={styles.osOptions}>
                 <button
                   type="button"
                   onClick={() => setSmartphoneOS("ios")}
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "8px",
-                    padding: "10px",
-                    borderRadius: "6px",
-                    border:
-                      smartphoneOS === "ios"
-                        ? "2px solid #1F2937"
-                        : "1px solid #E5E7EB",
-                    backgroundColor: "#FFFFFF",
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                  }}
+                  className={`${styles.osButton} ${smartphoneOS === "ios" ? styles.osButtonActive : ""}`}
                 >
-                  <AppleIcon
-                    style={{
-                      fontSize: 20,
-                      color: smartphoneOS === "ios" ? "#000" : "#6B7280",
-                    }}
-                  />
-                  <span
-                    style={{
-                      fontWeight: smartphoneOS === "ios" ? "600" : "400",
-                      color: smartphoneOS === "ios" ? "#000" : "#6B7280",
-                    }}
-                  >
+                  <AppleIcon className={styles.osIcon} />
+                  <span>
                     iOS
                   </span>
                 </button>
@@ -149,35 +104,10 @@ export default function PairingFormStep({
                 <button
                   type="button"
                   onClick={() => setSmartphoneOS("android")}
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "8px",
-                    padding: "10px",
-                    borderRadius: "6px",
-                    border:
-                      smartphoneOS === "android"
-                        ? "2px solid #1F2937"
-                        : "1px solid #E5E7EB",
-                    backgroundColor: "#FFFFFF",
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                  }}
+                  className={`${styles.osButton} ${smartphoneOS === "android" ? styles.osButtonActive : ""}`}
                 >
-                  <AndroidIcon
-                    style={{
-                      fontSize: 20,
-                      color: smartphoneOS === "android" ? "#3DDC84" : "#6B7280",
-                    }}
-                  />
-                  <span
-                    style={{
-                      fontWeight: smartphoneOS === "android" ? "600" : "400",
-                      color: smartphoneOS === "android" ? "#000" : "#6B7280",
-                    }}
-                  >
+                  <AndroidIcon className={styles.osIcon} />
+                  <span>
                     Android
                   </span>
                 </button>

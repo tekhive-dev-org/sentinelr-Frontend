@@ -210,7 +210,7 @@ export default function SOSAlertHistory({
                           aria-label={`More actions for ${alert.userName}`}
                           onClick={(e) => handleMenuToggle(alert.id, e)}
                         >
-                          <MoreVertIcon style={{ fontSize: 18 }} />
+                          <MoreVertIcon className={styles.rowMenuIcon} />
                         </button>
 
                         {!isMobile && menuState.id === alert.id && (

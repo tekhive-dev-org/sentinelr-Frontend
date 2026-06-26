@@ -45,7 +45,7 @@ export default function ForgotPassword() {
             src="/assets/images/lock.svg" 
             alt="Security" 
             fill
-            style={{ objectFit: 'cover' }}
+            className={styles.authImage}
             priority
           />
         </div>
@@ -70,7 +70,7 @@ export default function ForgotPassword() {
           </p>
 
           {successMessage && (
-            <div style={{ color: 'green', fontSize: '14px', marginBottom: '16px', textAlign: 'center' }}>
+            <div className={styles.successMessage}>
               {successMessage}
             </div>
           )}

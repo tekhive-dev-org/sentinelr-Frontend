@@ -159,18 +159,18 @@ export default function SOSAlertBanner({
       <div className={styles.actionButtons}>
         <div className={styles.primaryActionRow}>
           <button type="button" className={styles.callBtn} onClick={() => onCall(alert)}>
-            <PhoneIcon style={{ fontSize: 18 }} />
+            <PhoneIcon className={styles.actionIcon} />
             Call contact
           </button>
 
           <button type="button" className={styles.mapBtn} onClick={() => onOpenMap(alert)}>
-            <MyLocationOutlinedIcon style={{ fontSize: 18 }} />
+            <MyLocationOutlinedIcon className={styles.actionIcon} />
             Open map
           </button>
         </div>
 
         <button type="button" className={styles.shareBtn} onClick={() => onCopySummary(alert)}>
-          <ShareIcon style={{ fontSize: 18 }} />
+          <ShareIcon className={styles.actionIcon} />
           Copy incident brief
         </button>
 

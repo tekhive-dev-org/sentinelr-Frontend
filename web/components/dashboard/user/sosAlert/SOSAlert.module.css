@@ -1526,3 +1526,630 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Premium SOS Command Center Refresh */
+.container {
+  width: 100%;
+  min-height: 100%;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(224, 111, 41, 0.08), transparent 30%),
+    linear-gradient(180deg, #fbf9ff 0%, #fffaf6 48%, #f8f6ff 100%);
+}
+
+.commandHeader,
+.criticalBanner,
+.mapSection,
+.noAlertCard,
+.tableCard,
+.incidentModal {
+  border: 1px solid rgba(61, 9, 208, 0.1);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(255, 250, 246, 0.93) 48%, rgba(245, 241, 255, 0.88)),
+    #ffffff;
+  box-shadow:
+    0 24px 70px rgba(31, 22, 54, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.commandHeader {
+  max-width: 1220px;
+  width: calc(100% - 56px);
+  margin: 18px auto 0;
+  padding: 28px;
+  border-radius: 26px;
+}
+
+.commandHeader::before {
+  inset: 0 0 auto;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, #dc323f, #e06f29, #e6ae12, #3d09d0);
+  z-index: 0;
+}
+
+.commandHeader::after {
+  right: -120px;
+  top: -150px;
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(circle, rgba(61, 9, 208, 0.14), transparent 68%);
+}
+
+.commandHeader > * {
+  position: relative;
+  z-index: 1;
+}
+
+.commandEyebrow {
+  border-color: rgba(220, 50, 63, 0.18);
+  background: #fff0f1;
+  color: #a92731;
+  font-weight: 900;
+}
+
+.realtimeBadge {
+  font-weight: 900;
+}
+
+.realtimeLive,
+.realtimePolling {
+  border-color: rgba(230, 174, 18, 0.24);
+  background: #fff8e8;
+  color: #8d6504;
+}
+
+.realtimeConnecting {
+  border-color: rgba(61, 9, 208, 0.14);
+  background: #f5f1ff;
+  color: #3d09d0;
+}
+
+.realtimeConnecting::before {
+  background: #3d09d0;
+}
+
+.commandTitle,
+.bannerName,
+.noAlertTitle,
+.historyTitle,
+.modalTitle {
+  font-family: "Playfair Display", serif;
+  color: #160f24;
+  letter-spacing: 0;
+}
+
+.commandTitle {
+  font-size: clamp(30px, 4vw, 42px);
+  line-height: 1.02;
+}
+
+.commandSubtitle,
+.bannerSubLabel,
+.bannerIncidentMeta,
+.incidentSummaryMeta,
+.deviceStatSublabel,
+.noAlertDesc,
+.historySubtitle,
+.memberMeta,
+.incidentMeta,
+.locationSecondary,
+.deviceSecondary,
+.detailLabel {
+  color: #6f647c;
+}
+
+.commandStats {
+  gap: 14px;
+}
+
+.commandStatCard {
+  border: 1px solid rgba(61, 9, 208, 0.09);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 16px 36px rgba(31, 22, 54, 0.07);
+}
+
+.commandStatCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(224, 111, 41, 0.24);
+  box-shadow: 0 22px 46px rgba(31, 22, 54, 0.11);
+}
+
+.commandStatIcon,
+.deviceStatIcon,
+.noAlertIcon {
+  border: 1px solid rgba(61, 9, 208, 0.1);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(230, 174, 18, 0.18), transparent 40%),
+    linear-gradient(135deg, rgba(61, 9, 208, 0.12), rgba(224, 111, 41, 0.14));
+  color: #3d09d0;
+}
+
+.commandStatSvg,
+.actionIcon,
+.rowMenuIcon,
+.modalIcon,
+.detailSectionIcon {
+  font-size: 18px !important;
+}
+
+.inlineActionIcon {
+  font-size: 16px !important;
+}
+
+.commandStatLabel,
+.incidentSummaryLabel,
+.deviceStatLabel,
+.mapOverlayLabel,
+.mapInfoLabel,
+.modalEyebrow {
+  color: #6b5d82;
+  font-weight: 900;
+}
+
+.commandStatValue,
+.incidentSummaryValue,
+.deviceStatValue,
+.memberName,
+.incidentTitle,
+.locationPrimary,
+.devicePrimary,
+.detailValue {
+  color: #160f24;
+  font-weight: 800;
+}
+
+.contentPad {
+  max-width: 1220px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 22px 28px 34px;
+}
+
+.criticalBanner {
+  border-radius: 24px;
+}
+
+.criticalBanner::before {
+  width: 6px;
+  background: linear-gradient(180deg, #dc323f, #e06f29, #e6ae12);
+}
+
+.bannerTop {
+  padding: 18px 20px 0 24px;
+}
+
+.bannerLabel {
+  color: #dc323f;
+  font-weight: 900;
+}
+
+.liveBadge {
+  border-color: rgba(220, 50, 63, 0.18);
+  background: #fff0f1;
+  color: #a92731;
+  font-weight: 900;
+}
+
+.bannerIdentity {
+  padding: 14px 20px 0 24px;
+}
+
+.bannerAvatar,
+.memberAvatar {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(230, 174, 18, 0.28), transparent 40%),
+    linear-gradient(135deg, #dc323f, #e06f29);
+  box-shadow: 0 12px 24px rgba(220, 50, 63, 0.18);
+}
+
+.bannerName {
+  font-size: 23px;
+}
+
+.bannerPill {
+  border-color: rgba(61, 9, 208, 0.14);
+  background: #f5f1ff;
+  color: #3d09d0;
+  font-weight: 900;
+}
+
+.incidentSummaryGrid,
+.deviceStatsGrid {
+  gap: 10px;
+  padding-left: 24px;
+  padding-right: 20px;
+}
+
+.incidentSummaryCard,
+.deviceStatCard,
+.modalSection {
+  border: 1px solid rgba(61, 9, 208, 0.09);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 10px 22px rgba(31, 22, 54, 0.05);
+}
+
+.bannerDivider {
+  margin: 0 24px;
+  background: rgba(61, 9, 208, 0.08);
+}
+
+.actionButtons {
+  gap: 8px;
+  padding: 14px 20px 20px 24px;
+}
+
+.callBtn,
+.resolveBtn,
+.modalPrimaryAction {
+  border: 0;
+  background: linear-gradient(135deg, #3d09d0, #e06f29);
+  color: #ffffff;
+  box-shadow: 0 14px 28px rgba(61, 9, 208, 0.18);
+}
+
+.callBtn:hover,
+.resolveBtn:hover,
+.modalPrimaryAction:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #32109f, #c95f20);
+  box-shadow: 0 18px 34px rgba(224, 111, 41, 0.22);
+}
+
+.mapBtn,
+.shareBtn,
+.modalSecondaryAction,
+.secondaryInlineButton,
+.mapDetailsLink {
+  border: 1px solid rgba(61, 9, 208, 0.14);
+  background: rgba(255, 255, 255, 0.92);
+  color: #3d09d0;
+  font-weight: 850;
+}
+
+.mapBtn:hover,
+.shareBtn:hover,
+.modalSecondaryAction:hover,
+.secondaryInlineButton:hover,
+.mapDetailsLink:hover {
+  transform: translateY(-1px);
+  border-color: rgba(224, 111, 41, 0.28);
+  background: #fffaf6;
+  color: #e06f29;
+}
+
+.dismissBtn,
+.modalDangerAction {
+  border: 1px solid rgba(220, 50, 63, 0.18);
+  background: #fff0f1;
+  color: #a92731;
+  font-weight: 850;
+}
+
+.dismissBtn:hover,
+.modalDangerAction:hover {
+  transform: translateY(-1px);
+  background: #ffe1e4;
+}
+
+.callBtn:focus-visible,
+.mapBtn:focus-visible,
+.shareBtn:focus-visible,
+.resolveBtn:focus-visible,
+.dismissBtn:focus-visible,
+.modalPrimaryAction:focus-visible,
+.modalSecondaryAction:focus-visible,
+.modalDangerAction:focus-visible,
+.secondaryInlineButton:focus-visible,
+.mapDetailsLink:focus-visible,
+.rowMenuBtn:focus-visible,
+.rowMenuItem:focus-visible,
+.modalCloseBtn:focus-visible,
+.searchInput:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(61, 9, 208, 0.14);
+}
+
+.mapSection {
+  border-radius: 24px;
+}
+
+.mapOverlay,
+.mapDetailsLink {
+  border-radius: 16px;
+  box-shadow: 0 16px 34px rgba(31, 22, 54, 0.13);
+}
+
+.mapOverlay {
+  border: 1px solid rgba(61, 9, 208, 0.1);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.mapOverlay svg {
+  color: #dc323f;
+}
+
+.mapOverlayValue {
+  color: #160f24;
+  font-weight: 850;
+}
+
+.mapInfoPanel {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(135deg, rgba(61, 9, 208, 0.9), rgba(224, 111, 41, 0.86));
+  box-shadow: 0 18px 45px rgba(31, 22, 54, 0.22);
+}
+
+.mapEmptyState {
+  background:
+    radial-gradient(circle at top, rgba(224, 111, 41, 0.1), transparent 45%),
+    #ffffff;
+  color: #6f647c;
+}
+
+.noAlertCard {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+.noAlertCard::before,
+.tableCard::before,
+.incidentModal::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 5px;
+  background: linear-gradient(90deg, #3d09d0, #e06f29, #dc323f, #e6ae12);
+}
+
+.noAlertIcon {
+  color: #e6ae12;
+}
+
+.historyHeader {
+  margin-bottom: 18px;
+}
+
+.historyTitle {
+  font-size: 27px;
+}
+
+.searchIcon {
+  color: #e06f29;
+}
+
+.searchInput {
+  min-height: 46px;
+  border: 1px solid rgba(61, 9, 208, 0.12);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #160f24;
+  font-weight: 650;
+}
+
+.searchInput:focus {
+  border-color: rgba(61, 9, 208, 0.5);
+  box-shadow: 0 0 0 4px rgba(61, 9, 208, 0.12);
+}
+
+.tableCard {
+  position: relative;
+  overflow: auto;
+  border-radius: 22px;
+}
+
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table thead th {
+  padding-top: 18px;
+  color: #5c4b78;
+  background: linear-gradient(135deg, rgba(245, 241, 255, 0.96), rgba(255, 248, 232, 0.72));
+  border-bottom: 1px solid rgba(61, 9, 208, 0.08);
+  font-weight: 900;
+}
+
+.table tbody td {
+  border-bottom: 1px solid rgba(61, 9, 208, 0.06);
+}
+
+.table tbody tr:hover {
+  background: rgba(255, 250, 246, 0.74);
+}
+
+.locationMapBtn {
+  padding: 4px 6px;
+  margin: -4px -6px;
+}
+
+.locationMapBtn:hover .locationPrimary,
+.locationMapHint {
+  color: #e06f29;
+}
+
+.statusBadge {
+  border-radius: 999px;
+  font-weight: 900;
+}
+
+.statusResolved {
+  border-color: rgba(230, 174, 18, 0.24);
+  background: #fff8e8;
+  color: #8d6504;
+}
+
+.statusDismissed {
+  border-color: rgba(61, 9, 208, 0.16);
+  background: #f5f1ff;
+  color: #3d09d0;
+}
+
+.statusActive {
+  border-color: rgba(220, 50, 63, 0.18);
+  background: #fff0f1;
+  color: #a92731;
+}
+
+.rowMenuBtn,
+.modalCloseBtn {
+  border: 1px solid rgba(61, 9, 208, 0.12);
+  border-radius: 12px;
+  background: #ffffff;
+  color: #3d09d0;
+}
+
+.rowMenuBtn:hover,
+.modalCloseBtn:hover {
+  border-color: rgba(224, 111, 41, 0.28);
+  background: #fffaf6;
+  color: #e06f29;
+}
+
+.rowMenuDropdown,
+.rowMenuBottomSheet {
+  border: 1px solid rgba(61, 9, 208, 0.1);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 18px 48px rgba(31, 22, 54, 0.18);
+}
+
+.rowMenuItem {
+  color: #281a40;
+  font-weight: 750;
+}
+
+.rowMenuItem:hover {
+  background: #f5f1ff;
+  color: #3d09d0;
+}
+
+.rowMenuDanger {
+  color: #a92731;
+}
+
+.rowMenuDanger:hover {
+  background: #fff0f1;
+  color: #dc323f;
+}
+
+.rowMenuOverlay {
+  background: rgba(22, 15, 36, 0.52);
+  backdrop-filter: blur(6px);
+}
+
+.bottomSheetHandle {
+  background: rgba(61, 9, 208, 0.18);
+}
+
+.emptyState,
+.loadingWrapper {
+  color: #6f647c;
+  font-weight: 650;
+}
+
+.modalOverlay {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(224, 111, 41, 0.2), transparent 34%),
+    rgba(22, 15, 36, 0.56);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.incidentModal {
+  position: relative;
+  overflow-x: hidden;
+  border-radius: 26px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 250, 246, 0.94) 48%, rgba(245, 241, 255, 0.9)),
+    #ffffff;
+}
+
+.modalHeader {
+  padding-top: 4px;
+}
+
+.modalEyebrow {
+  color: #dc323f;
+  font-weight: 900;
+}
+
+.modalTitle {
+  font-size: 30px;
+}
+
+.modalStatusRow {
+  border-bottom: 1px solid rgba(61, 9, 208, 0.08);
+}
+
+.detailSectionTitle {
+  color: #3d09d0;
+  font-weight: 900;
+}
+
+.detailSectionIcon {
+  color: #e06f29;
+}
+
+.modalFooter {
+  padding-top: 20px;
+  border-top: 1px solid rgba(61, 9, 208, 0.08);
+}
+
+@media (max-width: 1024px) {
+  .commandHeader {
+    width: calc(100% - 40px);
+  }
+}
+
+@media (max-width: 768px) {
+  .commandHeader {
+    width: calc(100% - 32px);
+    padding: 22px 18px;
+    border-radius: 22px;
+  }
+
+  .contentPad {
+    padding: 16px;
+  }
+
+  .criticalBanner,
+  .mapSection,
+  .noAlertCard,
+  .tableCard,
+  .incidentModal {
+    border-radius: 20px;
+  }
+
+  .modalTitle {
+    font-size: 25px;
+  }
+}
+
+@media (max-width: 520px) {
+  .commandHeader {
+    width: calc(100% - 24px);
+    margin-top: 12px;
+  }
+
+  .commandTitle {
+    font-size: 28px;
+  }
+
+  .bannerTop,
+  .bannerIdentity,
+  .incidentSummaryGrid,
+  .deviceStatsGrid,
+  .actionButtons {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .bannerDivider {
+    margin: 0 18px;
+  }
+}

@@ -27,19 +27,10 @@ function formatDuration(totalMinutes) {
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div
-      style={{
-        background: '#fff',
-        border: '1px solid #e5e7eb',
-        borderRadius: 8,
-        padding: '8px 12px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-        fontSize: 13,
-      }}
-    >
-      <div style={{ fontWeight: 600, color: '#374151', marginBottom: 2 }}>{label}</div>
-      <div style={{ color: '#6b7280' }}>
-        Activity: <strong style={{ color: '#e6ae12' }}>{payload[0].value}h</strong>
+    <div className={styles.chartTooltip}>
+      <div className={styles.chartTooltipLabel}>{label}</div>
+      <div className={styles.chartTooltipValue}>
+        Activity: <strong>{payload[0].value}h</strong>
       </div>
     </div>
   );
@@ -54,30 +45,21 @@ export default function HistoryActivityTrend({ data = [], totalMinutes = 0 }) {
       </div>
       <div className={styles.chartPlaceholder}>
         {data.length === 0 ? (
-          <div
-            style={{
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#9ca3af',
-              fontSize: 13,
-            }}
-          >
+          <div className={styles.emptyChart}>
             No activity data available
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(61, 9, 208, 0.08)" />
               <XAxis
                 dataKey="name"
-                tick={{ fontSize: 12, fill: '#9ca3af' }}
-                axisLine={{ stroke: '#e5e7eb' }}
+                tick={{ fontSize: 12, fill: '#8a7d9d' }}
+                axisLine={{ stroke: 'rgba(61, 9, 208, 0.12)' }}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fontSize: 12, fill: '#9ca3af' }}
+                tick={{ fontSize: 12, fill: '#8a7d9d' }}
                 axisLine={false}
                 tickLine={false}
                 domain={[0, 'auto']}

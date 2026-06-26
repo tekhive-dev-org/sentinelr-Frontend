@@ -22,8 +22,6 @@ function formatEventTime(dateStr) {
 }
 
 export default function GeofenceActivity({ events = [], onViewAll }) {
-  if (events.length === 0) return null;
-
   return (
     <div className={styles.activitySection}>
       <div className={styles.activityHeader}>
@@ -33,7 +31,11 @@ export default function GeofenceActivity({ events = [], onViewAll }) {
         </button>
       </div>
       <div className={styles.activityList}>
-        {events.map((event) => {
+        {events.length === 0 ? (
+          <div className={styles.activityEmpty}>
+            No recent geofence activity yet.
+          </div>
+        ) : events.map((event) => {
           const isEntry = event.type === 'entry';
           return (
             <div key={event.id} className={styles.activityItem}>

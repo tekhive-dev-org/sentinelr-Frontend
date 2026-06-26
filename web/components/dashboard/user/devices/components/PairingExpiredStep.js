@@ -6,7 +6,7 @@ export default function PairingExpiredStep({ error, onGenerateNewCode, onCancel 
   return (
     <div className={styles.pairingCard}>
       <div className={styles.expiredIcon}>
-        <ErrorOutlineIcon style={{ fontSize: 36, color: "#dc323f" }} />
+        <ErrorOutlineIcon className={styles.stateIcon} />
       </div>
 
       <h2 className={styles.cardTitle}>Code Expired</h2>
@@ -16,17 +16,7 @@ export default function PairingExpiredStep({ error, onGenerateNewCode, onCancel 
       </p>
 
       {error && (
-        <div
-          className={styles.errorMessage}
-          style={{
-            color: "#dc323f",
-            backgroundColor: "#ffe1e4",
-            padding: "12px",
-            borderRadius: "8px",
-            marginBottom: "16px",
-            fontSize: "14px",
-          }}
-        >
+        <div className={styles.errorMessage}>
           {error}
         </div>
       )}
@@ -36,9 +26,8 @@ export default function PairingExpiredStep({ error, onGenerateNewCode, onCancel 
       </button>
 
       <button
-        className={styles.secondaryButton}
+        className={`${styles.secondaryButton} ${styles.stackedButton}`}
         onClick={onCancel}
-        style={{ marginTop: "12px", width: "100%" }}
       >
         Cancel
       </button>

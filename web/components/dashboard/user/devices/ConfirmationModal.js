@@ -43,7 +43,7 @@ export default function ConfirmationModal({
           disabled={isConfirming}
           aria-label="Close confirmation modal"
         >
-          <CloseIcon style={{ fontSize: 18 }} />
+          <CloseIcon className={styles.closeIcon} />
         </button>
 
         <div className={styles.modalHeader}>

@@ -47,61 +47,24 @@ function PlaceItem({ event }) {
       <div className={`${styles.timelineNode} ${styles.nodeBlue}`}>
         <LocationOnIcon />
       </div>
-      <div
-        className={styles.timelineEvent}
-        style={{ borderColor: '#ede7ff', background: '#fbf9ff' }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            gap: 8,
-            marginBottom: 5,
-          }}
-        >
-          <span
-            style={{
-              fontWeight: 700,
-              fontSize: 13,
-              color: '#111827',
-              lineHeight: 1.3,
-            }}
-          >
+      <div className={`${styles.timelineEvent} ${styles.timelinePlaceEvent}`}>
+        <div className={styles.placeEventHeader}>
+          <span className={styles.placeEventName}>
             {event.name}
           </span>
           {event.duration && (
-            <span
-              style={{
-                fontSize: 11,
-                fontWeight: 600,
-                color: '#3d09d0',
-                background: '#ede7ff',
-                borderRadius: 5,
-                padding: '2px 7px',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-              }}
-            >
+            <span className={styles.placeDuration}>
               {event.duration}
             </span>
           )}
         </div>
-        <div
-          style={{
-            fontSize: 12,
-            color: '#6b7280',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-          }}
-        >
+        <div className={styles.placeTimeRow}>
           <span>{timeLabel}</span>
           {event.date && (
-            <span style={{ color: '#d1d5db' }}>·</span>
+            <span className={styles.timelineSeparator}>·</span>
           )}
           {event.date && (
-            <span style={{ color: '#9ca3af' }}>{formatDate(event.date)}</span>
+            <span className={styles.timelineDate}>{formatDate(event.date)}</span>
           )}
         </div>
       </div>
@@ -113,27 +76,16 @@ function PlaceItem({ event }) {
 function TravelItem({ event }) {
   const parts = [event.distance, event.duration].filter(Boolean).join(' · ');
   return (
-    <div className={styles.timelineItem} style={{ paddingBottom: 12 }}>
-      <div
-        className={`${styles.timelineNode} ${styles.nodeGray}`}
-        style={{ background: '#f3f4f6' }}
-      >
-        <DirectionsCarIcon style={{ fontSize: 10, color: '#9ca3af' }} />
+    <div className={`${styles.timelineItem} ${styles.timelineTravelItem}`}>
+      <div className={`${styles.timelineNode} ${styles.nodeGray}`}>
+        <DirectionsCarIcon className={styles.travelIcon} />
       </div>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 5,
-          paddingTop: 1,
-          flexWrap: 'wrap',
-        }}
-      >
-        <span style={{ fontSize: 12, color: '#9ca3af', fontWeight: 500 }}>
+      <div className={styles.travelContent}>
+        <span className={styles.travelParts}>
           {parts}
         </span>
         {event.timeRange && (
-          <span style={{ fontSize: 11, color: '#d1d5db' }}>
+          <span className={styles.travelTimeRange}>
             · {event.timeRange}
           </span>
         )}
@@ -175,11 +127,11 @@ export default function HistoryTimeline({ events = [], loading = false, error = 
         {loading ? (
           <CardSkeleton variant="compact" count={4} />
         ) : error ? (
-          <p style={{ fontSize: 13, color: '#dc323f', textAlign: 'center', marginTop: 24 }}>
+          <p className={`${styles.timelineState} ${styles.timelineStateError}`}>
             {error}
           </p>
         ) : events.length === 0 ? (
-          <p style={{ fontSize: 13, color: '#9ca3af', textAlign: 'center', marginTop: 24 }}>
+          <p className={styles.timelineState}>
             No timeline events for the selected period.
           </p>
         ) : (

@@ -84,7 +84,7 @@ export default function GeofenceMap({ geofences = [], selectedZoneId }) {
 
   if (!isLoaded) {
     return (
-      <div className={styles.mapEmptyState} style={{ color: '#6b7280' }}>
+      <div className={styles.mapEmptyState}>
         Loading map…
       </div>
     );

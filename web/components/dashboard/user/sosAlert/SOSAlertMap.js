@@ -71,7 +71,7 @@ export default function SOSAlertMap({ alert, onOpenMap, onViewDetails }) {
           <strong className={styles.mapInfoValue}>{formatDateTime(alert.lastUpdatedAt)}</strong>
         </div>
         <button type="button" className={styles.secondaryInlineButton} onClick={() => onViewDetails(alert)}>
-          <AccessTimeIcon style={{ fontSize: 16 }} />
+          <AccessTimeIcon className={styles.inlineActionIcon} />
           View full timeline
         </button>
       </div>

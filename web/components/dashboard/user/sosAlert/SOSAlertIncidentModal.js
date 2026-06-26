@@ -54,7 +54,7 @@ export default function SOSAlertIncidentModal({
           </div>
 
           <button type="button" className={styles.modalCloseBtn} onClick={onClose} aria-label="Close incident details">
-            <CloseIcon style={{ fontSize: 18 }} />
+            <CloseIcon className={styles.modalIcon} />
           </button>
         </div>
 
@@ -70,7 +70,7 @@ export default function SOSAlertIncidentModal({
         <div className={styles.modalSectionGrid}>
           <section className={styles.modalSection}>
             <div className={styles.detailSectionTitle}>
-              <PersonOutlineOutlinedIcon style={{ fontSize: 18 }} />
+              <PersonOutlineOutlinedIcon className={styles.detailSectionIcon} />
               Member context
             </div>
             <div className={styles.detailList}>
@@ -95,7 +95,7 @@ export default function SOSAlertIncidentModal({
 
           <section className={styles.modalSection}>
             <div className={styles.detailSectionTitle}>
-              <SmartphoneOutlinedIcon style={{ fontSize: 18 }} />
+              <SmartphoneOutlinedIcon className={styles.detailSectionIcon} />
               Device telemetry
             </div>
             <div className={styles.detailList}>
@@ -120,7 +120,7 @@ export default function SOSAlertIncidentModal({
 
           <section className={styles.modalSection}>
             <div className={styles.detailSectionTitle}>
-              <LocationOnOutlinedIcon style={{ fontSize: 18 }} />
+              <LocationOnOutlinedIcon className={styles.detailSectionIcon} />
               Location evidence
             </div>
             <div className={styles.detailList}>
@@ -145,7 +145,7 @@ export default function SOSAlertIncidentModal({
 
           <section className={styles.modalSection}>
             <div className={styles.detailSectionTitle}>
-              <AccessTimeIcon style={{ fontSize: 18 }} />
+              <AccessTimeIcon className={styles.detailSectionIcon} />
               Incident timeline
             </div>
             <div className={styles.detailList}>

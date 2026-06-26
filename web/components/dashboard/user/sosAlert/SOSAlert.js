@@ -49,7 +49,7 @@ export default function SOSAlert() {
             return (
               <div key={stat.label} className={styles.commandStatCard}>
                 <div className={styles.commandStatIcon}>
-                  <StatIcon style={{ fontSize: 18 }} />
+                  <StatIcon className={styles.commandStatSvg} />
                 </div>
                 <div className={styles.commandStatCopy}>
                   <span className={styles.commandStatLabel}>{stat.label}</span>

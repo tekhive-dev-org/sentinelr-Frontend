@@ -1099,3 +1099,560 @@
     opacity: 1;
   }
 }
+
+/* Premium Device Page Refresh */
+.container {
+  width: 100%;
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 0 24px 48px !important;
+}
+
+.headerActions {
+  margin-bottom: 18px;
+}
+
+.addDevicesBtn,
+.addButton,
+.btnPrimary,
+.pairDeviceBtn {
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #3d09d0 0%, #e06f29 100%);
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0;
+  box-shadow: 0 14px 28px rgba(61, 9, 208, 0.18);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.addDevicesBtn:hover,
+.addButton:hover,
+.btnPrimary:hover,
+.pairDeviceBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px rgba(224, 111, 41, 0.22);
+  filter: saturate(1.06);
+}
+
+.addDevicesBtn:focus-visible,
+.addButton:focus-visible,
+.btnPrimary:focus-visible,
+.btnSecondary:focus-visible,
+.tab:focus-visible,
+.searchInput:focus-visible,
+.statusSelect:focus-visible,
+.formInput:focus-visible,
+.formSelect:focus-visible,
+.tableActionBtn:focus-visible,
+.modalClose:focus-visible,
+.notificationClose:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(61, 9, 208, 0.14);
+}
+
+.addButton:disabled,
+.btnPrimary:disabled,
+.btnSecondary:disabled,
+.pairDeviceBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+  transform: none;
+  box-shadow: none;
+}
+
+.warningBanner {
+  border: 1px solid rgba(230, 174, 18, 0.28);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(255, 248, 232, 0.96), rgba(245, 241, 255, 0.7)),
+    #ffffff;
+  box-shadow: 0 14px 28px rgba(230, 174, 18, 0.09);
+}
+
+.warningContent {
+  color: #6b4b00;
+  font-weight: 650;
+}
+
+.warningIcon {
+  color: #e6ae12;
+}
+
+.warningClose {
+  border: 1px solid rgba(230, 174, 18, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #b98b0e;
+}
+
+.warningClose:hover {
+  background: #fff0cf;
+}
+
+.warningCloseIcon,
+.modalCloseIcon,
+.tableActionIcon,
+.pairDeviceIcon,
+.limitBadgeIcon {
+  font-size: 18px !important;
+}
+
+.listCard,
+.modal,
+.userDetailModal {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(61, 9, 208, 0.1);
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 250, 246, 0.92) 46%, rgba(245, 241, 255, 0.86)),
+    #ffffff;
+  box-shadow:
+    0 24px 70px rgba(31, 22, 54, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.listCard::before,
+.modal::before,
+.userDetailModal::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 5px;
+  background: linear-gradient(90deg, #3d09d0, #e06f29, #dc323f, #e6ae12);
+}
+
+.listCard {
+  padding: 28px;
+  min-height: 520px;
+}
+
+.listTitle,
+.modalTitle,
+.userDetailName,
+.activeControlsTitle {
+  font-family: "Playfair Display", serif;
+  color: #160f24;
+}
+
+.listTitle {
+  margin-bottom: 22px;
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.controlsRow {
+  align-items: stretch;
+  padding: 12px;
+  border: 1px solid rgba(61, 9, 208, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.tabs {
+  padding: 4px;
+  border: 1px solid rgba(61, 9, 208, 0.1);
+  border-radius: 999px;
+  background: #f8f6ff;
+}
+
+.tab {
+  min-height: 42px;
+  padding: 8px 20px;
+  border: 0;
+  border-radius: 999px;
+  color: #6b5d82;
+  font-weight: 800;
+  background: transparent;
+}
+
+.tab:hover {
+  background: rgba(224, 111, 41, 0.1);
+  color: #3d09d0;
+}
+
+.tabActive,
+.tabActive:hover {
+  background: linear-gradient(135deg, #3d09d0, #e06f29);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(61, 9, 208, 0.2);
+}
+
+.controlsRight {
+  gap: 10px;
+}
+
+.searchWrapper {
+  min-width: 280px;
+}
+
+.searchIcon {
+  color: #e06f29;
+}
+
+.searchInput,
+.statusSelect,
+.formInput,
+.formSelect,
+.countryCodeSelect {
+  min-height: 44px;
+  border: 1px solid rgba(61, 9, 208, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #160f24;
+  font-weight: 650;
+}
+
+.searchInput:focus,
+.statusSelect:focus,
+.formInput:focus,
+.formSelect:focus,
+.countryCodeSelect:focus {
+  border-color: rgba(61, 9, 208, 0.5);
+  box-shadow: 0 0 0 4px rgba(61, 9, 208, 0.12);
+}
+
+.searchInput::placeholder,
+.formInput::placeholder {
+  color: #9a8fad;
+}
+
+.emptyState {
+  min-height: 330px;
+  padding: 46px 20px;
+  border: 1px dashed rgba(61, 9, 208, 0.2);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top, rgba(224, 111, 41, 0.1), transparent 42%),
+    rgba(255, 255, 255, 0.58);
+}
+
+.emptyIllustration {
+  padding: 18px;
+  border-radius: 28px;
+  background: #f5f1ff;
+  box-shadow: inset 0 0 0 1px rgba(61, 9, 208, 0.1);
+}
+
+.emptyTitle {
+  font-family: "Playfair Display", serif;
+  color: #160f24;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.emptyDescription,
+.deviceMeta,
+.userRole,
+.userDetailEmail,
+.activeControlsSubtitle,
+.controlDescription {
+  color: #6f647c;
+}
+
+.devicesTableContainer {
+  border: 1px solid rgba(61, 9, 208, 0.08);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.74);
+  overflow-x: auto;
+}
+
+.devicesTable {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.devicesTable thead tr {
+  border-bottom: 0;
+  background: linear-gradient(135deg, rgba(245, 241, 255, 0.96), rgba(255, 248, 232, 0.74));
+}
+
+.devicesTable th {
+  padding: 14px 18px;
+  color: #5c4b78;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.devicesTable td {
+  padding: 17px 18px;
+  color: #271a3d;
+  font-weight: 650;
+}
+
+.devicesTable tbody tr {
+  border-bottom: 1px solid rgba(61, 9, 208, 0.06);
+}
+
+.devicesTable tbody tr:hover {
+  background: rgba(255, 250, 246, 0.76);
+}
+
+.deviceNameCell,
+.deviceName,
+.userName,
+.deviceNameBold,
+.controlTitle {
+  color: #160f24;
+  font-weight: 800;
+}
+
+.statusBadge,
+.deviceStatus,
+.limitBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+.statusBadge,
+.deviceStatus {
+  padding: 6px 12px;
+}
+
+.statusOnlineBadge,
+.statusOnline {
+  border: 1px solid rgba(230, 174, 18, 0.24);
+  background: #fff8e8 !important;
+  color: #8d6504 !important;
+}
+
+.statusOfflineBadge,
+.statusOffline {
+  border: 1px solid rgba(220, 50, 63, 0.16);
+  background: #fff0f1 !important;
+  color: #a92731 !important;
+}
+
+.limitBadge {
+  padding: 6px 10px;
+  border: 1px solid rgba(230, 174, 18, 0.24);
+  background: #fff8e8;
+  color: #8d6504;
+}
+
+.tableMetaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 10px 0px 0px 4px;
+}
+
+.tableCountText {
+  color: #6f647c;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.actionCell {
+  text-align: right;
+}
+
+.tableActionBtn,
+.deviceActionBtn,
+.modalClose,
+.notificationClose {
+  border: 1px solid rgba(61, 9, 208, 0.1);
+  border-radius: 12px;
+  background: #ffffff;
+  color: #3d09d0;
+}
+
+.tableActionBtn:hover,
+.deviceActionBtn:hover,
+.modalClose:hover,
+.notificationClose:hover {
+  background: #f5f1ff;
+  border-color: rgba(61, 9, 208, 0.22);
+  color: #e06f29;
+}
+
+.deviceCard,
+.userCard,
+.controlItem {
+  border: 1px solid rgba(61, 9, 208, 0.09);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 16px 36px rgba(31, 22, 54, 0.07);
+}
+
+.deviceCard:hover,
+.userCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(224, 111, 41, 0.22);
+  box-shadow: 0 22px 46px rgba(31, 22, 54, 0.1);
+}
+
+.deviceIconWrapper,
+.userAvatar,
+.userDetailAvatar {
+  background:
+    linear-gradient(135deg, rgba(61, 9, 208, 0.12), rgba(224, 111, 41, 0.14)),
+    #ffffff;
+  color: #3d09d0;
+  box-shadow: inset 0 0 0 1px rgba(61, 9, 208, 0.1);
+}
+
+.deviceIconWrapper svg {
+  color: #3d09d0;
+}
+
+.modalOverlay {
+  background:
+    radial-gradient(circle at 50% 16%, rgba(224, 111, 41, 0.2), transparent 34%),
+    rgba(22, 15, 36, 0.54);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.modal {
+  max-width: 500px;
+}
+
+.modalHeader {
+  padding: 24px 26px 18px;
+  border-bottom: 1px solid rgba(61, 9, 208, 0.08);
+}
+
+.modalTitle {
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.modalBody {
+  padding: 24px 26px;
+}
+
+.modalFooter {
+  padding: 18px 26px 24px;
+  border-top: 1px solid rgba(61, 9, 208, 0.08);
+  background: linear-gradient(180deg, rgba(245, 241, 255, 0.24), rgba(255, 250, 246, 0.64));
+}
+
+.formLabel {
+  color: #35274d;
+  font-weight: 850;
+}
+
+.formError {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(220, 50, 63, 0.18);
+  border-radius: 14px;
+  background: #fff0f1;
+  color: #a92731;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.phoneInputGroup {
+  display: flex;
+  gap: 10px;
+}
+
+.countryCodeSelect {
+  width: 112px;
+  flex: 0 0 112px;
+}
+
+.btnSecondary {
+  border: 1px solid rgba(61, 9, 208, 0.14);
+  border-radius: 14px;
+  background: #ffffff;
+  color: #3d09d0;
+  font-weight: 800;
+}
+
+.btnSecondary:hover {
+  border-color: rgba(224, 111, 41, 0.26);
+  background: #fffaf6;
+  color: #e06f29;
+}
+
+.userDetailModal {
+  max-width: 590px;
+  padding: 28px;
+}
+
+.userDetailHeaderContainer {
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(61, 9, 208, 0.08);
+}
+
+.userDetailName {
+  font-size: 28px;
+}
+
+.userDetailDivider {
+  background: rgba(61, 9, 208, 0.08);
+}
+
+.controlItem {
+  padding: 16px;
+}
+
+.notification {
+  border: 1px solid rgba(61, 9, 208, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 18px 45px rgba(31, 22, 54, 0.14);
+}
+
+.notificationSuccess {
+  border-left-color: #e6ae12;
+}
+
+.notificationError {
+  border-left-color: #dc323f;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 14px 32px !important;
+  }
+
+  .listCard {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .controlsRow {
+    padding: 10px;
+  }
+
+  .tabs {
+    border-radius: 18px;
+  }
+
+  .tab {
+    min-height: 40px;
+  }
+
+  .tableMetaRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .modalFooter {
+    gap: 10px;
+  }
+
+  .phoneInputGroup {
+    flex-direction: column;
+  }
+
+  .countryCodeSelect {
+    width: 100%;
+    flex-basis: auto;
+  }
+}

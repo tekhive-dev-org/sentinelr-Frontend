@@ -90,7 +90,7 @@ export default function UserDetailModal({
                   className={styles.pairDeviceBtn}
                   onClick={() => onPairDevice && onPairDevice(user)}
                 >
-                  <LinkIcon style={{ fontSize: 16 }} />
+                  <LinkIcon className={styles.pairDeviceIcon} />
                   Pair Device
                 </button>
               )}

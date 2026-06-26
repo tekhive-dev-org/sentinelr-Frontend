@@ -30,20 +30,18 @@ export default function DeviceActivityOverview({ selectedDevice = null }) {
   const networkVal = selectedDevice.networkType ?? selectedDevice.network_type ?? 'WiFi';
   const platform = selectedDevice.platform ?? selectedDevice.type ?? 'Android';
   const lastSeenStr = selectedDevice.lastSeen ?? selectedDevice.updatedAt ?? null;
+  const isLowBattery = batteryVal != null && batteryVal < 20;
 
 
   return (
     <div className={styles.telemetryGrid}>
       {/* Battery Status */}
       <div className={styles.telemetryCard}>
-        <div className={styles.telemetryIconWrapper} style={{ 
-          background: batteryVal != null && batteryVal < 20 ? 'var(--clr-danger-soft)' : 'var(--clr-success-soft)',
-          color: batteryVal != null && batteryVal < 20 ? 'var(--clr-danger)' : 'var(--clr-success)'
-        }}>
-          {batteryVal != null && batteryVal < 20 ? (
-            <BatteryAlertIcon sx={{ fontSize: 22 }} />
+        <div className={`${styles.telemetryIconWrapper} ${isLowBattery ? styles.telemetryIconDanger : styles.telemetryIconYellow}`}>
+          {isLowBattery ? (
+            <BatteryAlertIcon />
           ) : (
-            <BatteryChargingFullIcon sx={{ fontSize: 22 }} />
+            <BatteryChargingFullIcon />
           )}
         </div>
         <div className={styles.telemetryDetails}>
@@ -57,12 +55,12 @@ export default function DeviceActivityOverview({ selectedDevice = null }) {
 
       {/* Network Type */}
       <div className={styles.telemetryCard}>
-        <div className={styles.telemetryIconWrapper} style={{ background: '#f5f1ff', color: '#3d09d0' }}>
-          <WifiIcon sx={{ fontSize: 22 }} />
+        <div className={`${styles.telemetryIconWrapper} ${styles.telemetryIconPurple}`}>
+          <WifiIcon />
         </div>
         <div className={styles.telemetryDetails}>
           <span className={styles.telemetryLabel}>Network Connection</span>
-          <span className={styles.telemetryValue} style={{ textTransform: 'capitalize' }}>
+          <span className={`${styles.telemetryValue} ${styles.capitalizeText}`}>
             {networkVal}
           </span>
         </div>
@@ -70,8 +68,8 @@ export default function DeviceActivityOverview({ selectedDevice = null }) {
 
       {/* OS & Platform */}
       <div className={styles.telemetryCard}>
-        <div className={styles.telemetryIconWrapper} style={{ background: '#f5f3ff', color: '#3d09d0' }}>
-          <PhoneAndroidIcon sx={{ fontSize: 22 }} />
+        <div className={`${styles.telemetryIconWrapper} ${styles.telemetryIconOrange}`}>
+          <PhoneAndroidIcon />
         </div>
         <div className={styles.telemetryDetails}>
           <span className={styles.telemetryLabel}>OS Platform</span>
@@ -83,8 +81,8 @@ export default function DeviceActivityOverview({ selectedDevice = null }) {
 
       {/* Last Seen / Synced */}
       <div className={styles.telemetryCard}>
-        <div className={styles.telemetryIconWrapper} style={{ background: '#fff8e8', color: '#e6ae12' }}>
-          <UpdateIcon sx={{ fontSize: 22 }} />
+        <div className={`${styles.telemetryIconWrapper} ${styles.telemetryIconYellow}`}>
+          <UpdateIcon />
         </div>
         <div className={styles.telemetryDetails}>
           <span className={styles.telemetryLabel}>Last Active</span>

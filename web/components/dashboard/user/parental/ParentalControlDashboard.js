@@ -68,7 +68,7 @@ export default function ParentalControlDashboard() {
     return (
       <div className={styles.container}>
         <div className={styles.emptyState}>
-          <div className={styles.emptyIcon}><PeopleAltRoundedIcon sx={{ fontSize: 56, color: '#d1d5db' }} /></div>
+          <div className={styles.emptyIcon}><PeopleAltRoundedIcon className={styles.emptyIconSvg} /></div>
           <h3 className={styles.emptyTitle}>No Family Members Found</h3>
           <p className={styles.emptySubtitle}>
             Add family members and pair their devices to start managing parental controls.
@@ -85,7 +85,7 @@ export default function ParentalControlDashboard() {
         <div className={styles.noSelectionContainer}>
           <div className={styles.noSelectionHeader}>
             <div className={styles.emptyIcon}>
-              <PeopleAltRoundedIcon sx={{ fontSize: 32, color: 'var(--clr-primary)' }} />
+              <PeopleAltRoundedIcon className={styles.emptyIconSmallSvg} />
             </div>
             <h3 className={styles.noSelectionTitle}>Family Protection Center</h3>
             <p className={styles.noSelectionSubtitle}>

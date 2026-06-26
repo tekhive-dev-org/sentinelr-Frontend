@@ -53,20 +53,8 @@ export default function DevicesList({
         </p>
 
         {isAtDeviceLimit ? (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: "13px",
-              color: "#b98b0e",
-              backgroundColor: "#fff8e8",
-              border: "1px solid #f3d476",
-              borderRadius: "8px",
-              padding: "8px 16px",
-            }}
-          >
-            <BlockIcon style={{ fontSize: 15 }} />
+          <div className={styles.limitBadge}>
+            <BlockIcon className={styles.limitBadgeIcon} />
             Device limit reached ({maxDevices})
           </div>
         ) : (
@@ -93,36 +81,16 @@ export default function DevicesList({
   return (
     <div className={styles.devicesTableContainer}>
       {/* Header row with device count + limit badge */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "12px",
-          padding: "0 4px",
-        }}
-      >
-        <span style={{ fontSize: "13px", color: "#6b7280" }}>
+      <div className={styles.tableMetaRow}>
+        <span className={styles.tableCountText}>
           {devices.length}
           {maxDevices != null ? ` / ${maxDevices}` : ""} device
           {devices.length !== 1 ? "s" : ""}
         </span>
 
         {isAtDeviceLimit && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: "12px",
-              color: "#b98b0e",
-              backgroundColor: "#fff8e8",
-              border: "1px solid #f3d476",
-              borderRadius: "8px",
-              padding: "6px 12px",
-            }}
-          >
-            <BlockIcon style={{ fontSize: 15 }} />
+          <div className={styles.limitBadge}>
+            <BlockIcon className={styles.limitBadgeIcon} />
             Device limit reached ({maxDevices})
           </div>
         )}
@@ -171,12 +139,12 @@ export default function DevicesList({
                     : "Unpaired"}
                 </span>
               </td>
-              <td style={{ position: "relative" }}>
+              <td className={styles.actionCell}>
                 <button
                   className={styles.tableActionBtn}
                   onClick={() => onDeviceClick && onDeviceClick(device)}
                 >
-                  <MoreVertIcon style={{ fontSize: 18 }} />
+                  <MoreVertIcon className={styles.tableActionIcon} />
                 </button>
               </td>
             </tr>

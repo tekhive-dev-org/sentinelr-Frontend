@@ -12,7 +12,7 @@ export default function PairingConnectingStep({
     <div className={styles.connectingContainer}>
       <div className={styles.deviceIconLarge}>
         <div className={styles.deviceIconRing}>
-          <SmartphoneIcon style={{ fontSize: 40, color: "#1F2937" }} />
+          <SmartphoneIcon className={styles.connectingDeviceIcon} />
         </div>
         <div className={styles.signalWaves}>
           <span></span>

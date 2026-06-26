@@ -138,7 +138,7 @@ export default function GeofenceFormModal({ isOpen, onClose, onSave, onDelete, e
             {isEditing ? 'Edit Geofence' : 'New Geofence'}
           </h2>
           <button className={styles.modalCloseBtn} onClick={onClose}>
-            <CloseIcon style={{ fontSize: 20 }} />
+            <CloseIcon className={styles.modalCloseIcon} />
           </button>
         </div>
 
@@ -254,14 +254,13 @@ export default function GeofenceFormModal({ isOpen, onClose, onSave, onDelete, e
             <div className={styles.formGroup}>
               <label className={styles.formLabel}>Assign Family Members</label>
               <select
-                className={styles.formSelect}
+                className={`${styles.formSelect} ${styles.memberSelect}`}
                 multiple
                 value={form.assignedUserIds.map(String)}
                 onChange={(e) => {
                   const selected = Array.from(e.target.selectedOptions, (opt) => Number(opt.value));
                   handleChange('assignedUserIds', selected);
                 }}
-                style={{ minHeight: 90 }}
               >
                 {familyMembers.map((m) => (
                   <option key={m.id} value={m.id}>

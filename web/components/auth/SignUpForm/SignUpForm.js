@@ -35,7 +35,7 @@ export default function SignUpForm() {
             src="/assets/images/lock.svg"
             alt="Security"
             fill
-            style={{ objectFit: "cover" }}
+            className={styles.authImage}
             priority
           />
         </div>
@@ -168,13 +168,7 @@ export default function SignUpForm() {
                 />
                 {formik.touched.confirmPassword &&
                   formik.errors.confirmPassword && (
-                    <div
-                      style={{
-                        color: "#e53935",
-                        fontSize: "12px",
-                        marginTop: "4px",
-                      }}
-                    >
+                    <div className={styles.errorText}>
                       {formik.errors.confirmPassword}
                     </div>
                   )}

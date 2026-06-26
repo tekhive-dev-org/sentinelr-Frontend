@@ -82,7 +82,7 @@ export default function HistoryStatCards({ stats = {}, loading = false }) {
                   onClick={() => setOpenMenu(openMenu === cfg.key ? null : cfg.key)}
                   aria-label={`${cfg.title} options`}
                 >
-                  <MoreVertIcon style={{ fontSize: 18 }} />
+                  <MoreVertIcon className={styles.menuIcon} />
                 </button>
                 {openMenu === cfg.key && (
                   <div className={styles.dropdownMenu}>

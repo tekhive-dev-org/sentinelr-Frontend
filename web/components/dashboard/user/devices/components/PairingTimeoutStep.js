@@ -6,7 +6,7 @@ export default function PairingTimeoutStep({ error, onTryAgain, onCancel }) {
   return (
     <div className={styles.pairingCard}>
       <div className={styles.timeoutIcon}>
-        <WifiOffIcon style={{ fontSize: 36, color: "#F59E0B" }} />
+        <WifiOffIcon className={styles.stateIcon} />
       </div>
 
       <h2 className={styles.cardTitle}>Pairing Timed Out</h2>
@@ -16,17 +16,7 @@ export default function PairingTimeoutStep({ error, onTryAgain, onCancel }) {
       </p>
 
       {error && (
-        <div
-          className={styles.errorMessage}
-          style={{
-            color: "#dc323f",
-            backgroundColor: "#ffe1e4",
-            padding: "12px",
-            borderRadius: "8px",
-            marginBottom: "16px",
-            fontSize: "14px",
-          }}
-        >
+        <div className={styles.errorMessage}>
           {error}
         </div>
       )}
@@ -36,9 +26,8 @@ export default function PairingTimeoutStep({ error, onTryAgain, onCancel }) {
       </button>
 
       <button
-        className={styles.secondaryButton}
+        className={`${styles.secondaryButton} ${styles.stackedButton}`}
         onClick={onCancel}
-        style={{ marginTop: "12px", width: "100%" }}
       >
         Cancel
       </button>

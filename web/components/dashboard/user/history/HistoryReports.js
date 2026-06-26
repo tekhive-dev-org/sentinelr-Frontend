@@ -28,18 +28,7 @@ const LiveLocationMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div
-        style={{
-          height: '260px',
-          background: '#eef2f6',
-          borderRadius: '8px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#9ca3af',
-          fontSize: '13px',
-        }}
-      >
+      <div className={styles.mapSkeleton}>
         Loading map…
       </div>
     ),

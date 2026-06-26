@@ -18,8 +18,8 @@ export default function QuickActions({
     <div className={styles.card}>
       <div className={styles.cardHeader}>
         <span className={styles.cardTitle}>
-          <span className={styles.cardTitleIcon} style={{ background: '#fff0f1', color: '#dc323f' }}>
-            <WarningAmberRoundedIcon sx={{ fontSize: 18 }} />
+          <span className={`${styles.cardTitleIcon} ${styles.iconRed}`}>
+            <WarningAmberRoundedIcon />
           </span>
           Quick Protection Actions
         </span>
@@ -35,19 +35,19 @@ export default function QuickActions({
         >
           {isFrozen ? (
             <>
-              <LockOpenRoundedIcon sx={{ fontSize: 18 }} />
+              <LockOpenRoundedIcon />
               UNFREEZE DEVICE
             </>
           ) : (
             <>
-              <LockRoundedIcon sx={{ fontSize: 18 }} />
+              <LockRoundedIcon />
               FREEZE DEVICE
             </>
           )}
         </button>
         
         <button className={styles.bonusBtn} onClick={handleBonusHour}>
-          <MoreTimeRoundedIcon sx={{ fontSize: 18 }} /> Grant Bonus Hour (+1h)
+          <MoreTimeRoundedIcon /> Grant Bonus Hour (+1h)
         </button>
       </div>
     </div>

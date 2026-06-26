@@ -94,7 +94,7 @@ export default function ResetPassword() {
             src="/assets/images/lock.svg" 
             alt="Security" 
             fill
-            style={{ objectFit: 'cover' }}
+            className={styles.authImage}
             priority
           />
         </div>

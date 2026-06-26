@@ -1,5 +1,4 @@
 import React from 'react';
-import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import styles from '../ParentalControl.module.css';
 
 export default function ChildProfileSummary({
@@ -52,46 +51,6 @@ export default function ChildProfileSummary({
           </button>
         </div>
       </div>
-
-      {/* ── Child Selector Floating Badge ─────────────────────────────── */}
-      {/* {members.length > 0 && (
-        <>
-          <div
-            className={styles.childSelector}
-            onClick={() => setShowChildDropdown(!showChildDropdown)}
-          >
-            <div className={styles.childAvatar}>
-              {selectedMember.name?.charAt(0)?.toUpperCase() || '?'}
-            </div>
-            <div className={styles.childSelectorInfo}>
-              <span className={styles.childSelectorName}>{selectedMember.name}</span>
-              <span className={styles.childSelectorEmail}>
-                {selectedDevice?.name || 'Select a paired device'}
-              </span>
-            </div>
-            <ChevronRightRoundedIcon sx={{ fontSize: 20, color: '#9ca3af' }} />
-          </div>
-
-          {showChildDropdown && (
-            <div className={styles.childDropdown}>
-              {members.map((m) => (
-                <button
-                  key={m.userId}
-                  className={`${styles.childDropdownItem} ${
-                    m.userId === selectedMember.userId ? styles.childDropdownItemActive : ''
-                  }`}
-                  onClick={() => handleSelectMember(m)}
-                >
-                  <div className={styles.childAvatar} style={{ width: 28, height: 28, fontSize: 12 }}>
-                    {m.name?.charAt(0)?.toUpperCase() || '?'}
-                  </div>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>{m.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </>
-      )} */}
     </div>
   );
 }

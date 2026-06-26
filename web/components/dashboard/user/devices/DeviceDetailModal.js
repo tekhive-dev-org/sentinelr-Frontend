@@ -16,14 +16,13 @@ import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import LinkIcon from "@mui/icons-material/Link";
 
 const DeviceIcon = ({ type, platform }) => {
-  const sz = { fontSize: 30 };
-  if (type === "Phone" && platform === "iOS") return <AppleIcon style={sz} />;
-  if (type === "Phone" && platform === "Android") return <AndroidIcon style={sz} />;
-  if (type === "Phone") return <SmartphoneIcon style={sz} />;
-  if (type === "Tablet") return <TabletIcon style={sz} />;
-  if (type === "Laptop") return <LaptopIcon style={sz} />;
-  if (type === "Watch") return <WatchIcon style={sz} />;
-  return <RouterIcon style={sz} />;
+  if (type === "Phone" && platform === "iOS") return <AppleIcon className={s.deviceHeroIcon} />;
+  if (type === "Phone" && platform === "Android") return <AndroidIcon className={s.deviceHeroIcon} />;
+  if (type === "Phone") return <SmartphoneIcon className={s.deviceHeroIcon} />;
+  if (type === "Tablet") return <TabletIcon className={s.deviceHeroIcon} />;
+  if (type === "Laptop") return <LaptopIcon className={s.deviceHeroIcon} />;
+  if (type === "Watch") return <WatchIcon className={s.deviceHeroIcon} />;
+  return <RouterIcon className={s.deviceHeroIcon} />;
 };
 
 export default function DeviceDetailModal({
@@ -82,7 +81,7 @@ export default function DeviceDetailModal({
 
         {/* Close */}
         <button className={s.closeBtn} onClick={onClose} aria-label="Close">
-          <CloseIcon style={{ fontSize: 18 }} />
+          <CloseIcon className={s.closeIcon} />
         </button>
 
         {/* ── Hero ── */}
@@ -133,7 +132,7 @@ export default function DeviceDetailModal({
             <h3 className={s.sectionTitle}>Device Settings</h3>
             {!isEditing && (
               <button className={s.editBtn} onClick={() => setIsEditing(true)}>
-                <EditIcon style={{ fontSize: 13 }} />
+                <EditIcon className={s.inlineBtnIcon} />
                 Edit
               </button>
             )}
@@ -157,7 +156,7 @@ export default function DeviceDetailModal({
           {/* Assigned User */}
           <div className={s.fieldRow}>
             <div className={s.fieldLabel}>
-              <SwapHorizIcon style={{ fontSize: 14 }} />
+              <SwapHorizIcon className={s.fieldLabelIcon} />
               Assigned To
             </div>
             {isEditing ? (
@@ -185,7 +184,7 @@ export default function DeviceDetailModal({
           {isEditing && (
             <div className={s.editActions}>
               <button className={s.btnSave} onClick={handleSave} disabled={saving}>
-                <SaveIcon style={{ fontSize: 15 }} />
+                <SaveIcon className={s.inlineBtnIcon} />
                 {saving ? "Saving…" : "Save Changes"}
               </button>
               <button
@@ -208,7 +207,7 @@ export default function DeviceDetailModal({
 
         {/* ── Device Actions ── */}
         <div className={s.actions}>
-          <div className={s.sectionHeader} style={{ marginBottom: 10 }}>
+          <div className={`${s.sectionHeader} ${s.actionsHeader}`}>
             <h3 className={s.sectionTitle}>Device Actions</h3>
           </div>
 
@@ -217,7 +216,7 @@ export default function DeviceDetailModal({
               className={`${s.actionBtn} ${s.btnUnpair}`}
               onClick={() => onUnpair && onUnpair(device)}
             >
-              <LinkOffIcon style={{ fontSize: 20 }} />
+              <LinkOffIcon className={s.actionIcon} />
               <div className={s.actionBtnContent}>
                 <span className={s.actionBtnLabel}>Unpair Device</span>
                 <span className={s.actionBtnHint}>Stays on dashboard with Unpaired status</span>
@@ -230,7 +229,7 @@ export default function DeviceDetailModal({
               className={`${s.actionBtn} ${s.btnRepair}`}
               onClick={() => onRepair && onRepair(device)}
             >
-              <LinkIcon style={{ fontSize: 20 }} />
+              <LinkIcon className={s.actionIcon} />
               <div className={s.actionBtnContent}>
                 <span className={s.actionBtnLabel}>Re-pair Device</span>
                 <span className={s.actionBtnHint}>Removes record and opens pairing screen</span>
@@ -242,7 +241,7 @@ export default function DeviceDetailModal({
             className={`${s.actionBtn} ${s.btnRemove}`}
             onClick={() => onRemove && onRemove(device)}
           >
-            <DeleteOutlineIcon style={{ fontSize: 20 }} />
+            <DeleteOutlineIcon className={s.actionIcon} />
             <div className={s.actionBtnContent}>
               <span className={s.actionBtnLabel}>Remove from Dashboard</span>
               <span className={s.actionBtnHint}>Hides this device from your dashboard view</span>
@@ -254,5 +253,4 @@ export default function DeviceDetailModal({
     </div>
   );
 }
-
 

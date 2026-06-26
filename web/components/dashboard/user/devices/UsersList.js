@@ -42,11 +42,6 @@ export default function UsersList({
           title={
             isAtMemberLimit ? `Member limit reached (${maxMembers})` : undefined
           }
-          style={
-            isAtMemberLimit
-              ? { opacity: 0.5, cursor: "not-allowed" }
-              : undefined
-          }
         >
           <AddIcon className={styles.addButtonIcon} />
           Add Member
@@ -59,36 +54,16 @@ export default function UsersList({
   return (
     <div className={styles.devicesTableContainer}>
       {/* Header row with member count + Add button */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "12px",
-          padding: "0 4px",
-        }}
-      >
-        <span style={{ fontSize: "13px", color: "#6b7280" }}>
+      <div className={styles.tableMetaRow}>
+        <span className={styles.tableCountText}>
           {users.length}
           {maxMembers != null ? ` / ${maxMembers}` : ""} member
           {users.length !== 1 ? "s" : ""}
         </span>
 
         {isAtMemberLimit && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: "12px",
-              color: "#b98b0e",
-              backgroundColor: "#fff8e8",
-              border: "1px solid #f3d476",
-              borderRadius: "8px",
-              padding: "6px 12px",
-            }}
-          >
-            <BlockIcon style={{ fontSize: 15 }} />
+          <div className={styles.limitBadge}>
+            <BlockIcon className={styles.limitBadgeIcon} />
             Member limit reached ({maxMembers})
           </div>
         )}
@@ -126,7 +101,7 @@ export default function UsersList({
                   className={styles.tableActionBtn}
                   onClick={() => onUserClick && onUserClick(user)}
                 >
-                  <MoreVertIcon style={{ fontSize: 18 }} />
+                  <MoreVertIcon className={styles.tableActionIcon} />
                 </button>
               </td>
             </tr>

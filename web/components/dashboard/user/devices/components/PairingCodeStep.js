@@ -22,17 +22,7 @@ export default function PairingCodeStep({
       </p>
 
       {error && (
-        <div
-          className={styles.errorMessage}
-          style={{
-            color: "#dc323f",
-            backgroundColor: "#ffe1e4",
-            padding: "12px",
-            borderRadius: "8px",
-            marginBottom: "16px",
-            fontSize: "14px",
-          }}
-        >
+        <div className={styles.errorMessage}>
           {error}
         </div>
       )}
@@ -59,7 +49,7 @@ export default function PairingCodeStep({
       </div>
 
       <button className={styles.copyButton} onClick={handleCopyCode}>
-        <ContentCopyIcon style={{ fontSize: 18 }} />
+        <ContentCopyIcon className={styles.buttonIcon} />
         {copied ? "Copied!" : "Copy to clipboard"}
       </button>
 
@@ -68,7 +58,7 @@ export default function PairingCodeStep({
       </div>
 
       <button className={styles.qrButton} onClick={onScanQr}>
-        <QrCode2Icon style={{ fontSize: 20 }} />
+        <QrCode2Icon className={styles.buttonIcon} />
         Scan QR Code
       </button>
     </div>

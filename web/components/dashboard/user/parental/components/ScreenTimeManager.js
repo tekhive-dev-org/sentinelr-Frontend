@@ -128,8 +128,8 @@ export default function ScreenTimeManager({
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <span className={styles.cardTitle}>
-            <span className={styles.cardTitleIcon} style={{ background: '#f5f1ff', color: '#3d09d0' }}>
-              <BarChartRoundedIcon sx={{ fontSize: 18 }} />
+            <span className={`${styles.cardTitleIcon} ${styles.iconPurple}`}>
+              <BarChartRoundedIcon />
             </span>
             Daily Screen Time
           </span>
@@ -144,7 +144,7 @@ export default function ScreenTimeManager({
         
         {screenTimeLimit?.enabled && (
           <div className={styles.progressBar}>
-            <div
+            <progress
               className={`${styles.progressFill} ${
                 usedPercent > 90
                   ? styles.progressFillDanger
@@ -152,7 +152,9 @@ export default function ScreenTimeManager({
                   ? styles.progressFillWarn
                   : styles.progressFillSafe
               }`}
-              style={{ width: `${usedPercent}%` }}
+              value={usedPercent}
+              max={100}
+              aria-label="Screen time used"
             />
           </div>
         )}
@@ -166,7 +168,7 @@ export default function ScreenTimeManager({
               </div>
             ))
           ) : (
-            <span style={{ fontSize: 11, color: 'var(--clr-text-4)', fontWeight: 600 }}>
+            <span className={styles.inlineEmptyText}>
               No application usage breakdown logs found today.
             </span>
           )}
@@ -177,8 +179,8 @@ export default function ScreenTimeManager({
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <span className={styles.cardTitle}>
-            <span className={styles.cardTitleIcon} style={{ background: '#ede7ff', color: '#4f46e5' }}>
-              <TimerRoundedIcon sx={{ fontSize: 18 }} />
+            <span className={`${styles.cardTitleIcon} ${styles.iconOrange}`}>
+              <TimerRoundedIcon />
             </span>
             Configure Daily Limit
           </span>
@@ -196,13 +198,12 @@ export default function ScreenTimeManager({
             <span className={styles.toggleSlider} />
           </label>
         </div>
-
+        
         {limitEnabled && (
-          <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div className={styles.limitConfigPanel}>
             <span className={styles.fieldLabelText}>Daily Time Allowed</span>
             <select
-              className={styles.deviceSelect}
-              style={{ width: '100%' }}
+              className={`${styles.deviceSelect} ${styles.fullWidthSelect}`}
               value={limitMinutes}
               onChange={(e) => setLimitMinutes(Number(e.target.value))}
             >
@@ -236,8 +237,8 @@ export default function ScreenTimeManager({
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <span className={styles.cardTitle}>
-            <span className={styles.cardTitleIcon} style={{ background: '#fff8e8', color: '#e6ae12' }}>
-              <BedtimeRoundedIcon sx={{ fontSize: 18 }} />
+            <span className={`${styles.cardTitleIcon} ${styles.iconYellow}`}>
+              <BedtimeRoundedIcon />
             </span>
             Bedtime Schedule
           </span>

@@ -26,7 +26,7 @@ export default function PairingQrStep({
           <img
             src={qrCodeData}
             alt="Pairing QR Code"
-            style={{ width: 200, height: 200 }}
+            className={styles.qrCodeImage}
           />
         ) : (
           // Otherwise generate QR from code

@@ -1,86 +1,23 @@
-import React, { useState } from "react";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import { useRouter } from "next/router";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useAuth } from "../../../context/AuthContext";
 import Toast from "../../common/Toast";
 import styles from "./SignUpForm.module.css";
-
-const passwordChecks = [
-  { label: "At least 1 uppercase", check: (v) => /[A-Z]/.test(v) },
-  { label: "At least 1 number", check: (v) => /[0-9]/.test(v) },
-  { label: "At least 1 special character", check: (v) => /[^A-Za-z0-9]/.test(v) },
-  { label: "At least 8 characters", check: (v) => v.length >= 8 },
-];
-
-const validationSchema = Yup.object({
-  userName: Yup.string().required("Username is required"),
-  email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
-  password: Yup.string()
-    .required("Password is required")
-    .matches(/[A-Z]/, "At least 1 uppercase")
-    .matches(/[0-9]/, "At least 1 number")
-    .matches(/[^A-Za-z0-9]/, "At least 1 special character")
-    .min(8, "At least 8 characters"),
-  confirmPassword: Yup.string()
-    .required("Please confirm your password")
-    .oneOf([Yup.ref("password")], "Passwords must match"),
-  agree: Yup.boolean().oneOf([true], "You must accept the terms"),
-});
-
-const getPasswordStrength = (password) => {
-  const checks = passwordChecks.map((c) => c.check(password));
-  const passed = checks.filter(Boolean).length;
-  if (passed === 0) return "none";
-  if (passed <= 2) return "weak";
-  if (passed === 3) return "moderate";
-  if (passed === 4) return "strong";
-  return "none";
-};
+import { useSignUp } from "./hooks/useSignUp";
 
 export default function SignUpForm() {
-  const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
-  const [toast, setToast] = useState(null);
-  const { signup, loading, loginWithGoogle } = useAuth();
-  const formik = useFormik({
-    initialValues: {
-      userName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      agree: false,
-    },
-    validationSchema,
-    onSubmit: async (values) => {
-      // Pass all fields to signup
-      const result = await signup(
-        values.userName,
-        values.email,
-        values.password,
-        values.confirmPassword,
-        values.role,
-      );
-
-      if (result.success) {
-        // After successful signup, redirect to verification page
-        router.push(`/verify?email=${encodeURIComponent(values.email)}`);
-      } else {
-        const errorMsg = result.error
-          ? result.error.replace("Error: ", "")
-          : "Signup failed";
-        setToast({ message: errorMsg, type: "error" });
-        formik.setFieldError("email", errorMsg);
-      }
-    },
-  });
-
-  const strength = getPasswordStrength(formik.values.password);
-  const allValid = passwordChecks.every((c) => c.check(formik.values.password));
+  const {
+    formik,
+    showPassword,
+    setShowPassword,
+    toast,
+    setToast,
+    loading,
+    loginWithGoogle,
+    strength,
+    allValid,
+    passwordChecks,
+  } = useSignUp();
 
   return (
     <div className={styles.container}>
@@ -130,37 +67,10 @@ export default function SignUpForm() {
               />
               {formik.touched.userName && formik.errors.userName && (
                 <div className={styles.errorText}>
-                  {/* Add a simple error text style if not present in module, assuming it is handled or inherited,
-                       but looking at other fields, there doesn't seem to be explicit error text rendered for them in the original snippet,
-                       only inputError class. I will add error text block like in LoginForm if available, 
-                       or sticking to the pattern. The original file didn't show error text div for email?
-                       Wait, looking at line 132 in original SignUpForm... ah, actually it DOESN'T show error text for email in the snippet I saw!
-                       It only applies `inputError` class.
-                       However, it's better to show it. I'll add it.
-                   */}
                   {formik.errors.userName}
                 </div>
               )}
             </div>
-
-            {/* <div className={styles.formField}>
-              <label className={styles.label}>
-                Role
-              </label>
-              <select
-                name="role"
-                className={styles.input} // Reusing input style for consistency
-                value={formik.values.role}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                style={{ appearance: 'none', backgroundImage: 'none' }} // Simple reset, browser arrow might be hidden or default. 
-                // To support a custom arrow, usually we need a wrapper, but for now standard select is fine or simple styling.
-                // Actually, let's just leave standard appearance or minimal style.
-              >
-                <option value="Parent">Parent</option>
-                <option value="Child">Child</option>
-              </select>
-            </div> */}
 
             <div className={styles.formField}>
               <label className={styles.label}>Email Address</label>
@@ -499,17 +409,6 @@ export default function SignUpForm() {
             </svg>
             Continue with Google
           </button>
-
-          {/* <button className={styles.socialButton} type="button">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-            </svg>
-            Continue with Apple
-          </button> */}
-
-          {/* <button className={styles.socialButton} type="button">
-            Guest Mode
-          </button> */}
         </div>
       </div>
     </div>

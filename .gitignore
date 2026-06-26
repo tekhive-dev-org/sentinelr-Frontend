@@ -72,3 +72,7 @@ web-build/
 
 #docs
 /docs/*.md
+
+/.agents/*.md
+
+test-parental-controls.js

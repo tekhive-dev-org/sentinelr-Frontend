@@ -7,12 +7,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'primary-green': '#e07030',
-        'secondary-green': '#e03040',
-        'accent-blue': '#4000d0',
-        'warm-yellow': '#e0b010',
+        'brand-primary': '#e06f29',
+        'brand-secondary': '#3d09d0',
+        'brand-danger': '#dc323f',
+        'brand-warning': '#e6ae12',
+        'primary-green': '#e06f29',
+        'secondary-green': '#dc323f',
+        'accent-blue': '#3d09d0',
+        'warm-yellow': '#e6ae12',
         'deep-forest': '#12061e',
-        'light-mint': '#fff3e8',
+        'light-mint': '#fffaf6',
       },
       fontFamily: {
         'display': ['Playfair Display', 'serif'],

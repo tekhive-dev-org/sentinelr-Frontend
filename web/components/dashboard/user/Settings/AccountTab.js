@@ -139,7 +139,7 @@ export default function AccountTab({ formik, isSubmitting, onSubmit, onDiscard }
       />
 
       {/* Actions */}
-      <div className={styles.actions} style={{ marginTop: '20px' }}>
+      <div className={styles.actions}>
         <button 
           type="button" 
           className={styles.secondaryButton} 

@@ -72,7 +72,7 @@ const Bee = ({ position = [0, 0, 0], scale = 1, isGiant = false }) => {
 
     const materials = useMemo(() => ({
         body: new THREE.MeshStandardMaterial({ 
-            color: '#F6C102', 
+            color: '#e6ae12', 
             roughness: 0.3, 
             metalness: 0.1 
         }),

@@ -16,11 +16,15 @@ export default function PaymentMethodOption({
       <div className={styles.methodSummary} onClick={() => !isDetailsOpen && onSelect(method)}>
         <div className={styles.methodLeft}>
           {isDetailsOpen && isSelected ? (
-            <CheckIcon style={{ color: '#0F4C75', fontSize: 24, background: '#eee', borderRadius: '50%', padding: 4 }} />
+            <span className={styles.methodCheckIcon}>
+              <CheckIcon />
+            </span>
           ) : (
             <div className={`${styles.radio} ${isSelected ? styles.selected : ''}`}></div>
           )}
-          <Image src={icon} alt={name} width={24} height={24} />
+          <span className={styles.methodIconWrap}>
+            <Image src={icon} alt={name} width={24} height={24} />
+          </span>
           <span className={styles.methodName}>{name}</span>
         </div>
       </div>

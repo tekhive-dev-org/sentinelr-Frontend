@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./ConfirmationModal.module.css";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import CloseIcon from "@mui/icons-material/Close";
 
 export default function ConfirmationModal({
   isOpen,
@@ -12,34 +13,75 @@ export default function ConfirmationModal({
   confirmText = "Confirm",
   isDanger = false,
 }) {
+  const [isConfirming, setIsConfirming] = useState(false);
+
   if (!isOpen) return null;
 
+  const handleConfirm = async () => {
+    if (isConfirming) return;
+
+    setIsConfirming(true);
+    try {
+      await onConfirm();
+      onClose();
+    } finally {
+      setIsConfirming(false);
+    }
+  };
+
+  const handleClose = () => {
+    if (!isConfirming) onClose();
+  };
+
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
+    <div className={styles.modalOverlay} onClick={handleClose} role="presentation">
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          className={styles.closeButton}
+          onClick={handleClose}
+          disabled={isConfirming}
+          aria-label="Close confirmation modal"
+        >
+          <CloseIcon style={{ fontSize: 18 }} />
+        </button>
+
         <div className={styles.modalHeader}>
-          {isDanger ? (
-            <ErrorOutlineIcon className={styles.dangerIcon} />
-          ) : (
-            <WarningAmberIcon className={styles.warningIcon} />
-          )}
-          <h3 className={styles.modalTitle}>{title}</h3>
+          <div className={`${styles.iconShell} ${isDanger ? styles.iconShellDanger : styles.iconShellWarning}`}>
+            {isDanger ? (
+              <ErrorOutlineIcon className={styles.dangerIcon} />
+            ) : (
+              <WarningAmberIcon className={styles.warningIcon} />
+            )}
+          </div>
+          <div className={styles.headerText}>
+            <span className={styles.eyebrow}>
+              {isDanger ? "Destructive action" : "Device confirmation"}
+            </span>
+            <h3 className={styles.modalTitle}>{title}</h3>
+          </div>
         </div>
 
-        <div className={styles.modalBody}>{message}</div>
+        <div className={styles.modalBody}>
+          <p>{message}</p>
+        </div>
 
         <div className={styles.modalFooter}>
-          <button className={styles.btnCancel} onClick={onClose}>
+          <button
+            type="button"
+            className={styles.btnCancel}
+            onClick={handleClose}
+            disabled={isConfirming}
+          >
             Cancel
           </button>
           <button
+            type="button"
             className={`${styles.btnConfirm} ${isDanger ? styles.btnDanger : ""}`}
-            onClick={async () => {
-              await onConfirm();
-              onClose();
-            }}
+            onClick={handleConfirm}
+            disabled={isConfirming}
           >
-            {confirmText}
+            {isConfirming ? "Working..." : confirmText}
           </button>
         </div>
       </div>

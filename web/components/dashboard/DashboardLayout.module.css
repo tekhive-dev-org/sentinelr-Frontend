@@ -23,7 +23,9 @@
   transition: margin-left 0.3s ease;
   height: 100dvh;
   overflow-y: auto;
-  background-color: transparent;
+  background:
+    linear-gradient(135deg, rgba(255, 250, 246, 0.96) 0%, rgba(245, 241, 255, 0.92) 56%, rgba(255, 240, 241, 0.9) 100%);
+  border: 1px solid rgba(224, 111, 41, 0.16);
   width: calc(100% - 240px);
   max-width: calc(100% - 240px);
   min-width: 0;

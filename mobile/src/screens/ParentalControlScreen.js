@@ -71,11 +71,11 @@ export default function ParentalControlScreen() {
     <View style={[
       s.statusPill,
       active
-        ? { backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' }
-        : { backgroundColor: '#fef2f2', borderColor: '#fecaca' },
+        ? { backgroundColor: '#fff8e8', borderColor: '#f3d476' }
+        : { backgroundColor: '#fff0f1', borderColor: '#f4a6ad' },
     ]}>
-      <View style={[s.statusDot, { backgroundColor: active ? '#22c55e' : '#db323f' }]} />
-      <Text style={[s.statusPillText, { color: active ? '#15803d' : '#b91c1c' }]}>{label}</Text>
+      <View style={[s.statusDot, { backgroundColor: active ? '#e6ae12' : '#dc323f' }]} />
+      <Text style={[s.statusPillText, { color: active ? '#b98b0e' : '#a92731' }]}>{label}</Text>
     </View>
   );
 
@@ -101,7 +101,7 @@ export default function ParentalControlScreen() {
           <View style={s.centered}>
             {parentalSyncError === 'auth' ? (
               <>
-                <Ionicons name="key-outline" size={56} color="#f59e0b" />
+                <Ionicons name="key-outline" size={56} color="#e6ae12" />
                 <Text style={[s.emptyTitle, { color: colors.text }]}>Session Expired</Text>
                 <Text style={[s.emptySubtitle, { color: colors.textSecondary }]}>
                   Your device session has expired. Ask a parent to unpair and re-pair this device to restore parental control visibility.
@@ -172,15 +172,15 @@ export default function ParentalControlScreen() {
                       {
                         width: `${usedPercent}%`,
                         backgroundColor:
-                          usedPercent > 90 ? '#db323f'
-                          : usedPercent > 70 ? '#e6ad13'
-                          : '#3e0d10',
+                          usedPercent > 90 ? '#dc323f'
+                          : usedPercent > 70 ? '#e6ae12'
+                          : '#e06f29',
                       },
                     ]}
                   />
                 </View>
 
-                <Text style={[s.remainingText, { color: usedPercent > 90 ? '#db323f' : '#e6ad13' }]}>
+                <Text style={[s.remainingText, { color: usedPercent > 90 ? '#dc323f' : '#e6ae12' }]}>
                   {formatMinutes(st.remaining)} remaining
                 </Text>
 
@@ -209,7 +209,7 @@ export default function ParentalControlScreen() {
                 <View style={s.bedtimeRow}>
                   <View style={s.bedtimeItem}>
                     <View style={[s.bedtimeIconBadge, { backgroundColor: 'rgba(99,102,241,0.1)' }]}>
-                      <Ionicons name="lock-closed" size={14} color="#6366f1" />
+                      <Ionicons name="lock-closed" size={14} color="#3d09d0" />
                     </View>
                     <Text style={[s.bedtimeLabel, { color: colors.textSecondary }]}>Start lock</Text>
                     <View style={s.bedtimeBadge}>
@@ -218,7 +218,7 @@ export default function ParentalControlScreen() {
                   </View>
                   <View style={s.bedtimeItem}>
                     <View style={[s.bedtimeIconBadge, { backgroundColor: 'rgba(22,163,74,0.1)' }]}>
-                      <Ionicons name="lock-open" size={14} color="#16a34a" />
+                      <Ionicons name="lock-open" size={14} color="#e6ae12" />
                     </View>
                     <Text style={[s.bedtimeLabel, { color: colors.textSecondary }]}>End lock</Text>
                     <View style={s.bedtimeBadge}>
@@ -247,7 +247,7 @@ export default function ParentalControlScreen() {
                     ]}
                   >
                     <View style={s.appCategoryLeft}>
-                      <View style={[s.categoryDot, { backgroundColor: cat.enabled ? '#db323f' : '#16a34a' }]} />
+                      <View style={[s.categoryDot, { backgroundColor: cat.enabled ? '#dc323f' : '#e6ae12' }]} />
                       <View>
                         <Text style={[s.categoryName, { color: colors.text }]}>{cat.category}</Text>
                         <Text style={[s.categoryMeta, { color: colors.textMuted }]}>
@@ -255,8 +255,8 @@ export default function ParentalControlScreen() {
                         </Text>
                       </View>
                     </View>
-                    <View style={[s.categoryStatusBadge, { backgroundColor: cat.enabled ? '#fef2f2' : '#f0fdf4' }]}>
-                      <Text style={{ fontSize: 11, fontWeight: '800', color: cat.enabled ? '#db323f' : '#16a34a', letterSpacing: 0.3 }}>
+                    <View style={[s.categoryStatusBadge, { backgroundColor: cat.enabled ? '#fff0f1' : '#fff8e8' }]}>
+                      <Text style={{ fontSize: 11, fontWeight: '800', color: cat.enabled ? '#dc323f' : '#e6ae12', letterSpacing: 0.3 }}>
                         {cat.enabled ? 'BLOCKED' : 'OK'}
                       </Text>
                     </View>
@@ -282,7 +282,7 @@ export default function ParentalControlScreen() {
                       },
                     ]}
                   >
-                    <Ionicons name="ban" size={16} color="#db323f" />
+                    <Ionicons name="ban" size={16} color="#dc323f" />
                     <Text style={[s.blockedSiteText, { color: colors.text }]}>{site}</Text>
                   </View>
                 ))}
@@ -341,10 +341,10 @@ function getActivityIcon(type) {
 
 function getActivityColor(type) {
   const map = {
-    app_install: '#16a34a',
-    web_blocked: '#db323f',
-    screen_time_limit: '#3e0d10',
-    app_blocked: '#e6ad13',
+    app_install: '#e6ae12',
+    web_blocked: '#dc323f',
+    screen_time_limit: '#e06f29',
+    app_blocked: '#e6ae12',
   };
   return map[type] || '#6b7280';
 }
@@ -376,7 +376,7 @@ const s = StyleSheet.create({
 
   // Frozen banner
   frozenBanner: {
-    backgroundColor: '#db323f',
+    backgroundColor: '#dc323f',
     borderRadius: 14,
     padding: 15,
     flexDirection: 'row',
@@ -384,7 +384,7 @@ const s = StyleSheet.create({
     justifyContent: 'center',
     gap: 10,
     marginBottom: 16,
-    shadowColor: '#db323f',
+    shadowColor: '#dc323f',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 10,
@@ -447,13 +447,13 @@ const s = StyleSheet.create({
     width: 3,
     height: 14,
     borderRadius: 2,
-    backgroundColor: '#3e0d10',
+    backgroundColor: '#e06f29',
   },
   sectionLabel: {
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.3,
-    color: '#3e0d10',
+    color: '#e06f29',
   },
 
   // Screen time
@@ -541,7 +541,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 8,
-    backgroundColor: '#3e0d10',
+    backgroundColor: '#e06f29',
   },
   bedtimeValue: {
     fontSize: 15,

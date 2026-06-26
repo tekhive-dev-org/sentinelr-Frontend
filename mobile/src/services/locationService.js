@@ -130,7 +130,7 @@ export const locationService = {
       foregroundService: {
         notificationTitle: "Sentinelr",
         notificationBody: "Location tracking is active",
-        notificationColor: "#db323f",
+        notificationColor: "#dc323f",
         killServiceOnDestroy: false,
       },
       pausesUpdatesAutomatically: false,

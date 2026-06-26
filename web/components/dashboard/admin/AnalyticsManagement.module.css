@@ -62,7 +62,7 @@
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background: #0e7490;
+  background: #3d09d0;
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -73,7 +73,7 @@
 }
 
 .exportBtn:hover {
-  background: #0c6581;
+  background: #32109f;
 }
 
 .dropdownIcon {

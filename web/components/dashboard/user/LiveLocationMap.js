@@ -107,7 +107,7 @@ const SILVER_MAP_STYLE = [
   {
     featureType: "water",
     elementType: "geometry",
-    stylers: [{ color: "#e0e7ff" }]
+    stylers: [{ color: "#ede7ff" }]
   }
 ];
 
@@ -297,7 +297,7 @@ export default function LiveLocationMap({ showDetails = true }) {
         <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
           <circle cx="20" cy="20" r="16" fill="rgba(59, 130, 246, 0.18)" />
           <circle cx="20" cy="20" r="9" fill="#ffffff" stroke="rgba(59, 130, 246, 0.3)" stroke-width="1.5" />
-          <circle cx="20" cy="20" r="5" fill="#3b82f6" />
+          <circle cx="20" cy="20" r="5" fill="#3d09d0" />
         </svg>
       `)}`,
       scaledSize: new window.google.maps.Size(40, 40),
@@ -500,10 +500,10 @@ export default function LiveLocationMap({ showDetails = true }) {
                     center={markerPos}
                     radius={locationData.accuracy}
                     options={{
-                      strokeColor: "#3b82f6",
+                      strokeColor: "#3d09d0",
                       strokeOpacity: 0.22,
                       strokeWeight: 1,
-                      fillColor: "#3b82f6",
+                      fillColor: "#3d09d0",
                       fillOpacity: 0.05,
                       clickable: false,
                       editable: false,

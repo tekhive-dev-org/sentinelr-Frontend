@@ -138,7 +138,7 @@ export default function QRScannerScreen({ navigation }) {
       <View style={[styles.container, { backgroundColor: "black" }]}>
         <StatusBar barStyle="light-content" />
         <View style={styles.centered}>
-          <Ionicons name="camera-off-outline" size={64} color="#ef4444" />
+          <Ionicons name="camera-off-outline" size={64} color="#dc323f" />
           <Text style={[styles.textWhite, styles.title]}>No Camera Access</Text>
           <Text style={[styles.textDim, styles.subtitle]}>
             We need camera permission to scan the pairing code.

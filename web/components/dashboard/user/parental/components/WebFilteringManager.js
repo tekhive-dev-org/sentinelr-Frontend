@@ -27,7 +27,7 @@ export default function WebFilteringManager({
     <div className={styles.card}>
       <div className={styles.cardHeader}>
         <span className={styles.cardTitle}>
-          <span className={styles.cardTitleIcon} style={{ background: '#f0fdf4', color: '#16a34a' }}>
+          <span className={styles.cardTitleIcon} style={{ background: '#fff8e8', color: '#e6ae12' }}>
             <LanguageRoundedIcon sx={{ fontSize: 18 }} />
           </span>
           Web Filtering

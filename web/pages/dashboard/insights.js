@@ -5,6 +5,7 @@ import { DashboardLayout } from '../../components/dashboard';
 import UsageChart from '../../components/dashboard/user/insights/UsageChart';
 import AppsList from '../../components/dashboard/user/insights/AppsList';
 import InsightFilters from '../../components/dashboard/user/insights/InsightFilters';
+import styles from './insights.module.css';
 
 import { InsightsService } from '../../components/dashboard/user/insights/InsightsService';
 
@@ -23,6 +24,18 @@ export default function Insights() {
   const [loading, setLoading] = useState(true);
   const [usageData, setUsageData] = useState([]);
   const [appsData, setAppsData] = useState([]);
+
+  const totalUsage = usageData.reduce((sum, item) => sum + Number(item.usage || 0), 0);
+  const averageUsage = usageData.length ? totalUsage / usageData.length : 0;
+  const peakUsage = usageData.reduce((peak, item) => Math.max(peak, Number(item.usage || 0)), 0);
+  const topApp = appsData?.[0]?.name || 'No app data';
+
+  const formatHours = (hours) => {
+    const wholeHours = Math.floor(hours);
+    const minutes = Math.round((hours - wholeHours) * 60);
+    if (!wholeHours && !minutes) return '0m';
+    return `${wholeHours ? `${wholeHours}h` : ''}${minutes ? ` ${minutes}m` : ''}`.trim();
+  };
 
   const handleExport = (type) => {
     if (type === 'csv') {
@@ -66,7 +79,7 @@ export default function Insights() {
             startY: 30,
             theme: 'grid',
             styles: { fontSize: 10, cellPadding: 3 },
-            headStyles: { fillColor: [15, 60, 95], textColor: [255, 255, 255] }, // Brand color
+            headStyles: { fillColor: [61, 9, 208], textColor: [255, 255, 255] },
             alternateRowStyles: { fillColor: [240, 240, 240] }
         });
 
@@ -112,36 +125,57 @@ export default function Insights() {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <DashboardLayout>
-        <div className="insights-page">
-          <style jsx>{`
-            .insights-page {
-              padding: 0 32px 40px;
-              max-width: 1200px;
-              margin: 0 auto;
-            }
-            @media (max-width: 1024px) {
-              .insights-page {
-                padding: 0 24px 32px;
-              }
-            }
-            @media (max-width: 640px) {
-              .insights-page {
-                padding: 0 16px 24px;
-              }
-            }
-          `}</style>
+        <div className={styles.page}>
+          <section className={styles.hero}>
+            <div>
+              <span className={styles.kicker}>Usage Insights</span>
+              <h1 className={styles.title}>Screen time intelligence for safer routines</h1>
+              <p className={styles.subtitle}>
+                Review app usage, spot screen-time patterns, and export reports for the selected period.
+              </p>
+            </div>
+            <div className={styles.heroBadge}>
+              <span>Current Period</span>
+              <strong>{activePeriod.replace(/_/g, ' ')}</strong>
+            </div>
+          </section>
 
-          <InsightFilters
-              currentChartType={chartType}
-              onChartTypeChange={setChartType}
-              activePeriod={activePeriod}
-              onPeriodChange={setActivePeriod}
-              onExport={handleExport}
-          />
+          <section className={styles.statsGrid} aria-label="Insights summary">
+            <div className={styles.statCard}>
+              <span className={styles.statLabel}>Total Usage</span>
+              <span className={styles.statValue}>{formatHours(totalUsage)}</span>
+              <span className={styles.statHint}>Across selected range</span>
+            </div>
+            <div className={styles.statCard}>
+              <span className={styles.statLabel}>Average</span>
+              <span className={styles.statValue}>{formatHours(averageUsage)}</span>
+              <span className={styles.statHint}>Per data point</span>
+            </div>
+            <div className={styles.statCard}>
+              <span className={styles.statLabel}>Peak Day</span>
+              <span className={styles.statValue}>{formatHours(peakUsage)}</span>
+              <span className={styles.statHint}>Highest usage logged</span>
+            </div>
+            <div className={styles.statCard}>
+              <span className={styles.statLabel}>Top App</span>
+              <span className={styles.statValue}>{topApp}</span>
+              <span className={styles.statHint}>Most-used app sample</span>
+            </div>
+          </section>
 
-          <UsageChart chartType={chartType} data={usageData} loading={loading} />
+          <section className={styles.contentPanel}>
+            <InsightFilters
+                currentChartType={chartType}
+                onChartTypeChange={setChartType}
+                activePeriod={activePeriod}
+                onPeriodChange={setActivePeriod}
+                onExport={handleExport}
+            />
 
-          <AppsList apps={appsData} loading={loading} />
+            <UsageChart chartType={chartType} data={usageData} loading={loading} />
+
+            <AppsList apps={appsData} loading={loading} />
+          </section>
         </div>
       </DashboardLayout>
     </LocalizationProvider>

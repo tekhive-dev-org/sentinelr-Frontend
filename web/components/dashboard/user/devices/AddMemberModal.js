@@ -197,8 +197,8 @@ export default function AddMemberModal({
                   padding: "12px",
                   marginBottom: "20px",
                   borderRadius: "8px",
-                  backgroundColor: "#fee2e2",
-                  color: "#991b1b",
+                  backgroundColor: "#ffe1e4",
+                  color: "#a92731",
                   fontSize: "14px",
                 }}
               >

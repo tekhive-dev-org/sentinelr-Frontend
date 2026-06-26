@@ -11,22 +11,26 @@ export default function PlanSelection({
 }) {
   return (
     <>
-      <div className={styles.header}>
-        <div className={styles.pricingBadgeContainer}>
-          <span className={styles.pricingBadge}>Our pricing</span>
+      <div className={styles.hero}>
+        <div className={styles.heroCopy}>
+          <span className={styles.pricingBadge}>Subscription Plans</span>
+          <h1 className={styles.title}>Protection that scales with your household</h1>
+          <p className={styles.subtitle}>Choose a Sentinelr plan, compare coverage, and move into payment when you are ready.</p>
         </div>
-        <h2 className={styles.title}>Designed without limits..</h2>
-        <p className={styles.subtitle}>Try our freemium plan for 14 days. Cancel or upgrade anytime.</p>
-        
+
         <div className={styles.toggleContainer}>
+          <span className={styles.toggleLabel}>Billing</span>
           <div className={styles.toggleWrapper}>
             <button 
+              type="button"
               className={`${styles.toggleOption} ${billingCycle === 'annual' ? styles.active : ''}`}
               onClick={() => onBillingCycleChange('annual')}
             >
               Annual
+              <small>Best value</small>
             </button>
             <button 
+              type="button"
               className={`${styles.toggleOption} ${billingCycle === 'monthly' ? styles.active : ''}`}
               onClick={() => onBillingCycleChange('monthly')}
             >

@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Link from 'next/link';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
+import VerifiedUserOutlinedIcon from '@mui/icons-material/VerifiedUserOutlined';
 import AccountTab from './AccountTab';
 import PasswordTab from './PasswordTab';
 import NotificationsTab from './NotificationsTab';
@@ -9,6 +13,27 @@ import styles from './Settings.module.css';
 import Toast from '../../../common/Toast';
 import SettingsService, { SettingsError } from './SettingsService';
 import { useAuth } from '../../../../context/AuthContext';
+
+const SETTING_TABS = [
+  {
+    key: 'Account',
+    title: 'Account',
+    description: 'Profile, contact details, and security controls',
+    Icon: AccountCircleOutlinedIcon,
+  },
+  {
+    key: 'Password',
+    title: 'Password',
+    description: 'OTP verification and password rotation',
+    Icon: LockOutlinedIcon,
+  },
+  {
+    key: 'Notifications',
+    title: 'Notifications',
+    description: 'Email, product, and summary preferences',
+    Icon: NotificationsNoneOutlinedIcon,
+  },
+];
 
 export default function UserSettings({ user }) {
   const { logout, refreshUser } = useAuth();
@@ -150,6 +175,32 @@ export default function UserSettings({ user }) {
     setToast({ message: 'Changes discarded', type: 'info' });
   };
 
+  const handleTabChange = (tab) => {
+    if (tab === activeTab) return;
+    if (formik.dirty && !window.confirm('You have unsaved changes. Switch sections and discard them?')) {
+      return;
+    }
+    if (formik.dirty) {
+      formik.resetForm();
+    }
+    setPasswordError('');
+    setActiveTab(tab);
+  };
+
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (!formik.dirty) return;
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [formik.dirty]);
+
+  const displayName = user?.fullName || user?.userName || user?.name || 'Sentinelr user';
+  const accountEmail = user?.email || 'No email added';
+
   return (
     <div className={styles.container}>
       {/* Toast Notification */}
@@ -161,45 +212,79 @@ export default function UserSettings({ user }) {
         />
       )}
 
-      <div className={styles.tabs}>
-        {['Account', 'Password', 'Notifications'].map((tab) => (
-          <button
-            key={tab}
-            className={`${styles.tab} ${activeTab === tab ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-          </button>
-        ))}
+      <div className={styles.hero}>
+        <div className={styles.heroIcon}>
+          <VerifiedUserOutlinedIcon />
+        </div>
+        <div className={styles.heroCopy}>
+          <span className={styles.heroKicker}>Account Settings</span>
+          <h1 className={styles.heroTitle}>Control center for your Sentinelr profile</h1>
+          <p className={styles.heroDescription}>
+            Manage identity, password security, notification preferences, and critical account actions from one protected workspace.
+          </p>
+        </div>
+        <div className={styles.heroProfile}>
+          <span className={styles.heroProfileLabel}>Signed in as</span>
+          <strong>{displayName}</strong>
+          <span>{accountEmail}</span>
+        </div>
       </div>
 
-      <div className={styles.content}>
-        {activeTab === 'Account' && (
-          <AccountTab 
-            formik={formik}
-            isSubmitting={isSubmitting}
-            onSubmit={formik.handleSubmit}
-            onDiscard={handleDiscard}
-          />
-        )}
-        {activeTab === 'Password' && (
-          <PasswordTab 
-            formik={formik} 
-            apiError={passwordError}
-            onClearError={() => setPasswordError('')}
-            isSubmitting={isSubmitting}
-            onSubmit={formik.handleSubmit}
-            onDiscard={handleDiscard}
-          />
-        )}
-        {activeTab === 'Notifications' && (
-          <NotificationsTab 
-            formik={formik}
-            isSubmitting={isSubmitting}
-            onSubmit={formik.handleSubmit}
-            onDiscard={handleDiscard}
-          />
-        )}
+      <div className={styles.settingsGrid}>
+        <aside className={styles.navPanel} aria-label="Settings sections">
+          <div className={styles.navHeader}>
+            <span>Settings</span>
+            {formik.dirty && <span className={styles.unsavedBadge}>Unsaved</span>}
+          </div>
+          <div className={styles.tabs}>
+            {SETTING_TABS.map(({ key, title, description, Icon }) => (
+              <button
+                key={key}
+                type="button"
+                className={`${styles.tab} ${activeTab === key ? styles.activeTab : ''}`}
+                onClick={() => handleTabChange(key)}
+                aria-current={activeTab === key ? 'page' : undefined}
+              >
+                <span className={styles.tabIcon}>
+                  <Icon />
+                </span>
+                <span className={styles.tabCopy}>
+                  <span>{title}</span>
+                  <small>{description}</small>
+                </span>
+              </button>
+            ))}
+          </div>
+        </aside>
+
+        <main className={styles.content}>
+          {activeTab === 'Account' && (
+            <AccountTab 
+              formik={formik}
+              isSubmitting={isSubmitting}
+              onSubmit={formik.handleSubmit}
+              onDiscard={handleDiscard}
+            />
+          )}
+          {activeTab === 'Password' && (
+            <PasswordTab 
+              formik={formik} 
+              apiError={passwordError}
+              onClearError={() => setPasswordError('')}
+              isSubmitting={isSubmitting}
+              onSubmit={formik.handleSubmit}
+              onDiscard={handleDiscard}
+            />
+          )}
+          {activeTab === 'Notifications' && (
+            <NotificationsTab 
+              formik={formik}
+              isSubmitting={isSubmitting}
+              onSubmit={formik.handleSubmit}
+              onDiscard={handleDiscard}
+            />
+          )}
+        </main>
       </div>
 
       <div className={styles.footerBar}>

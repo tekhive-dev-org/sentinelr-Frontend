@@ -14,7 +14,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #1f4e5f 0%, #2d6a7c 100%);
+  background: linear-gradient(135deg, #e06f29 0%, #3d09d0 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -41,8 +41,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #fef3c7;
-  border: 1px solid #f59e0b;
+  background-color: #fff8e8;
+  border: 1px solid #e6ae12;
   border-radius: 8px;
   padding: 12px 16px;
   margin-bottom: 24px;
@@ -53,7 +53,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #92400e;
+  color: #b98b0e;
   font-size: 14px;
   flex: 1;
   min-width: 0;
@@ -63,14 +63,14 @@
 .warningIcon {
   width: 20px;
   height: 20px;
-  color: #f59e0b;
+  color: #e6ae12;
   flex-shrink: 0;
 }
 
 .warningClose {
   background: none;
   border: none;
-  color: #f59e0b;
+  color: #e6ae12;
   cursor: pointer;
   padding: 4px;
   display: flex;
@@ -90,7 +90,7 @@
   margin: 0;
   padding: 0 0 0 20px;
   font-size: 14px;
-  color: #92400e;
+  color: #b98b0e;
   line-height: 1.6;
 }
 
@@ -200,7 +200,7 @@
 }
 
 .searchInput:focus {
-  border-color: #3b82f6;
+  border-color: #3d09d0;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -223,7 +223,7 @@
 
 
 .statusSelect:focus {
-  border-color: #3b82f6;
+  border-color: #3d09d0;
 }
 
 /* Tab Content */
@@ -348,8 +348,8 @@
 }
 
 .statusOnlineBadge {
-  background-color: #d1fae5 !important;
-  color: #065f46 !important;
+  background-color: #fff0cf !important;
+  color: #b98b0e !important;
 }
 
 .statusOfflineBadge {
@@ -364,7 +364,7 @@
 }
 
 .statusOnlineBadge .statusDotSmall {
-  background-color: #10b981 !important;
+  background-color: #e6ae12 !important;
 }
 
 .statusOfflineBadge .statusDotSmall {
@@ -461,13 +461,13 @@
 }
 
 .statusOnline {
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: #fff0cf;
+  color: #b98b0e;
 }
 
 .statusOffline {
-  background-color: #fee2e2 !important;
-  color: #991b1b;
+  background-color: #ffe1e4 !important;
+  color: #a92731;
 }
 
 .statusDot {
@@ -477,11 +477,11 @@
 }
 
 .statusOnline .statusDot {
-  background-color: #10b981;
+  background-color: #e6ae12;
 }
 
 .statusOffline .statusDot {
-  background-color: #ef4444;
+  background-color: #dc323f;
 }
 
 .deviceActions {
@@ -529,7 +529,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #e06f29 0%, #3d09d0 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -651,7 +651,7 @@
 }
 
 .formInput:focus {
-  border-color: #3b82f6;
+  border-color: #3d09d0;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -670,7 +670,7 @@
 }
 
 .formSelect:focus {
-  border-color: #3b82f6;
+  border-color: #3d09d0;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -932,7 +932,7 @@
   align-items: center;
   gap: 8px;
   padding: 6px 16px;
-  background-color: #154f63; /* Dark teal/blue from design */
+  background-color: #3d09d0; /* Dark teal/blue from design */
   color: white;
   border: none;
   border-radius: 6px;
@@ -1043,19 +1043,19 @@
 }
 
 .notificationSuccess {
-  border-left-color: #10b981;
+  border-left-color: #e6ae12;
 }
 
 .notificationSuccess .notificationIcon {
-  color: #10b981;
+  color: #e6ae12;
 }
 
 .notificationError {
-  border-left-color: #ef4444;
+  border-left-color: #dc323f;
 }
 
 .notificationError .notificationIcon {
-  color: #ef4444;
+  color: #dc323f;
 }
 
 .notificationIcon {

@@ -30,9 +30,9 @@ const DroneBee = ({ delay = 0 }) => (
             position: 'absolute',
             width: '10px',
             height: '10px',
-            background: '#F6C102', // Bee Gold
+            background: '#e6ae12', // Bee Gold
             borderRadius: '50%',
-            boxShadow: '0 0 10px #F6C102',
+            boxShadow: '0 0 10px #e6ae12',
         }}
     />
 );
@@ -105,9 +105,9 @@ const AdminBackground = () => {
                     left: `${Math.random() * 100}%`,
                     width: '6px',
                     height: '6px',
-                    background: i % 2 === 0 ? '#0ea5e9' : '#eab308', // Sky Blue 500 or Yellow 500 (darker for visibility on light bg)
+                    background: i % 2 === 0 ? '#3d09d0' : '#e6ae12', // Sky Blue 500 or Yellow 500 (darker for visibility on light bg)
                     borderRadius: '50%',
-                    boxShadow: `0 0 8px ${i % 2 === 0 ? '#0ea5e9' : '#eab308'}`,
+                    boxShadow: `0 0 8px ${i % 2 === 0 ? '#3d09d0' : '#e6ae12'}`,
                 }}
              />
         ))}

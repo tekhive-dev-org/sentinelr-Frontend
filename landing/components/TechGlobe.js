@@ -44,9 +44,9 @@ function GlobeSkeleton() {
         </div>
         
         {/* Pulsing dots to simulate nodes */}
-        <div className="absolute top-1/4 left-1/3 w-2 h-2 rounded-full bg-orange-500/50 animate-ping" />
-        <div className="absolute top-1/2 right-1/4 w-2 h-2 rounded-full bg-orange-500/50 animate-ping" style={{ animationDelay: '0.5s' }} />
-        <div className="absolute bottom-1/3 left-1/2 w-2 h-2 rounded-full bg-orange-500/50 animate-ping" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/4 left-1/3 w-2 h-2 rounded-full bg-primary-green/50 animate-ping" />
+        <div className="absolute top-1/2 right-1/4 w-2 h-2 rounded-full bg-primary-green/50 animate-ping" style={{ animationDelay: '0.5s' }} />
+        <div className="absolute bottom-1/3 left-1/2 w-2 h-2 rounded-full bg-primary-green/50 animate-ping" style={{ animationDelay: '1s' }} />
       </div>
     </div>
   );
@@ -217,7 +217,7 @@ export default function TechGlobe() {
         pointsData={places}
         pointLat="lat"
         pointLng="lng"
-        pointColor={() => '#e07030'}
+        pointColor={() => '#e06f29'}
         pointAltitude={0.015}
         pointRadius={0.6}
         pointLabel={d => `
@@ -231,7 +231,7 @@ export default function TechGlobe() {
             color: #fff;
             border: 1px solid rgba(224, 112, 48, 0.5);
           ">
-            <div style="color: #e07030; margin-bottom: 2px;">${d.city}</div>
+            <div style="color: #e06f29; margin-bottom: 2px;">${d.city}</div>
             <div style="font-size: 9px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.5px;">● Active</div>
           </div>
         `}

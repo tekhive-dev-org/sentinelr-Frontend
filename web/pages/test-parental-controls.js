@@ -198,7 +198,7 @@ export default function TestParentalControls() {
   if (authLoading || !user) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#3d09d0]"></div>
       </div>
     );
   }
@@ -221,7 +221,7 @@ export default function TestParentalControls() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-xs text-gray-400">Authenticated as: <strong className="text-blue-400">{user.email}</strong></span>
+          <span className="text-xs text-gray-400">Authenticated as: <strong className="text-[#3d09d0]">{user.email}</strong></span>
           <button
             onClick={fetchMembers}
             disabled={loadingMembers}
@@ -247,7 +247,7 @@ export default function TestParentalControls() {
                   id="manualOverrideCheckbox"
                   checked={manualOverride}
                   onChange={(e) => setManualOverride(e.target.checked)}
-                  className="rounded text-blue-600 focus:ring-0 w-3.5 h-3.5 bg-gray-950 border-gray-800 cursor-pointer"
+                  className="rounded text-[#3d09d0] focus:ring-0 w-3.5 h-3.5 bg-gray-950 border-gray-800 cursor-pointer"
                 />
                 <label htmlFor="manualOverrideCheckbox" className="text-[11px] text-gray-400 font-semibold cursor-pointer select-none">
                   Manual ID Override
@@ -261,7 +261,7 @@ export default function TestParentalControls() {
                     <select
                       value={selectedUserIdState}
                       onChange={(e) => handleUserChange(e.target.value)}
-                      className="w-full px-3 py-2 bg-gray-955 border border-gray-800 rounded-lg text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-white font-medium"
+                      className="w-full px-3 py-2 bg-gray-955 border border-gray-800 rounded-lg text-sm focus:border-[#3d09d0] focus:ring-1 focus:ring-[#3d09d0] outline-none text-white font-medium"
                     >
                       {members.length === 0 && <option>No members found</option>}
                       {members.map((m) => (
@@ -277,7 +277,7 @@ export default function TestParentalControls() {
                     <select
                       value={selectedDeviceIdState}
                       onChange={(e) => setSelectedDeviceIdState(e.target.value)}
-                      className="w-full px-3 py-2 bg-gray-955 border border-gray-800 rounded-lg text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-white font-medium"
+                      className="w-full px-3 py-2 bg-gray-955 border border-gray-800 rounded-lg text-sm focus:border-[#3d09d0] focus:ring-1 focus:ring-[#3d09d0] outline-none text-white font-medium"
                       disabled={!activeMember || activeMember.devices?.length === 0}
                     >
                       {!activeMember || activeMember.devices?.length === 0 ? (
@@ -301,7 +301,7 @@ export default function TestParentalControls() {
                       value={manualUserId}
                       onChange={(e) => setManualUserId(e.target.value)}
                       placeholder="e.g., 2"
-                      className="w-full px-3 py-2 bg-gray-955 border border-gray-800 rounded-lg text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-white font-medium"
+                      className="w-full px-3 py-2 bg-gray-955 border border-gray-800 rounded-lg text-sm focus:border-[#3d09d0] focus:ring-1 focus:ring-[#3d09d0] outline-none text-white font-medium"
                     />
                   </div>
 
@@ -312,7 +312,7 @@ export default function TestParentalControls() {
                       value={manualDeviceId}
                       onChange={(e) => setManualDeviceId(e.target.value)}
                       placeholder="e.g., dev_001"
-                      className="w-full px-3 py-2 bg-gray-955 border border-gray-800 rounded-lg text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-white font-medium"
+                      className="w-full px-3 py-2 bg-gray-955 border border-gray-800 rounded-lg text-sm focus:border-[#3d09d0] focus:ring-1 focus:ring-[#3d09d0] outline-none text-white font-medium"
                     />
                   </div>
                 </>
@@ -325,7 +325,7 @@ export default function TestParentalControls() {
                   value={mobileDeviceToken}
                   onChange={(e) => setMobileDeviceToken(e.target.value)}
                   placeholder="Paste mobile JWT token"
-                  className="w-full px-3 py-2 bg-gray-955 border border-gray-800 rounded-lg text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-white font-medium"
+                  className="w-full px-3 py-2 bg-gray-955 border border-gray-800 rounded-lg text-sm focus:border-[#3d09d0] focus:ring-1 focus:ring-[#3d09d0] outline-none text-white font-medium"
                 />
               </div>
             </div>
@@ -337,7 +337,7 @@ export default function TestParentalControls() {
               <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Response Terminal</span>
               <button
                 onClick={clearLogs}
-                className="text-[10px] text-red-400 hover:text-red-300 font-semibold transition"
+                className="text-[10px] text-[#dc323f] hover:text-[#dc323f] font-semibold transition"
               >
                 Clear Console
               </button>
@@ -354,10 +354,10 @@ export default function TestParentalControls() {
                       key={log.id}
                       className={`border-l-2 pl-3 py-0.5 ${
                         log.type === "success"
-                          ? "border-emerald-500"
+                          ? "border-[#e6ae12]"
                           : log.type === "error"
                           ? "border-rose-500"
-                          : "border-blue-500"
+                          : "border-[#3d09d0]"
                       }`}
                     >
                       <div
@@ -365,9 +365,9 @@ export default function TestParentalControls() {
                         onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
                       >
                         <div className="flex items-center gap-1.5 flex-1 min-w-0 pr-2">
-                          {log.type === "success" && <CheckCircleIcon className="w-3.5 h-3.5 text-emerald-500" />}
+                          {log.type === "success" && <CheckCircleIcon className="w-3.5 h-3.5 text-[#e6ae12]" />}
                           {log.type === "error" && <ErrorIcon className="w-3.5 h-3.5 text-rose-500" />}
-                          {log.type === "info" && <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>}
+                          {log.type === "info" && <span className="w-2 h-2 rounded-full bg-[#3d09d0] animate-pulse"></span>}
                           
                           <span className="font-semibold text-gray-300 truncate">{log.apiName}</span>
                         </div>
@@ -413,7 +413,7 @@ export default function TestParentalControls() {
                   <select
                     value={customMethod}
                     onChange={(e) => setCustomMethod(e.target.value)}
-                    className="w-full px-2.5 py-1.5 bg-gray-950 border border-gray-800 rounded-lg text-xs focus:border-blue-500 outline-none text-white font-medium"
+                    className="w-full px-2.5 py-1.5 bg-gray-950 border border-gray-800 rounded-lg text-xs focus:border-[#3d09d0] outline-none text-white font-medium"
                   >
                     <option value="GET">GET</option>
                     <option value="POST">POST</option>
@@ -430,7 +430,7 @@ export default function TestParentalControls() {
                     value={customPath}
                     onChange={(e) => setCustomPath(e.target.value)}
                     placeholder="/parental-controls/2/freeze"
-                    className="w-full px-2.5 py-1.5 bg-gray-950 border border-gray-800 rounded-lg text-xs focus:border-blue-500 outline-none text-white font-medium"
+                    className="w-full px-2.5 py-1.5 bg-gray-950 border border-gray-800 rounded-lg text-xs focus:border-[#3d09d0] outline-none text-white font-medium"
                   />
                 </div>
               </div>
@@ -443,7 +443,7 @@ export default function TestParentalControls() {
                     onChange={(e) => setCustomBody(e.target.value)}
                     placeholder='{ "deviceId": "dev_001" }'
                     rows={3}
-                    className="w-full px-2.5 py-1.5 bg-gray-950 border border-gray-800 rounded-lg text-xs focus:border-blue-500 outline-none text-white font-mono"
+                    className="w-full px-2.5 py-1.5 bg-gray-950 border border-gray-800 rounded-lg text-xs focus:border-[#3d09d0] outline-none text-white font-mono"
                   />
                 </div>
               )}
@@ -463,13 +463,13 @@ export default function TestParentalControls() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-sm font-bold text-white">getMembers()</h4>
-                <span className="text-[10px] bg-blue-950 text-blue-400 border border-blue-900 font-bold px-2 py-0.5 rounded-full uppercase">GET</span>
+                <span className="text-[10px] bg-[#f5f1ff] text-[#3d09d0] border border-[#3d09d0] font-bold px-2 py-0.5 rounded-full uppercase">GET</span>
               </div>
               <p className="text-xs text-gray-400 mb-4">Fetch the family member profiles paired with devices.</p>
             </div>
             <button
               onClick={() => testApi("getMembers", () => parentalControlService.getMembers())}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Trigger Test
             </button>
@@ -480,7 +480,7 @@ export default function TestParentalControls() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-sm font-bold text-white">getDeviceStatus()</h4>
-                <span className="text-[10px] bg-blue-950 text-blue-400 border border-blue-900 font-bold px-2 py-0.5 rounded-full uppercase">GET</span>
+                <span className="text-[10px] bg-[#f5f1ff] text-[#3d09d0] border border-[#3d09d0] font-bold px-2 py-0.5 rounded-full uppercase">GET</span>
               </div>
               <p className="text-xs text-gray-400 mb-4">Fetch full device status summary (screen limits, blocking, bedtime details).</p>
             </div>
@@ -491,7 +491,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!selectedUserId || !selectedDeviceId}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:pointer-events-none text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 disabled:pointer-events-none text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Trigger Test
             </button>
@@ -502,7 +502,7 @@ export default function TestParentalControls() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-sm font-bold text-white">getControls()</h4>
-                <span className="text-[10px] bg-blue-950 text-blue-400 border border-blue-900 font-bold px-2 py-0.5 rounded-full uppercase">GET</span>
+                <span className="text-[10px] bg-[#f5f1ff] text-[#3d09d0] border border-[#3d09d0] font-bold px-2 py-0.5 rounded-full uppercase">GET</span>
               </div>
               <p className="text-xs text-gray-400 mb-4">Fetch direct monitoring rules configured for the device.</p>
             </div>
@@ -513,7 +513,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!selectedUserId || !selectedDeviceId}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:pointer-events-none text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 disabled:pointer-events-none text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Trigger Test
             </button>
@@ -524,7 +524,7 @@ export default function TestParentalControls() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-sm font-bold text-white">Freeze / Unfreeze</h4>
-                <span className="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-900 font-bold px-2 py-0.5 rounded-full uppercase">POST</span>
+                <span className="text-[10px] bg-[#fff8e8] text-[#b98b0e] border border-[#e6ae12] font-bold px-2 py-0.5 rounded-full uppercase">POST</span>
               </div>
               <p className="text-xs text-gray-400 mb-3">Instantly freeze (Quick Pause) or restore access to the child's device.</p>
             </div>
@@ -536,7 +536,7 @@ export default function TestParentalControls() {
                   )
                 }
                 disabled={!selectedUserId || !selectedDeviceId}
-                className="flex-1 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+                className="flex-1 bg-red-600 hover:bg-[#dc323f] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
               >
                 Freeze
               </button>
@@ -547,7 +547,7 @@ export default function TestParentalControls() {
                   )
                 }
                 disabled={!selectedUserId || !selectedDeviceId}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+                className="flex-1 bg-[#e6ae12] hover:bg-[#e6ae12] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
               >
                 Unfreeze
               </button>
@@ -570,7 +570,7 @@ export default function TestParentalControls() {
                     type="checkbox"
                     checked={screenTimeEnabled}
                     onChange={(e) => setScreenTimeEnabled(e.target.checked)}
-                    className="rounded text-blue-600 focus:ring-0 w-4 h-4 bg-gray-900 border-gray-800 cursor-pointer"
+                    className="rounded text-[#3d09d0] focus:ring-0 w-4 h-4 bg-gray-900 border-gray-800 cursor-pointer"
                   />
                 </div>
                 <div>
@@ -595,7 +595,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!selectedUserId || !selectedDeviceId}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Save Screen Time
             </button>
@@ -617,7 +617,7 @@ export default function TestParentalControls() {
                     type="checkbox"
                     checked={bedtimeEnabled}
                     onChange={(e) => setBedtimeEnabled(e.target.checked)}
-                    className="rounded text-blue-600 focus:ring-0 w-4 h-4 bg-gray-900 border-gray-800 cursor-pointer"
+                    className="rounded text-[#3d09d0] focus:ring-0 w-4 h-4 bg-gray-900 border-gray-800 cursor-pointer"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -655,7 +655,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!selectedUserId || !selectedDeviceId}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Save Bedtime
             </button>
@@ -666,7 +666,7 @@ export default function TestParentalControls() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-sm font-bold text-white">grantBonusTime()</h4>
-                <span className="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-900 font-bold px-2 py-0.5 rounded-full uppercase">POST</span>
+                <span className="text-[10px] bg-[#fff8e8] text-[#b98b0e] border border-[#e6ae12] font-bold px-2 py-0.5 rounded-full uppercase">POST</span>
               </div>
               <p className="text-xs text-gray-400 mb-3">Add supplementary screen time minutes outside standard rules.</p>
               
@@ -687,7 +687,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!selectedUserId || !selectedDeviceId}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Add Bonus Time
             </button>
@@ -708,7 +708,7 @@ export default function TestParentalControls() {
                   type="checkbox"
                   checked={appBlockingEnabled}
                   onChange={(e) => setAppBlockingEnabled(e.target.checked)}
-                  className="rounded text-blue-600 focus:ring-0 w-4 h-4 bg-gray-900 border-gray-800 cursor-pointer"
+                  className="rounded text-[#3d09d0] focus:ring-0 w-4 h-4 bg-gray-900 border-gray-800 cursor-pointer"
                 />
               </div>
             </div>
@@ -721,7 +721,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!selectedUserId || !selectedDeviceId}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Save App Blocking
             </button>
@@ -772,7 +772,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!selectedUserId || !selectedDeviceId}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Toggle App Rule
             </button>
@@ -804,7 +804,7 @@ export default function TestParentalControls() {
                     type="checkbox"
                     checked={categoryBlockToggle}
                     onChange={(e) => setCategoryBlockToggle(e.target.checked)}
-                    className="rounded text-blue-600 focus:ring-0 w-4 h-4 bg-gray-900 border-gray-800 cursor-pointer"
+                    className="rounded text-[#3d09d0] focus:ring-0 w-4 h-4 bg-gray-900 border-gray-800 cursor-pointer"
                   />
                 </div>
               </div>
@@ -821,7 +821,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!selectedUserId || !selectedDeviceId}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Toggle Category Block
             </button>
@@ -843,7 +843,7 @@ export default function TestParentalControls() {
                     type="checkbox"
                     checked={webFilteringEnabled}
                     onChange={(e) => setWebFilteringEnabled(e.target.checked)}
-                    className="rounded text-blue-600 focus:ring-0 w-4 h-4 bg-gray-900 border-gray-800 cursor-pointer"
+                    className="rounded text-[#3d09d0] focus:ring-0 w-4 h-4 bg-gray-900 border-gray-800 cursor-pointer"
                   />
                 </div>
               </div>
@@ -858,7 +858,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!selectedUserId || !selectedDeviceId}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Save Web Filters
             </button>
@@ -869,7 +869,7 @@ export default function TestParentalControls() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-sm font-bold text-white">Manage Site Filter</h4>
-                <span className="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-900 font-bold px-2 py-0.5 rounded-full uppercase">POST/DEL</span>
+                <span className="text-[10px] bg-[#fff8e8] text-[#b98b0e] border border-[#e6ae12] font-bold px-2 py-0.5 rounded-full uppercase">POST/DEL</span>
               </div>
               <p className="text-xs text-gray-400 mb-3">Add or remove specific URL from child web filter block list.</p>
               
@@ -892,7 +892,7 @@ export default function TestParentalControls() {
                   )
                 }
                 disabled={!selectedUserId || !selectedDeviceId}
-                className="flex-1 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+                className="flex-1 bg-red-600 hover:bg-[#dc323f] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
               >
                 Block Site
               </button>
@@ -903,7 +903,7 @@ export default function TestParentalControls() {
                   )
                 }
                 disabled={!selectedUserId || !selectedDeviceId}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+                className="flex-1 bg-[#e6ae12] hover:bg-[#e6ae12] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
               >
                 Unblock Site
               </button>
@@ -915,7 +915,7 @@ export default function TestParentalControls() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-sm font-bold text-white">getActivity()</h4>
-                <span className="text-[10px] bg-blue-950 text-blue-400 border border-blue-900 font-bold px-2 py-0.5 rounded-full uppercase">GET</span>
+                <span className="text-[10px] bg-[#f5f1ff] text-[#3d09d0] border border-[#3d09d0] font-bold px-2 py-0.5 rounded-full uppercase">GET</span>
               </div>
               <p className="text-xs text-gray-400 mb-3">Fetch recent control logs, alerts, and system activities.</p>
               
@@ -936,7 +936,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!selectedUserId}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Fetch Logs
             </button>
@@ -957,7 +957,7 @@ export default function TestParentalControls() {
                   type="checkbox"
                   checked={monitoringEnabled}
                   onChange={(e) => setMonitoringEnabled(e.target.checked)}
-                  className="rounded text-blue-600 focus:ring-0 w-4 h-4 bg-gray-900 border-gray-800 cursor-pointer"
+                  className="rounded text-[#3d09d0] focus:ring-0 w-4 h-4 bg-gray-900 border-gray-800 cursor-pointer"
                 />
               </div>
             </div>
@@ -972,7 +972,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!selectedUserId || !selectedDeviceId}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Toggle Monitoring
             </button>
@@ -983,7 +983,7 @@ export default function TestParentalControls() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-sm font-bold text-white">getInstalledApps()</h4>
-                <span className="text-[10px] bg-blue-950 text-blue-400 border border-blue-900 font-bold px-2 py-0.5 rounded-full uppercase">GET</span>
+                <span className="text-[10px] bg-[#f5f1ff] text-[#3d09d0] border border-[#3d09d0] font-bold px-2 py-0.5 rounded-full uppercase">GET</span>
               </div>
               <p className="text-xs text-gray-400 mb-3">List all applications installed on the client mobile device.</p>
               
@@ -1020,7 +1020,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!selectedDeviceId}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Fetch Apps List
             </button>
@@ -1037,7 +1037,7 @@ export default function TestParentalControls() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-sm font-bold text-white">getParentalStatus()</h4>
-                <span className="text-[10px] bg-blue-955 text-blue-400 border border-blue-900 font-bold px-2 py-0.5 rounded-full uppercase">GET</span>
+                <span className="text-[10px] bg-[#f5f1ff] text-[#3d09d0] border border-[#3d09d0] font-bold px-2 py-0.5 rounded-full uppercase">GET</span>
               </div>
               <p className="text-xs text-gray-400 mb-4">Fetch read-only controls configuration for this device.</p>
             </div>
@@ -1048,7 +1048,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!mobileDeviceToken}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Fetch Mobile Status
             </button>
@@ -1059,7 +1059,7 @@ export default function TestParentalControls() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-sm font-bold text-white">getParentalActivity()</h4>
-                <span className="text-[10px] bg-blue-955 text-blue-400 border border-blue-900 font-bold px-2 py-0.5 rounded-full uppercase">GET</span>
+                <span className="text-[10px] bg-[#f5f1ff] text-[#3d09d0] border border-[#3d09d0] font-bold px-2 py-0.5 rounded-full uppercase">GET</span>
               </div>
               <p className="text-xs text-gray-400 mb-4">Fetch recent parental control logs for the child device.</p>
             </div>
@@ -1070,7 +1070,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!mobileDeviceToken}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Fetch Mobile Activity
             </button>
@@ -1081,7 +1081,7 @@ export default function TestParentalControls() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-sm font-bold text-white">sendMobileHeartbeat()</h4>
-                <span className="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-900 font-bold px-2 py-0.5 rounded-full uppercase">POST</span>
+                <span className="text-[10px] bg-[#fff8e8] text-[#b98b0e] border border-[#e6ae12] font-bold px-2 py-0.5 rounded-full uppercase">POST</span>
               </div>
               <p className="text-xs text-gray-400 mb-3">Send periodic heartbeat reporting battery and network status.</p>
               
@@ -1115,7 +1115,7 @@ export default function TestParentalControls() {
                     type="checkbox"
                     checked={mobileHeartbeatCharging}
                     onChange={(e) => setMobileHeartbeatCharging(e.target.checked)}
-                    className="rounded text-blue-600 focus:ring-0 w-4 h-4 bg-gray-900 border-gray-800 cursor-pointer"
+                    className="rounded text-[#3d09d0] focus:ring-0 w-4 h-4 bg-gray-900 border-gray-800 cursor-pointer"
                   />
                 </div>
               </div>
@@ -1132,7 +1132,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!mobileDeviceToken}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Send Heartbeat
             </button>
@@ -1143,7 +1143,7 @@ export default function TestParentalControls() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-sm font-bold text-white">sendMobilePing()</h4>
-                <span className="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-900 font-bold px-2 py-0.5 rounded-full uppercase">POST</span>
+                <span className="text-[10px] bg-[#fff8e8] text-[#b98b0e] border border-[#e6ae12] font-bold px-2 py-0.5 rounded-full uppercase">POST</span>
               </div>
               <p className="text-xs text-gray-400 mb-3">Upload periodic GPS coordinates representing the child's location.</p>
               
@@ -1191,7 +1191,7 @@ export default function TestParentalControls() {
                 )
               }
               disabled={!mobileDeviceToken}
-              className="w-full flex items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
+              className="w-full flex items-center justify-center gap-1 bg-[#3d09d0] hover:bg-[#3d09d0] disabled:opacity-50 text-white font-bold py-2 px-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlayArrowIcon className="w-4 h-4" /> Upload Ping
             </button>

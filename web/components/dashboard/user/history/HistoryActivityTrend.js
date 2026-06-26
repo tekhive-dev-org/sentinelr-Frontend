@@ -39,7 +39,7 @@ const CustomTooltip = ({ active, payload, label }) => {
     >
       <div style={{ fontWeight: 600, color: '#374151', marginBottom: 2 }}>{label}</div>
       <div style={{ color: '#6b7280' }}>
-        Activity: <strong style={{ color: '#22c55e' }}>{payload[0].value}h</strong>
+        Activity: <strong style={{ color: '#e6ae12' }}>{payload[0].value}h</strong>
       </div>
     </div>
   );
@@ -86,10 +86,10 @@ export default function HistoryActivityTrend({ data = [], totalMinutes = 0 }) {
               <Line
                 type="monotone"
                 dataKey="value"
-                stroke="#22c55e"
+                stroke="#e6ae12"
                 strokeWidth={2.5}
                 dot={{ r: 0 }}
-                activeDot={{ r: 5, stroke: '#22c55e', strokeWidth: 2, fill: '#fff' }}
+                activeDot={{ r: 5, stroke: '#e6ae12', strokeWidth: 2, fill: '#fff' }}
               />
             </LineChart>
           </ResponsiveContainer>

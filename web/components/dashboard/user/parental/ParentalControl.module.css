@@ -4,16 +4,16 @@
 
 .container {
   /* Brand color tokens & custom properties preserved */
-  --clr-primary:       #3e0d10;
-  --clr-primary-mid:   #6b2327;
+  --clr-primary:       #e06f29;
+  --clr-primary-mid:   #dc323f;
   --clr-primary-soft:  #f9f0ef;
   --clr-primary-tint:  rgba(62, 13, 16, 0.06);
-  --clr-danger:        #db323f;
-  --clr-danger-soft:   #fef2f2;
-  --clr-warning:       #e6ad13;
-  --clr-warning-soft:  #fffbeb;
-  --clr-success:       #16a34a;
-  --clr-success-soft:  #f0fdf4;
+  --clr-danger:        #dc323f;
+  --clr-danger-soft:   #fff0f1;
+  --clr-warning:       #e6ae12;
+  --clr-warning-soft:  #fff8e8;
+  --clr-success:       #e6ae12;
+  --clr-success-soft:  #fff8e8;
   --clr-text:          #0f0f0f;
   --clr-text-2:        #374151;
   --clr-text-3:        #6b7280;
@@ -65,7 +65,7 @@
 }
 
 .deviceSelect:focus {
-  @apply border-[#3e0d10] ring-4 ring-[#3e0d10]/10;
+  @apply border-[#e06f29] ring-4 ring-[#e06f29]/10;
 }
 
 .monitoringBadge {
@@ -73,11 +73,11 @@
 }
 
 .monitoringActive {
-  @apply bg-green-50 text-green-600 border border-green-200;
+  @apply bg-[#fff8e8] text-[#e6ae12] border border-[#f3d476];
 }
 
 .monitoringInactive {
-  @apply bg-red-50 text-red-500 border border-red-200;
+  @apply bg-[#fff0f1] text-[#dc323f] border border-[#f4a6ad];
 }
 
 .monitoringDot {
@@ -85,12 +85,12 @@
 }
 
 .monitoringDotActive {
-  @apply bg-green-600 shadow-[0_0_0_3px_rgba(22,163,74,0.25)];
+  @apply bg-[#e6ae12] shadow-[0_0_0_3px_rgba(22,163,74,0.25)];
   animation: shadowPulse 2s infinite;
 }
 
 .monitoringDotInactive {
-  @apply bg-red-500;
+  @apply bg-[#dc323f];
 }
 
 @keyframes shadowPulse {
@@ -112,7 +112,7 @@
 }
 
 .cardTitleIcon {
-  @apply flex items-center justify-center w-7 h-7 rounded-lg bg-[#3e0d10]/5 text-[#3e0d10] flex-shrink-0;
+  @apply flex items-center justify-center w-7 h-7 rounded-lg bg-[#e06f29]/5 text-[#e06f29] flex-shrink-0;
 }
 
 .cardSubtext {
@@ -125,7 +125,7 @@
 }
 
 .screenTimeRemaining {
-  @apply text-xs text-[#e6ad13] font-bold mb-3.5 tracking-wide;
+  @apply text-xs text-[#e6ae12] font-bold mb-3.5 tracking-wide;
 }
 
 .progressBar {
@@ -137,15 +137,15 @@
 }
 
 .progressFillSafe {
-  @apply bg-gradient-to-r from-[#3e0d10] to-[#6b2327];
+  @apply bg-gradient-to-r from-[#e06f29] to-[#dc323f];
 }
 
 .progressFillWarn {
-  @apply bg-gradient-to-r from-[#e6ad13] to-[#f59e0b];
+  @apply bg-gradient-to-r from-[#e6ae12] to-[#e6ae12];
 }
 
 .progressFillDanger {
-  @apply bg-gradient-to-r from-[#db323f] to-[#b91c1c];
+  @apply bg-gradient-to-r from-[#dc323f] to-[#a92731];
 }
 
 .screenTimeBreakdown {
@@ -178,11 +178,11 @@
 }
 
 .bedtimeValue {
-  @apply text-base font-extrabold text-[#3e0d10] tracking-tight;
+  @apply text-base font-extrabold text-[#e06f29] tracking-tight;
 }
 
 .editScheduleBtn {
-  @apply border-none bg-transparent text-[#3e0d10] text-xs font-bold cursor-pointer p-0 hover:underline;
+  @apply border-none bg-transparent text-[#e06f29] text-xs font-bold cursor-pointer p-0 hover:underline;
 }
 
 /* Quick overrides */
@@ -195,20 +195,20 @@
 }
 
 .freezeBtnActive {
-  @apply bg-gradient-to-br from-[#3e0d10] to-[#5b1a1d] shadow-[0_4px_14px_rgba(62,13,16,0.35)] hover:shadow-[0_6px_20px_rgba(62,13,16,0.45)] hover:-translate-y-0.5;
+  @apply bg-gradient-to-br from-[#e06f29] to-[#dc323f] shadow-[0_4px_14px_rgba(62,13,16,0.35)] hover:shadow-[0_6px_20px_rgba(62,13,16,0.45)] hover:-translate-y-0.5;
 }
 
 .freezeBtnFrozen {
-  @apply bg-gradient-to-br from-[#db323f] to-[#991b1b] shadow-[0_4px_14px_rgba(219,50,63,0.35)] hover:shadow-[0_6px_20px_rgba(219,50,63,0.45)] hover:-translate-y-0.5;
+  @apply bg-gradient-to-br from-[#dc323f] to-[#a92731] shadow-[0_4px_14px_rgba(219,50,63,0.35)] hover:shadow-[0_6px_20px_rgba(219,50,63,0.45)] hover:-translate-y-0.5;
 }
 
 .bonusBtn {
-  @apply w-full p-3 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 bg-white cursor-pointer flex items-center justify-center gap-2 transition-all duration-200 hover:border-[#3e0d10] hover:text-[#3e0d10] hover:bg-[#3e0d10]/5;
+  @apply w-full p-3 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 bg-white cursor-pointer flex items-center justify-center gap-2 transition-all duration-200 hover:border-[#e06f29] hover:text-[#e06f29] hover:bg-[#e06f29]/5;
 }
 
 /* Web Filtering site blocking */
 .addWebsiteBtn {
-  @apply border-none bg-transparent text-[#3e0d10] text-xs font-bold cursor-pointer p-0 hover:underline;
+  @apply border-none bg-transparent text-[#e06f29] text-xs font-bold cursor-pointer p-0 hover:underline;
 }
 
 .searchWrapper {
@@ -216,7 +216,7 @@
 }
 
 .searchInput {
-  @apply w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-xs text-gray-700 bg-[#f6f3f2] outline-none mb-3 transition-all duration-150 ease-in-out box-border focus:border-[#3e0d10] focus:ring-4 focus:ring-[#3e0d10]/10 focus:bg-white;
+  @apply w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-xs text-gray-700 bg-[#f6f3f2] outline-none mb-3 transition-all duration-150 ease-in-out box-border focus:border-[#e06f29] focus:ring-4 focus:ring-[#e06f29]/10 focus:bg-white;
 }
 
 .searchIcon {
@@ -236,7 +236,7 @@
 }
 
 .siteIcon {
-  @apply w-6 h-6 rounded-full bg-red-50 flex items-center justify-center text-red-500 flex-shrink-0;
+  @apply w-6 h-6 rounded-full bg-[#fff0f1] flex items-center justify-center text-[#dc323f] flex-shrink-0;
 }
 
 .siteName {
@@ -244,7 +244,7 @@
 }
 
 .removeSiteBtn {
-  @apply bg-red-50 border-none text-red-500 w-7 h-7 rounded-lg cursor-pointer flex items-center justify-center transition-all duration-150 flex-shrink-0 hover:bg-red-100 hover:scale-105;
+  @apply bg-[#fff0f1] border-none text-[#dc323f] w-7 h-7 rounded-lg cursor-pointer flex items-center justify-center transition-all duration-150 flex-shrink-0 hover:bg-[#fff0f1] hover:scale-105;
 }
 
 .addSiteForm {
@@ -252,11 +252,11 @@
 }
 
 .addSiteInput {
-  @apply flex-1 p-2 border border-gray-200 rounded-xl text-xs text-gray-700 bg-[#f6f3f2] outline-none transition-all duration-150 focus:border-[#3e0d10] focus:ring-4 focus:ring-[#3e0d10]/10 focus:bg-white;
+  @apply flex-1 p-2 border border-gray-200 rounded-xl text-xs text-gray-700 bg-[#f6f3f2] outline-none transition-all duration-150 focus:border-[#e06f29] focus:ring-4 focus:ring-[#e06f29]/10 focus:bg-white;
 }
 
 .addSiteSubmit {
-  @apply px-4 py-2 border-none rounded-xl bg-[#3e0d10] text-white text-xs font-bold cursor-pointer transition-all duration-150 whitespace-nowrap hover:bg-[#2c090b] hover:shadow-[0_3px_10px_rgba(62,13,16,0.3)];
+  @apply px-4 py-2 border-none rounded-xl bg-[#e06f29] text-white text-xs font-bold cursor-pointer transition-all duration-150 whitespace-nowrap hover:bg-[#b94f1e] hover:shadow-[0_3px_10px_rgba(62,13,16,0.3)];
 }
 
 /* Category Blocking Overrides */
@@ -270,7 +270,7 @@
 
 .sectionTitle::before {
   content: '';
-  @apply block w-1 h-4 rounded-full flex-shrink-0 bg-gradient-to-b from-[#3e0d10] to-[#db323f];
+  @apply block w-1 h-4 rounded-full flex-shrink-0 bg-gradient-to-b from-[#e06f29] to-[#dc323f];
 }
 
 .categoryList {
@@ -324,7 +324,7 @@
 }
 
 .toggleInput:checked + .toggleSlider {
-  @apply bg-[#3e0d10];
+  @apply bg-[#e06f29];
 }
 
 .toggleInput:checked + .toggleSlider::before {
@@ -360,7 +360,7 @@
 }
 
 .limitSelect:focus {
-  @apply border-[#3e0d10] ring-4 ring-[#3e0d10]/10;
+  @apply border-[#e06f29] ring-4 ring-[#e06f29]/10;
 }
 
 .loadingOpacity {
@@ -400,11 +400,11 @@
 }
 
 .activityHighlight {
-  @apply text-[#3e0d10] font-bold;
+  @apply text-[#e06f29] font-bold;
 }
 
 .activityHighlightDanger {
-  @apply text-red-500 font-bold underline decoration-red-500/30;
+  @apply text-[#dc323f] font-bold underline decoration-red-500/30;
 }
 
 .activityTime {
@@ -417,7 +417,7 @@
 }
 
 .spinner {
-  @apply w-9 h-9 border-[3px] border-gray-100 border-t-[#3e0d10] rounded-full animate-spin;
+  @apply w-9 h-9 border-[3px] border-gray-100 border-t-[#e06f29] rounded-full animate-spin;
 }
 
 .loadingText {
@@ -429,7 +429,7 @@
 }
 
 .emptyIcon {
-  @apply flex items-center justify-center w-16 h-16 rounded-full bg-[#3e0d10]/5 text-[#3e0d10] mb-1;
+  @apply flex items-center justify-center w-16 h-16 rounded-full bg-[#e06f29]/5 text-[#e06f29] mb-1;
 }
 
 .emptyTitle {
@@ -442,11 +442,11 @@
 
 /* Child Selector & Dropdowns */
 .childSelector {
-  @apply fixed bottom-20 left-[280px] z-10 flex items-center gap-2 bg-white rounded-xl p-2 shadow-[0_4px_24px_rgba(62,13,16,0.1)] cursor-pointer transition-all duration-200 border border-gray-200 min-w-[200px] hover:shadow-[0_12px_40px_rgba(62,13,16,0.14)] hover:border-[#3e0d10];
+  @apply fixed bottom-20 left-[280px] z-10 flex items-center gap-2 bg-white rounded-xl p-2 shadow-[0_4px_24px_rgba(62,13,16,0.1)] cursor-pointer transition-all duration-200 border border-gray-200 min-w-[200px] hover:shadow-[0_12px_40px_rgba(62,13,16,0.14)] hover:border-[#e06f29];
 }
 
 .childAvatar {
-  @apply w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-extrabold bg-gradient-to-br from-[#3e0d10] to-[#6b2327];
+  @apply w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-extrabold bg-gradient-to-br from-[#e06f29] to-[#dc323f];
 }
 
 .childSelectorInfo {
@@ -474,7 +474,7 @@
 }
 
 .childDropdownItemActive {
-  @apply bg-[#3e0d10]/5 border-l-[3px] border-[#3e0d10];
+  @apply bg-[#e06f29]/5 border-l-[3px] border-[#e06f29];
 }
 
 /* Bedtime Setting Modal */
@@ -499,7 +499,7 @@
 }
   
 .modalInput {
-  @apply w-full px-3.5 py-2 border border-gray-200 rounded-xl text-sm text-black outline-none transition-all duration-150 ease-in-out box-border bg-gray-50 focus:border-[#3e0d10] focus:ring-4 focus:ring-[#3e0d10]/10 focus:bg-white;
+  @apply w-full px-3.5 py-2 border border-gray-200 rounded-xl text-sm text-black outline-none transition-all duration-150 ease-in-out box-border bg-gray-50 focus:border-[#e06f29] focus:ring-4 focus:ring-[#e06f29]/10 focus:bg-white;
 }
 
 .modalActions {
@@ -511,7 +511,7 @@
 }
 
 .modalSaveBtn {
-  @apply px-5 py-2 border-none rounded-xl text-white text-xs font-bold cursor-pointer transition-all duration-200 shadow-[0_3px_10px_rgba(62,13,16,0.25)] hover:shadow-[0_5px_14px_rgba(62,13,16,0.35)] hover:-translate-y-0.5 bg-gradient-to-br from-[#3e0d10] to-[#5b1a1d];
+  @apply px-5 py-2 border-none rounded-xl text-white text-xs font-bold cursor-pointer transition-all duration-200 shadow-[0_3px_10px_rgba(62,13,16,0.25)] hover:shadow-[0_5px_14px_rgba(62,13,16,0.35)] hover:-translate-y-0.5 bg-gradient-to-br from-[#e06f29] to-[#dc323f];
 }
 
 /* Child Profile Header styling */
@@ -525,7 +525,7 @@
 
 .childLargeAvatar {
   @apply w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-extrabold shadow-[0_4px_12px_rgba(62,13,16,0.15)] border-2 border-white;
-  background: linear-gradient(135deg, #3e0d10 0%, #6b2327 100%);
+  background: linear-gradient(135deg, #e06f29 0%, #dc323f 100%);
 }
 
 /* Telemetry Grid and cards */
@@ -554,7 +554,7 @@
 }
 
 .chargingBadge {
-  @apply text-[9px] font-black text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full uppercase tracking-wide border border-green-600/20;
+  @apply text-[9px] font-black text-[#e6ae12] bg-[#fff8e8] px-1.5 py-0.5 rounded-full uppercase tracking-wide border border-[#e6ae12]/20;
 }
 
 /* General Layout grids */
@@ -579,7 +579,7 @@
 }
 
 .saveLimitBtn {
-  @apply w-full py-2.5 mt-4 border-none rounded-xl text-white text-xs font-bold cursor-pointer transition-all duration-200 shadow-[0_3px_10px_rgba(62,13,16,0.2)] hover:shadow-[0_5px_14px_rgba(62,13,16,0.3)] hover:-translate-y-0.5 bg-gradient-to-br from-[#3e0d10] to-[#5b1a1d];
+  @apply w-full py-2.5 mt-4 border-none rounded-xl text-white text-xs font-bold cursor-pointer transition-all duration-200 shadow-[0_3px_10px_rgba(62,13,16,0.2)] hover:shadow-[0_5px_14px_rgba(62,13,16,0.3)] hover:-translate-y-0.5 bg-gradient-to-br from-[#e06f29] to-[#dc323f];
 }
 
 /* No Selection premium styling */
@@ -604,7 +604,7 @@
 }
 
 .memberCard {
-  @apply bg-white rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_16px_rgba(62,13,16,0.05)] border border-gray-100/50 transition-all duration-[250ms] ease-in-out flex flex-col gap-4 hover:-translate-y-0.5 hover:shadow-[0_4px_24px_rgba(62,13,16,0.1)] hover:border-[#3e0d10]/10;
+  @apply bg-white rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_16px_rgba(62,13,16,0.05)] border border-gray-100/50 transition-all duration-[250ms] ease-in-out flex flex-col gap-4 hover:-translate-y-0.5 hover:shadow-[0_4px_24px_rgba(62,13,16,0.1)] hover:border-[#e06f29]/10;
 }
 
 .memberCardHeader {
@@ -612,7 +612,7 @@
 }
 
 .memberCardAvatar {
-  @apply w-11 h-11 rounded-full flex items-center justify-center text-white text-sm font-extrabold shadow-[0_2px_8px_rgba(62,13,16,0.15)] bg-gradient-to-br from-[#3e0d10] to-[#6b2327];
+  @apply w-11 h-11 rounded-full flex items-center justify-center text-white text-sm font-extrabold shadow-[0_2px_8px_rgba(62,13,16,0.15)] bg-gradient-to-br from-[#e06f29] to-[#dc323f];
 }
 
 .memberCardInfo {
@@ -632,7 +632,7 @@
 }
 
 .devicePairButton {
-  @apply flex items-center gap-3 w-full p-3.5 border border-gray-100/50 rounded-xl bg-gray-50 cursor-pointer transition-all duration-150 ease-in-out text-left hover:border-[#3e0d10] hover:bg-[#3e0d10]/5;
+  @apply flex items-center gap-3 w-full p-3.5 border border-gray-100/50 rounded-xl bg-gray-50 cursor-pointer transition-all duration-150 ease-in-out text-left hover:border-[#e06f29] hover:bg-[#e06f29]/5;
 }
 
 .devicePairIcon {
@@ -648,7 +648,7 @@
 }
 
 .devicePairStatus {
-  @apply text-[10px] text-green-600 font-bold;
+  @apply text-[10px] text-[#e6ae12] font-bold;
 }
 
 .noDevicesText {

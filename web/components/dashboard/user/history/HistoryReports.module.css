@@ -57,7 +57,7 @@
 }
 
 .searchInput:focus {
-  border-color: #818cf8;
+  border-color: #3d09d0;
   box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
 }
 
@@ -68,7 +68,7 @@
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   font-size: 13px;
-  font-family: 'Lato', sans-serif;
+  font-family: var(--font-body);
   font-weight: 500;
   color: #374151;
   background: rgba(255, 255, 255, 0.75);
@@ -80,7 +80,7 @@
 }
 
 .deviceSelect:focus {
-  border-color: #818cf8;
+  border-color: #3d09d0;
   box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
 }
 
@@ -161,23 +161,23 @@
 }
 
 .iconGreen {
-  background: #d1fae5;
-  color: #059669;
+  background: #fff0cf;
+  color: #e6ae12;
 }
 
 .iconBlue {
-  background: #e0f2fe;
-  color: #0284c7;
+  background: #f5f1ff;
+  color: #3d09d0;
 }
 
 .iconRed {
-  background: #fee2e2;
-  color: #dc2626;
+  background: #ffe1e4;
+  color: #dc323f;
 }
 
 .iconOrange {
-  background: #ffedd5;
-  color: #ea580c;
+  background: #fff0df;
+  color: #e06f29;
 }
 
 .statTitle {
@@ -247,7 +247,7 @@
 }
 
 .detailsLink:hover {
-  color: #2563eb;
+  color: #3d09d0;
 }
 
 .mapPlaceholder {
@@ -332,7 +332,7 @@
 }
 
 .seeAllBtn:hover {
-  color: #2563eb;
+  color: #3d09d0;
 }
 
 .reportPreview {
@@ -380,9 +380,9 @@
   flex-shrink: 0;
 }
 
-.dotOrange  { background: #f97316; }
-.dotGreen   { background: #22c55e; }
-.dotRed     { background: #ef4444; }
+.dotOrange  { background: #e06f29; }
+.dotGreen   { background: #e6ae12; }
+.dotRed     { background: #dc323f; }
 
 .reportDate {
   font-size: 13px;
@@ -404,18 +404,18 @@
 }
 
 .badgeTransit {
-  background: #ffedd5;
-  color: #ea580c;
+  background: #fff0df;
+  color: #e06f29;
 }
 
 .badgeWork {
-  background: #d1fae5;
-  color: #059669;
+  background: #fff0cf;
+  color: #e6ae12;
 }
 
 .badgeHome {
-  background: #fee2e2;
-  color: #dc2626;
+  background: #ffe1e4;
+  color: #dc323f;
 }
 
 /* ── Timeline column wrapper (caps timeline to left column height) ────────── */
@@ -540,18 +540,18 @@
 }
 
 .nodeBlue {
-  background: #dbeafe;
-  color: #2563eb;
+  background: #ede7ff;
+  color: #3d09d0;
 }
 
 .nodeRed {
-  background: #fee2e2;
-  color: #dc2626;
+  background: #ffe1e4;
+  color: #dc323f;
 }
 
 .nodeOrange {
-  background: #ffedd5;
-  color: #ea580c;
+  background: #fff0df;
+  color: #e06f29;
 }
 
 .timelineNode svg {
@@ -646,16 +646,16 @@
 
 /* Alert event (geofence exit, etc.) */
 .timelineAlert {
-  border: 1px solid #fed7aa;
+  border: 1px solid #f5bf91;
   border-radius: 10px;
   padding: 12px;
-  background: #fff7ed;
+  background: #fff7f0;
 }
 
 .alertType {
   font-size: 12px;
   font-weight: 700;
-  color: #ea580c;
+  color: #e06f29;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-bottom: 4px;
@@ -739,14 +739,14 @@
 }
 
 .dateChip:hover {
-  border-color: #2563eb;
-  color: #2563eb;
+  border-color: #3d09d0;
+  color: #3d09d0;
 }
 
 .dateChipActive {
-  background: #2563eb;
+  background: #3d09d0;
   color: #fff;
-  border-color: #2563eb;
+  border-color: #3d09d0;
 }
 
 .dateInput {
@@ -760,7 +760,7 @@
 }
 
 .dateInput:focus {
-  border-color: #818cf8;
+  border-color: #3d09d0;
 }
 
 /* ── Responsive ───────────────────────────────────────────────────────────── */

@@ -9,7 +9,7 @@ export default function TwoFactorSection({ isEnabled, onToggle, isLoading }) {
         Two-Factor Authentication adds an additional layer of security to your SENTINELR account. Each time you log in to SENTINELR, you will be asked to enter a unique code that is only available on your mobile phone.
       </p>
       
-      <div className={styles.toggleItem} style={{ border: 'none', padding: 0 }}>
+      <div className={`${styles.toggleItem} ${styles.toggleItemCompact}`}>
         <label className={`${styles.switch} ${isLoading ? styles.switchLoading : ''}`}>
           <input 
             type="checkbox" 
@@ -19,8 +19,8 @@ export default function TwoFactorSection({ isEnabled, onToggle, isLoading }) {
           />
           <span className={styles.slider}></span>
         </label>
-        <div className={styles.toggleInfo} style={{ paddingLeft: '16px' }}>
-          <div className={styles.toggleTitle} style={{ marginBottom: 0 }}>
+        <div className={styles.toggleInfo}>
+          <div className={`${styles.toggleTitle} ${styles.toggleTitleFlush}`}>
             {isLoading ? 'Updating...' : 'Enable Two-Factor Authentication'}
           </div>
         </div>

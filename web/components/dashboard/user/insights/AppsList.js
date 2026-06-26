@@ -30,6 +30,7 @@ export default function AppsList({ apps, loading }) {
         ) : (
           apps?.map((app, index) => {
             const pct = Math.round((parseMinutes(app.time) / maxMinutes) * 100);
+            const widthBucket = Math.max(5, Math.min(100, Math.ceil(pct / 5) * 5));
             return (
               <div key={app.id} className={styles.appItem}>
                 {/* Rank */}
@@ -58,8 +59,7 @@ export default function AppsList({ apps, loading }) {
                   <span className={styles.timeLabel}>{app.time}</span>
                   <div className={styles.barTrack}>
                     <div
-                      className={styles.barFill}
-                      style={{ width: `${pct}%` }}
+                      className={`${styles.barFill} ${styles[`barFill${widthBucket}`]}`}
                       aria-hidden="true"
                     />
                   </div>
@@ -72,4 +72,3 @@ export default function AppsList({ apps, loading }) {
     </div>
   );
 }
-

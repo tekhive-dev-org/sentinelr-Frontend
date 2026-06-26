@@ -30,10 +30,10 @@
   justify-content: center;
 }
 
-.iconBox.green { background-color: #dcfce7; color: #16a34a; }
-.iconBox.blue { background-color: #dbeafe; color: #2563eb; }
+.iconBox.green { background-color: #fff0cf; color: #e6ae12; }
+.iconBox.blue { background-color: #ede7ff; color: #3d09d0; }
 .iconBox.gray { background-color: #f1f5f9; color: #64748b; }
-.iconBox.red { background-color: #fee2e2; color: #dc2626; }
+.iconBox.red { background-color: #ffe1e4; color: #dc323f; }
 
 .statInfo {
   display: flex;
@@ -131,7 +131,7 @@
 }
 
 .searchInput:focus {
-  border-color: #3b82f6;
+  border-color: #3d09d0;
 }
 
 /* Table */
@@ -189,9 +189,9 @@
 }
 
 .statusBadge.active {
-  background-color: #f0fdf4;
-  color: #16a34a;
-  border-color: #dcfce7;
+  background-color: #fff8e8;
+  color: #e6ae12;
+  border-color: #fff0cf;
 }
 
 .statusBadge.due {
@@ -201,9 +201,9 @@
 }
 
 .statusBadge.overdue {
-  background-color: #fef2f2;
-  color: #dc2626;
-  border-color: #fee2e2;
+  background-color: #fff0f1;
+  color: #dc323f;
+  border-color: #ffe1e4;
 }
 
 .actionBtn {
@@ -325,7 +325,7 @@
 }
 
 .changePlanBtn {
-  background: #0E4B68;
+  background: #e06f29;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -383,7 +383,7 @@
 }
 
 .primaryBtn {
-  background: #0E4B68;
+  background: #e06f29;
   color: white;
   border: none;
   padding: 12px;
@@ -456,7 +456,7 @@
 }
 
 .planOption.featured {
-  border: 1px solid #0E4B68;
+  border: 1px solid #e06f29;
   transform: scale(1.05);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
@@ -499,9 +499,9 @@
 }
 
 .selectPlanBtn.filled {
-  background: #0E4B68;
+  background: #e06f29;
   color: white;
-  border: 1px solid #0E4B68;
+  border: 1px solid #e06f29;
 }
 
 .selectPlanBtn.outline {

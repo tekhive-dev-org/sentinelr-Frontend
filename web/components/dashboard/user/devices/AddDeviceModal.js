@@ -114,16 +114,16 @@ export default function AddDeviceModal({ isOpen, onClose, onSubmit }) {
 
             {/* Pairing Instructions */}
             <div style={{ 
-              background: '#F0F9FF', 
-              border: '1px solid #BAE6FD', 
+              background: '#f5f1ff', 
+              border: '1px solid #d8ccff', 
               borderRadius: '8px', 
               padding: '16px',
               marginTop: '8px'
             }}>
-              <h4 style={{ fontSize: '14px', fontWeight: 600, color: '#0369A1', marginBottom: '8px' }}>
+              <h4 style={{ fontSize: '14px', fontWeight: 600, color: '#3d09d0', marginBottom: '8px' }}>
                 Next Steps
               </h4>
-              <p style={{ fontSize: '13px', color: '#0C4A6E', lineHeight: 1.5 }}>
+              <p style={{ fontSize: '13px', color: '#32109f', lineHeight: 1.5 }}>
                 After adding the device, you'll receive a pairing code. Install the Sentinelr app on the target device and enter the code to complete the setup.
               </p>
             </div>

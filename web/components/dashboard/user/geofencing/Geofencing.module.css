@@ -76,14 +76,14 @@
   gap: 6px;
   font-size: 12px;
   font-weight: 600;
-  color: #059669;
+  color: #e6ae12;
 }
 
 .activeCountDot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #22c55e;
+  background: #e6ae12;
 }
 
 /* ── Zone List ────────────────────────────────────────────────────────────── */
@@ -161,11 +161,11 @@
 }
 
 .zoneIconSafe {
-  background: #0f3c5f;
+  background: #3d09d0;
 }
 
 .zoneIconDanger {
-  background: #ef4444;
+  background: #dc323f;
 }
 
 .zoneInfo {
@@ -206,7 +206,7 @@
 }
 
 .toggleSwitch.active {
-  background: #0f3c5f;
+  background: #3d09d0;
 }
 
 .toggleKnob {
@@ -263,7 +263,7 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #0f3c5f;
+  background: #3d09d0;
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
@@ -272,7 +272,7 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #0f3c5f;
+  background: #3d09d0;
   border: none;
   cursor: pointer;
 }
@@ -340,7 +340,7 @@
 }
 
 .viewAllBtn:hover {
-  color: #2563eb;
+  color: #3d09d0;
 }
 
 .activityList {
@@ -392,13 +392,13 @@
 }
 
 .dotEnter {
-  background: #d1fae5;
-  color: #059669;
+  background: #fff0cf;
+  color: #e6ae12;
 }
 
 .dotExit {
-  background: #fee2e2;
-  color: #ef4444;
+  background: #ffe1e4;
+  color: #dc323f;
 }
 
 .activityContent {
@@ -455,7 +455,7 @@
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background: #0f3c5f;
+  background: #3d09d0;
   color: #fff;
   font-size: 13px;
   font-weight: 600;
@@ -575,7 +575,7 @@
 }
 
 .formInput:focus {
-  border-color: #818cf8;
+  border-color: #3d09d0;
   box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
 }
 
@@ -585,7 +585,7 @@
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   font-size: 14px;
-  font-family: 'Lato', sans-serif;
+  font-family: var(--font-body);
   color: #374151;
   background: #fff;
   outline: none;
@@ -594,7 +594,7 @@
 }
 
 .formSelect:focus {
-  border-color: #818cf8;
+  border-color: #3d09d0;
   box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
 }
 
@@ -627,7 +627,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #0f3c5f;
+  background: #3d09d0;
   cursor: pointer;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
@@ -636,7 +636,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #0f3c5f;
+  background: #3d09d0;
   border: none;
   cursor: pointer;
 }
@@ -644,7 +644,7 @@
 .radiusFormValue {
   font-size: 14px;
   font-weight: 600;
-  color: #0f3c5f;
+  color: #3d09d0;
   text-align: center;
 }
 
@@ -657,7 +657,7 @@
 .checkbox {
   width: 18px;
   height: 18px;
-  accent-color: #0f3c5f;
+  accent-color: #3d09d0;
   cursor: pointer;
 }
 
@@ -695,14 +695,14 @@
 }
 
 .dayChip:hover {
-  border-color: #0f3c5f;
-  color: #0f3c5f;
+  border-color: #3d09d0;
+  color: #3d09d0;
 }
 
 .dayChipActive {
-  background: #0f3c5f;
+  background: #3d09d0;
   color: #fff;
-  border-color: #0f3c5f;
+  border-color: #3d09d0;
 }
 
 .dayChipActive:hover {
@@ -737,7 +737,7 @@
 
 .saveBtn {
   padding: 10px 24px;
-  background: #0f3c5f;
+  background: #3d09d0;
   color: #fff;
   font-size: 14px;
   font-weight: 600;
@@ -758,11 +758,11 @@
 
 .deleteBtn {
   padding: 10px 20px;
-  background: #fef2f2;
-  color: #dc2626;
+  background: #fff0f1;
+  color: #dc323f;
   font-size: 14px;
   font-weight: 600;
-  border: 1px solid #fecaca;
+  border: 1px solid #f4a6ad;
   border-radius: 10px;
   cursor: pointer;
   margin-right: auto;
@@ -770,7 +770,7 @@
 }
 
 .deleteBtn:hover {
-  background: #fee2e2;
+  background: #ffe1e4;
 }
 
 /* ── Loading ──────────────────────────────────────────────────────────────── */
@@ -798,11 +798,11 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: #f0f9ff;
+  background: #f5f1ff;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0284c7;
+  color: #3d09d0;
 }
 
 .emptyZonesIcon svg {

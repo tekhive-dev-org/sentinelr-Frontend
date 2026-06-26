@@ -81,7 +81,7 @@ export default function BeeCanvas() {
         ctx.globalAlpha = this.isQueen ? 0.9 : 0.65;
 
         // Body
-        ctx.fillStyle = '#ffcc00';
+        ctx.fillStyle = '#e6ae12';
         ctx.beginPath();
         ctx.ellipse(0, 0, this.size, this.size * 0.7, 0, 0, Math.PI * 2);
         ctx.fill();

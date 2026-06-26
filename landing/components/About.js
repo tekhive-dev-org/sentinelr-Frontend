@@ -85,7 +85,7 @@ export default function About() {
             transition={{ duration: 0.5 }}
           >
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-red-100 text-red-500 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl bg-[#fff0f1] text-[#dc323f] flex items-center justify-center">
                 <WarningAmberIcon className="text-2xl" />
               </div>
               <h3 className="font-display text-2xl md:text-3xl font-bold text-deep-forest">
@@ -103,7 +103,7 @@ export default function About() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.3, delay: index * 0.08 }}
                 >
-                  <span className="w-2 h-2 rounded-full bg-red-400 flex-shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-[#dc323f] flex-shrink-0" />
                   <p className="font-body text-gray-700">{problem}</p>
                 </motion.div>
               ))}

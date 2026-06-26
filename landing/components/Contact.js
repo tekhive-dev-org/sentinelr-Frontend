@@ -200,16 +200,16 @@ export default function Contact() {
                           aria-describedby={showError ? "email-error" : undefined}
                           className={`w-full px-5 py-4 bg-white border rounded-xl font-body text-deep-forest placeholder:text-gray-400 focus:outline-none transition-all ${
                             showError 
-                              ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                              ? 'border-[#dc323f] focus:border-[#dc323f] focus:ring-2 focus:ring-[#ffe1e4]' 
                               : 'border-gray-200 focus:border-primary-green focus:ring-2 focus:ring-primary-green/20'
                           }`}
                         />
                         {email && (
                           <div className="absolute right-4 top-1/2 -translate-y-1/2">
                             {isValidEmail ? (
-                              <CheckCircleIcon className="text-green-500 text-xl" />
+                              <CheckCircleIcon className="text-[#e6ae12] text-xl" />
                             ) : touched ? (
-                              <ErrorOutlineIcon className="text-red-400 text-xl" />
+                              <ErrorOutlineIcon className="text-[#dc323f] text-xl" />
                             ) : null}
                           </div>
                         )}
@@ -247,7 +247,7 @@ export default function Contact() {
                           initial={{ opacity: 0, y: -10, height: 0 }}
                           animate={{ opacity: 1, y: 0, height: 'auto' }}
                           exit={{ opacity: 0, y: -10, height: 0 }}
-                          className="text-red-500 text-sm font-body flex items-center gap-1.5"
+                          className="text-[#dc323f] text-sm font-body flex items-center gap-1.5"
                           role="alert"
                         >
                           <ErrorOutlineIcon className="text-base" />
@@ -270,15 +270,15 @@ export default function Contact() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="bg-white rounded-2xl p-8 border border-green-200 text-center"
+                  className="bg-white rounded-2xl p-8 border border-[#f3d476] text-center"
                 >
                   <motion.div 
-                    className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4"
+                    className="w-16 h-16 rounded-full bg-[#fff8e8] flex items-center justify-center mx-auto mb-4"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
                   >
-                    <CheckCircleIcon className="text-green-500 text-3xl" />
+                    <CheckCircleIcon className="text-[#e6ae12] text-3xl" />
                   </motion.div>
                   <h4 className="font-display text-xl font-bold text-deep-forest mb-2">
                     You're on the list! 🎉
@@ -302,10 +302,10 @@ export default function Contact() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="bg-white rounded-2xl p-8 border border-red-200 text-center"
+                  className="bg-white rounded-2xl p-8 border border-[#f4a6ad] text-center"
                 >
-                  <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-                    <ErrorOutlineIcon className="text-red-500 text-3xl" />
+                  <div className="w-16 h-16 rounded-full bg-[#fff0f1] flex items-center justify-center mx-auto mb-4">
+                    <ErrorOutlineIcon className="text-[#dc323f] text-3xl" />
                   </div>
                   <h4 className="font-display text-xl font-bold text-deep-forest mb-2">
                     Something went wrong

@@ -21,25 +21,25 @@ import { APP_NAME, APP_VERSION } from "../utils/constants";
 // Maps icon name to a background tint for the colored icon pill
 const ICON_COLORS = {
   // appearance
-  moon: '#6366f1',
-  sunny: '#f59e0b',
+  moon: '#3d09d0',
+  sunny: '#e6ae12',
   // device
-  phone_portrait: '#0ea5e9',
-  barcode: '#8b5cf6',
-  checkmark_circle: '#16a34a',
+  phone_portrait: '#3d09d0',
+  barcode: '#3d09d0',
+  checkmark_circle: '#e6ae12',
   // notifications
-  notifications: '#f97316',
+  notifications: '#e06f29',
   // privacy & security
-  lock_closed: '#ef4444',
+  lock_closed: '#dc323f',
   eye_off: '#64748b',
-  finger_print: '#0ea5e9',
+  finger_print: '#3d09d0',
   // support
-  help_circle: '#10b981',
-  shield: '#6366f1',
+  help_circle: '#e6ae12',
+  shield: '#3d09d0',
   document_text: '#64748b',
   // danger
-  unlink: '#d97706',
-  trash: '#ef4444',
+  unlink: '#e6ae12',
+  trash: '#dc323f',
 };
 
 function IconBadge({ name, bgColor }) {
@@ -168,7 +168,7 @@ export default function SettingsScreen({ navigation }) {
         value={value}
         onValueChange={onValueChange}
         trackColor={{ false: colors.neuInset, true: 'rgba(99, 102, 241, 0.55)' }}
-        thumbColor={value ? '#6366f1' : colors.textMuted}
+        thumbColor={value ? '#3d09d0' : colors.textMuted}
         ios_backgroundColor={colors.neuInset}
       />
     </View>
@@ -226,7 +226,7 @@ export default function SettingsScreen({ navigation }) {
           <GlassCard noPadding>
             <ToggleRow
               icon={isDark ? "moon" : "sunny"}
-              iconColor={isDark ? '#6366f1' : '#f59e0b'}
+              iconColor={isDark ? '#3d09d0' : '#e6ae12'}
               title="Dark Mode"
               subtitle={isDark ? "Using dark theme" : "Using light theme"}
               value={isDark}
@@ -240,7 +240,7 @@ export default function SettingsScreen({ navigation }) {
           <GlassCard noPadding>
             <ToggleRow
               icon="notifications-outline"
-              iconColor="#f97316"
+              iconColor="#e06f29"
               title="Push Notifications"
               subtitle="Alerts, SOS, and status updates"
               value={notificationsEnabled}
@@ -248,7 +248,7 @@ export default function SettingsScreen({ navigation }) {
             />
             <ToggleRow
               icon="location-outline"
-              iconColor="#0ea5e9"
+              iconColor="#3d09d0"
               title="Location Alerts"
               subtitle="Geofence and movement events"
               value={locationAlerts}
@@ -262,13 +262,13 @@ export default function SettingsScreen({ navigation }) {
           <GlassCard noPadding>
             <NavRow
               icon="lock-closed-outline"
-              iconColor="#ef4444"
+              iconColor="#dc323f"
               title="App Lock"
               subtitle="Require PIN or biometrics"
             />
             <NavRow
               icon="finger-print-outline"
-              iconColor="#0ea5e9"
+              iconColor="#3d09d0"
               title="Biometric Auth"
               subtitle="Use Face ID or fingerprint"
               isLast
@@ -280,19 +280,19 @@ export default function SettingsScreen({ navigation }) {
           <GlassCard noPadding>
             <InfoRow
               icon="barcode-outline"
-              iconColor="#8b5cf6"
+              iconColor="#3d09d0"
               title="Device ID"
               value={deviceId ? `••••${deviceId.slice(-8)}` : "Unknown"}
             />
             <InfoRow
               icon="git-branch-outline"
-              iconColor="#10b981"
+              iconColor="#e6ae12"
               title="App Version"
               value="1.1.2 (Build 2)"
             />
             <InfoRow
               icon="checkmark-circle-outline"
-              iconColor="#16a34a"
+              iconColor="#e6ae12"
               title="Status"
               value={deviceStatus}
               isLast
@@ -304,13 +304,13 @@ export default function SettingsScreen({ navigation }) {
           <GlassCard noPadding>
             <NavRow
               icon="help-circle-outline"
-              iconColor="#10b981"
+              iconColor="#e6ae12"
               title="Help Center"
               subtitle="FAQs and troubleshooting"
             />
             <NavRow
               icon="shield-outline"
-              iconColor="#6366f1"
+              iconColor="#3d09d0"
               title="Privacy Policy"
               onPress={() => navigation.navigate("PrivacyPolicy")}
             />
@@ -327,13 +327,13 @@ export default function SettingsScreen({ navigation }) {
           <GlassCard noPadding>
             <NavRow
               icon="information-circle-outline"
-              iconColor="#0ea5e9"
+              iconColor="#3d09d0"
               title="About Sentinelr"
               subtitle="Version history & licenses"
             />
             <NavRow
               icon="star-outline"
-              iconColor="#f59e0b"
+              iconColor="#e6ae12"
               title="Rate the App"
               subtitle="Share your feedback"
               isLast
@@ -353,9 +353,9 @@ export default function SettingsScreen({ navigation }) {
               disabled={isUnpairing || isRemoving}
             >
               <View style={setStyles.rowLeft}>
-                <IconBadge name="unlink-outline" bgColor="#d97706" />
+                <IconBadge name="unlink-outline" bgColor="#e6ae12" />
                 <View>
-                  <Text style={[setStyles.rowTitle, { color: '#d97706' }]}>
+                  <Text style={[setStyles.rowTitle, { color: '#e6ae12' }]}>
                     {isUnpairing ? "Unpairing…" : "Unpair Device"}
                   </Text>
                   <Text style={[setStyles.rowSubtitle, { color: colors.textMuted }]}>
@@ -364,7 +364,7 @@ export default function SettingsScreen({ navigation }) {
                 </View>
               </View>
               {isUnpairing ? (
-                <ActivityIndicator size="small" color="#d97706" />
+                <ActivityIndicator size="small" color="#e6ae12" />
               ) : (
                 <Ionicons name="chevron-forward" size={15} color={colors.textMuted} />
               )}
@@ -377,7 +377,7 @@ export default function SettingsScreen({ navigation }) {
               disabled={isUnpairing || isRemoving}
             >
               <View style={setStyles.rowLeft}>
-                <IconBadge name="trash-outline" bgColor="#ef4444" />
+                <IconBadge name="trash-outline" bgColor="#dc323f" />
                 <View>
                   <Text style={[setStyles.rowTitle, { color: colors.danger }]}>
                     {isRemoving ? "Removing…" : "Remove from Dashboard"}

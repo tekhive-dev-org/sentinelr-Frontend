@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import Toast from '../../../common/Toast';
 import styles from './Settings.module.css';
-import CloseIcon from '@mui/icons-material/Close';
-import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 
 export default function NotificationsTab({ formik, isSubmitting, onSubmit, onDiscard }) {
   const [toast, setToast] = useState(null);
@@ -89,7 +86,7 @@ export default function NotificationsTab({ formik, isSubmitting, onSubmit, onDis
       </div>
 
       {/* Actions */}
-      <div className={styles.actions} style={{ marginTop: '20px' }}>
+      <div className={styles.actions}>
         <button 
           type="button" 
           className={styles.secondaryButton} 

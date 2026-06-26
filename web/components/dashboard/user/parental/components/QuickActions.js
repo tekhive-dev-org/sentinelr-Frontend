@@ -18,7 +18,7 @@ export default function QuickActions({
     <div className={styles.card}>
       <div className={styles.cardHeader}>
         <span className={styles.cardTitle}>
-          <span className={styles.cardTitleIcon} style={{ background: '#fef2f2', color: '#ef4444' }}>
+          <span className={styles.cardTitleIcon} style={{ background: '#fff0f1', color: '#dc323f' }}>
             <WarningAmberRoundedIcon sx={{ fontSize: 18 }} />
           </span>
           Quick Protection Actions

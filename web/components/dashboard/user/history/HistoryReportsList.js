@@ -38,8 +38,8 @@ function ArcPreview() {
     >
       <defs>
         <linearGradient id="arcGrad" x1="20" y1="120" x2="180" y2="20">
-          <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.15" />
-          <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.8" />
+          <stop offset="0%" stopColor="#3d09d0" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#3d09d0" stopOpacity="0.8" />
         </linearGradient>
       </defs>
       <path
@@ -50,9 +50,9 @@ function ArcPreview() {
         fill="none"
       />
       {/* Decorative dots */}
-      <circle cx="20" cy="120" r="4" fill="#3b82f6" opacity="0.3" />
-      <circle cx="100" cy="80" r="4" fill="#3b82f6" opacity="0.5" />
-      <circle cx="180" cy="30" r="5" fill="#3b82f6" opacity="0.9" />
+      <circle cx="20" cy="120" r="4" fill="#3d09d0" opacity="0.3" />
+      <circle cx="100" cy="80" r="4" fill="#3d09d0" opacity="0.5" />
+      <circle cx="180" cy="30" r="5" fill="#3d09d0" opacity="0.9" />
     </svg>
   );
 }

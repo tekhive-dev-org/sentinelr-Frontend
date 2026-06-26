@@ -43,11 +43,11 @@
 }
 
 .liveIndicator {
-  @apply flex items-center gap-1.5 text-[11px] font-semibold text-emerald-500;
+  @apply flex items-center gap-1.5 text-[11px] font-semibold text-[#e6ae12];
 }
 
 .liveDot {
-  @apply inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] animate-pulse;
+  @apply inline-block w-1.5 h-1.5 rounded-full bg-[#e6ae12] shadow-[0_0_8px_rgba(230,174,18,0.6)] animate-pulse;
 }
 
 /* ── Custom device selector ────────────────────────────────────────────── */
@@ -56,7 +56,7 @@
 }
 
 .deviceSelector {
-  @apply w-full py-2 px-3 pr-9 border border-gray-200/60 rounded-lg text-[13.5px] font-semibold text-gray-800 bg-white cursor-pointer outline-none transition-all duration-150 shadow-[0_1px_2px_rgba(0,0,0,0.04)] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 appearance-none;
+  @apply w-full py-2 px-3 pr-9 border border-gray-200/60 rounded-lg text-[13.5px] font-semibold text-gray-800 bg-white cursor-pointer outline-none transition-all duration-150 shadow-[0_1px_2px_rgba(0,0,0,0.04)] focus:border-[#3d09d0] focus:ring-2 focus:ring-[#3d09d0]/15 appearance-none;
 }
 
 .deviceSelectorArrow {
@@ -147,7 +147,7 @@
 }
 
 .mapOverlayError {
-  @apply text-red-500 border border-red-500/20;
+  @apply text-[#dc323f] border border-red-500/20;
 }
 
 /* ── Custom Popup styling ──────────────────────────────────────────────── */

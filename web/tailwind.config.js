@@ -6,8 +6,23 @@ module.exports = {
   ],
   theme: {
     extend: { 
+      colors: {
+        brand: {
+          primary: '#e06f29',
+          primaryHover: '#c95f20',
+          secondary: '#3d09d0',
+          secondaryHover: '#32109f',
+          danger: '#dc323f',
+          warning: '#e6ae12',
+          surface: '#fffaf6',
+          purpleSurface: '#f5f1ff',
+          redSurface: '#fff0f1',
+          yellowSurface: '#fff8e8',
+        },
+      },
       fontFamily: {
-        sans: ['Lato', 'sans-serif'],
+        sans: ['Space Grotesk', 'sans-serif'],
+        heading: ['Playfair Display', 'serif'],
       },
       screens: {
         mobile: { max: "640px" },

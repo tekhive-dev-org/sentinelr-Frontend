@@ -63,7 +63,7 @@
   inset: -2px;
   border-radius: 50%;
   border: 2.5px solid transparent;
-  border-top-color: #F6C102;
+  border-top-color: #e6ae12;
   border-right-color: rgba(246, 193, 2, 0.3);
   animation: brandSpin 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
@@ -76,7 +76,7 @@
 /* ── Status message ────────────────────────────────────────────────────── */
 
 .message {
-  font-family: 'Lato', sans-serif;
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 500;
   color: #64748b;
@@ -99,8 +99,8 @@
 
   .spinnerRing {
     animation: none;
-    border-top-color: #F6C102;
-    border-right-color: #F6C102;
+    border-top-color: #e6ae12;
+    border-right-color: #e6ae12;
     border-bottom-color: rgba(246, 193, 2, 0.3);
     border-left-color: rgba(246, 193, 2, 0.3);
   }

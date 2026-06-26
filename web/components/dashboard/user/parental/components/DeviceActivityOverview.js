@@ -57,7 +57,7 @@ export default function DeviceActivityOverview({ selectedDevice = null }) {
 
       {/* Network Type */}
       <div className={styles.telemetryCard}>
-        <div className={styles.telemetryIconWrapper} style={{ background: '#eff6ff', color: '#3b82f6' }}>
+        <div className={styles.telemetryIconWrapper} style={{ background: '#f5f1ff', color: '#3d09d0' }}>
           <WifiIcon sx={{ fontSize: 22 }} />
         </div>
         <div className={styles.telemetryDetails}>
@@ -70,7 +70,7 @@ export default function DeviceActivityOverview({ selectedDevice = null }) {
 
       {/* OS & Platform */}
       <div className={styles.telemetryCard}>
-        <div className={styles.telemetryIconWrapper} style={{ background: '#f5f3ff', color: '#8b5cf6' }}>
+        <div className={styles.telemetryIconWrapper} style={{ background: '#f5f3ff', color: '#3d09d0' }}>
           <PhoneAndroidIcon sx={{ fontSize: 22 }} />
         </div>
         <div className={styles.telemetryDetails}>
@@ -83,7 +83,7 @@ export default function DeviceActivityOverview({ selectedDevice = null }) {
 
       {/* Last Seen / Synced */}
       <div className={styles.telemetryCard}>
-        <div className={styles.telemetryIconWrapper} style={{ background: '#fffbeb', color: '#d97706' }}>
+        <div className={styles.telemetryIconWrapper} style={{ background: '#fff8e8', color: '#e6ae12' }}>
           <UpdateIcon sx={{ fontSize: 22 }} />
         </div>
         <div className={styles.telemetryDetails}>

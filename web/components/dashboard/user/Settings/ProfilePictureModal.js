@@ -38,28 +38,28 @@ export default function ProfilePictureModal({
 
   const content = (
     <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()} style={{ maxWidth: '450px' }}>
-        <div className={styles.modalHeader} style={{ justifyContent: 'center', position: 'relative', marginBottom: '8px' }}>
-          <h3 className={styles.modalTitle} style={{ fontSize: '24px' }}>Sentinelr Account</h3>
+      <div className={`${styles.modal} ${styles.profileModal}`} onClick={(e) => e.stopPropagation()}>
+        <div className={`${styles.modalHeader} ${styles.profileModalHeader}`}>
+          <h3 className={`${styles.modalTitle} ${styles.profileModalTitle}`}>Sentinelr Account</h3>
           <button 
-            className={styles.closeButton} 
+            className={`${styles.closeButton} ${styles.profileModalClose}`} 
             onClick={onClose}
-            style={{ position: 'absolute', right: '-10px', top: '-10px' }}
+            type="button"
           >
-            <CloseIcon style={{ fontSize: '24px', color: '#1a1a1a' }} />
+            <CloseIcon className={styles.closeIcon} />
           </button>
         </div>
 
         <div className={styles.profileModalContent}>
-          <div style={{ width: '100%', textAlign: 'left', marginBottom: '24px' }}>
-            <h4 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '8px', color: '#1a1a1a' }}>Profile Picture</h4>
-            <p style={{ fontSize: '16px', color: '#4b5563', lineHeight: '1.5' }}>
+          <div className={styles.profileModalIntro}>
+            <h4>Profile Picture</h4>
+            <p>
               A picture helps people recognize you and lets you know when you are signed into your account
             </p>
           </div>
 
           <div className={styles.visibilityBadge}>
-            <PublicIcon style={{ fontSize: '20px', color: '#4b5563' }} />
+            <PublicIcon className={styles.visibilityIcon} />
             <span>Visible to anyone</span>
           </div>
 
@@ -79,17 +79,17 @@ export default function ProfilePictureModal({
             type="file" 
             ref={fileInputRef} 
             onChange={handleFileSelect} 
-            style={{ display: 'none' }} 
+            className={styles.hiddenInput}
             accept="image/png, image/jpeg, image/svg+xml"
           />
 
           <div className={styles.profileModalActions}>
-            <button className={styles.changeButton} onClick={triggerFileInput}>
-              <EditIcon style={{ fontSize: '18px' }} />
+            <button type="button" className={styles.changeButton} onClick={triggerFileInput}>
+              <EditIcon className={styles.actionIcon} />
               Change
             </button>
-            <button className={styles.removeButton} onClick={onImageRemove}>
-              <DeleteOutlineIcon style={{ fontSize: '18px' }} />
+            <button type="button" className={styles.removeButton} onClick={onImageRemove}>
+              <DeleteOutlineIcon className={styles.actionIcon} />
               Remove
             </button>
           </div>

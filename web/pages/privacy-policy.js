@@ -160,7 +160,7 @@ const styles = {
     textTransform: "uppercase",
     letterSpacing: "0.08em",
     fontWeight: 700,
-    color: "#1d4ed8",
+    color: "#3d09d0",
     fontSize: "12px",
   },
   title: {
@@ -196,7 +196,7 @@ const styles = {
     fontSize: "15px",
   },
   link: {
-    color: "#1d4ed8",
+    color: "#3d09d0",
     textDecoration: "underline",
   },
   actions: {
@@ -205,7 +205,7 @@ const styles = {
     paddingTop: "18px",
   },
   backLink: {
-    color: "#1d4ed8",
+    color: "#3d09d0",
     fontWeight: 600,
   },
 };

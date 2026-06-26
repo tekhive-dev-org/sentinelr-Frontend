@@ -60,7 +60,7 @@ export default function InsightFilters({ onChartTypeChange, currentChartType, ac
                   if (val !== 'custom') onPeriodChange(val);
               }}
               options={periodOptions}
-              icon={<CalendarTodayOutlinedIcon style={{ fontSize: 16 }} />}
+              icon={<CalendarTodayOutlinedIcon className={styles.selectIcon} />}
               className={styles.periodSelect}
           />
 

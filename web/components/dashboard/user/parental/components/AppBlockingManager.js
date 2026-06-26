@@ -10,12 +10,12 @@ import SmartphoneRoundedIcon from '@mui/icons-material/SmartphoneRounded';
 import styles from '../ParentalControl.module.css';
 
 const CATEGORY_CONFIG = {
-  Gaming: { icon: <SportsEsportsRoundedIcon sx={{ fontSize: 20 }} />, bg: '#fef2f2', color: '#ef4444' },
-  'Social Media': { icon: <GroupRoundedIcon sx={{ fontSize: 20 }} />, bg: '#f0fdf4', color: '#22c55e' },
-  Entertainment: { icon: <MovieRoundedIcon sx={{ fontSize: 20 }} />, bg: '#fefce8', color: '#eab308' },
-  TikTok: { icon: <MusicNoteRoundedIcon sx={{ fontSize: 20 }} />, bg: '#f0f9ff', color: '#0ea5e9' },
-  Facebook: { icon: <FacebookRoundedIcon sx={{ fontSize: 20 }} />, bg: '#eff6ff', color: '#3b82f6' },
-  WhatsApp: { icon: <ChatRoundedIcon sx={{ fontSize: 20 }} />, bg: '#f0fdf4', color: '#22c55e' },
+  Gaming: { icon: <SportsEsportsRoundedIcon sx={{ fontSize: 20 }} />, bg: '#fff0f1', color: '#dc323f' },
+  'Social Media': { icon: <GroupRoundedIcon sx={{ fontSize: 20 }} />, bg: '#fff8e8', color: '#e6ae12' },
+  Entertainment: { icon: <MovieRoundedIcon sx={{ fontSize: 20 }} />, bg: '#fff8e8', color: '#e6ae12' },
+  TikTok: { icon: <MusicNoteRoundedIcon sx={{ fontSize: 20 }} />, bg: '#f5f1ff', color: '#3d09d0' },
+  Facebook: { icon: <FacebookRoundedIcon sx={{ fontSize: 20 }} />, bg: '#f5f1ff', color: '#3d09d0' },
+  WhatsApp: { icon: <ChatRoundedIcon sx={{ fontSize: 20 }} />, bg: '#fff8e8', color: '#e6ae12' },
 };
 const DEFAULT_CATEGORY = { icon: <SmartphoneRoundedIcon sx={{ fontSize: 20 }} />, bg: '#f3f4f6', color: '#6b7280' };
 

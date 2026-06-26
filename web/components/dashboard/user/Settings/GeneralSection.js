@@ -24,27 +24,12 @@ export default function GeneralSection({
             alt="Profile" 
             className={styles.profileAvatar}
             onClick={onProfileClick}
-            style={{ cursor: 'pointer' }}
           />
-          <div className={styles.cameraIcon} onClick={onProfileClick} style={{ cursor: 'pointer' }}>
-            <CameraAltOutlinedIcon style={{ fontSize: '14px' }} />
+          <div className={styles.cameraIcon} onClick={onProfileClick}>
+            <CameraAltOutlinedIcon className={styles.smallIcon} />
           </div>
           {profilePictureChanged && (
-            <div style={{
-              position: 'absolute',
-              top: '0',
-              right: '0',
-              backgroundColor: '#10b981',
-              color: 'white',
-              borderRadius: '50%',
-              width: '20px',
-              height: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '12px',
-              fontWeight: 'bold'
-            }}>
+            <div className={styles.profileChangedMark}>
               ✓
             </div>
           )}
@@ -53,8 +38,8 @@ export default function GeneralSection({
           <div className={styles.profileLabel}>Profile Photo</div>
           <div className={styles.profileSubtext}>PNG, JPEG, SVG (less than 5MB)</div>
           {profilePictureChanged && (
-            <div style={{ fontSize: '12px', color: '#10b981', marginTop: '4px', fontWeight: '500' }}>
-              📷 New picture selected
+            <div className={styles.profileSelectedText}>
+              New picture selected
             </div>
           )}
         </div>
@@ -73,7 +58,7 @@ export default function GeneralSection({
           />
           {formik.touched.fullName && formik.errors.fullName && (
             <div className={styles.errorText}>
-              <ErrorOutlineIcon style={{ fontSize: '14px' }} />
+              <ErrorOutlineIcon className={styles.errorIcon} />
               {formik.errors.fullName}
             </div>
           )}
@@ -81,23 +66,22 @@ export default function GeneralSection({
 
         <div className={styles.formGroup}>
           <label className={styles.label}>Contact phone number</label>
-          <div style={{ position: 'relative' }}>
-            <div style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <img src="https://flagcdn.com/w20/ng.png" alt="Nigeria" style={{ width: '20px', borderRadius: '2px' }} />
+          <div className={styles.phoneInputWrapper}>
+            <div className={styles.phonePrefix}>
+              <img src="https://flagcdn.com/w20/ng.png" alt="Nigeria" />
             </div>
             <input
               type="text"
               name="phoneNumber"
-              className={`${styles.input} ${formik.touched.phoneNumber && formik.errors.phoneNumber ? styles.inputError : ''}`}
+              className={`${styles.input} ${styles.phoneInput} ${formik.touched.phoneNumber && formik.errors.phoneNumber ? styles.inputError : ''}`}
               value={formik.values.phoneNumber}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              style={{ paddingLeft: '40px' }}
             />
           </div>
           {formik.touched.phoneNumber && formik.errors.phoneNumber && (
             <div className={styles.errorText}>
-              <ErrorOutlineIcon style={{ fontSize: '14px' }} />
+              <ErrorOutlineIcon className={styles.errorIcon} />
               {formik.errors.phoneNumber}
             </div>
           )}
@@ -115,14 +99,10 @@ export default function GeneralSection({
           />
           {formik.touched.username && formik.errors.username && (
             <div className={styles.errorText}>
-              <ErrorOutlineIcon style={{ fontSize: '14px' }} />
+              <ErrorOutlineIcon className={styles.errorIcon} />
               {formik.errors.username}
             </div>
           )}
-          <div className={styles.infoText}>
-            <InfoOutlinedIcon style={{ fontSize: '14px' }} />
-            Your SENTINELR profile is https://app.sentinelr.com/profile/{formik.values.username.toLowerCase()}
-          </div>
         </div>
 
         <div className={styles.formGroup}>
@@ -137,12 +117,12 @@ export default function GeneralSection({
           />
           {formik.touched.email && formik.errors.email && (
             <div className={styles.errorText}>
-              <ErrorOutlineIcon style={{ fontSize: '14px' }} />
+              <ErrorOutlineIcon className={styles.errorIcon} />
               {formik.errors.email}
             </div>
           )}
           <div className={styles.infoText}>
-            To change your email, please <a href="#" style={{ color: '#0f4c75', textDecoration: 'none' }}>contact us</a>
+            To change your email, please <a href="#">contact us</a>
           </div>
         </div>
       </div>

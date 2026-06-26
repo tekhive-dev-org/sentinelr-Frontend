@@ -5,12 +5,14 @@ import { getPlanPrice, getPlanPeriod } from './utils';
 export default function PlanCard({ plan, billingCycle, onSelect }) {
   return (
     <div className={`${styles.planCard} ${plan.featured ? styles.featured : ''}`}>
+      {plan.featured && <span className={styles.featuredBadge}>Recommended</span>}
       <h3 className={styles.planTitle}>{plan.name}</h3>
       <p className={styles.planDesc}>{plan.desc}</p>
       <div className={styles.planPrice}>
         {getPlanPrice(plan, billingCycle)}<span>{getPlanPeriod(plan, billingCycle)}</span>
       </div>
       <button 
+        type="button"
         className={`${styles.selectPlanBtn} ${styles[plan.type]}`}
         onClick={() => onSelect(plan)}
       >

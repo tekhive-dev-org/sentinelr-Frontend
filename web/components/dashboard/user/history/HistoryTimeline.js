@@ -49,7 +49,7 @@ function PlaceItem({ event }) {
       </div>
       <div
         className={styles.timelineEvent}
-        style={{ borderColor: '#dbeafe', background: '#f8faff' }}
+        style={{ borderColor: '#ede7ff', background: '#fbf9ff' }}
       >
         <div
           style={{
@@ -75,8 +75,8 @@ function PlaceItem({ event }) {
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                color: '#2563eb',
-                background: '#dbeafe',
+                color: '#3d09d0',
+                background: '#ede7ff',
                 borderRadius: 5,
                 padding: '2px 7px',
                 whiteSpace: 'nowrap',
@@ -175,7 +175,7 @@ export default function HistoryTimeline({ events = [], loading = false, error = 
         {loading ? (
           <CardSkeleton variant="compact" count={4} />
         ) : error ? (
-          <p style={{ fontSize: 13, color: '#dc2626', textAlign: 'center', marginTop: 24 }}>
+          <p style={{ fontSize: 13, color: '#dc323f', textAlign: 'center', marginTop: 24 }}>
             {error}
           </p>
         ) : events.length === 0 ? (

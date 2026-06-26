@@ -7,8 +7,8 @@
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -74,11 +74,11 @@
   width: 68px;
   height: 68px;
   border-radius: 18px;
-  background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+  background: linear-gradient(135deg, #f5f1ff 0%, #ede7ff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0f4c75;
+  color: #e06f29;
   flex-shrink: 0;
   border: 1px solid rgba(15, 76, 117, 0.12);
 }
@@ -116,13 +116,13 @@
 }
 
 .statusPaired {
-  background: #dcfce7;
-  color: #15803d;
+  background: #fff0cf;
+  color: #b98b0e;
 }
 
 .statusUnpaired {
-  background: #fef3c7;
-  color: #92400e;
+  background: #fff8e8;
+  color: #b98b0e;
 }
 
 .statusDot {
@@ -132,11 +132,11 @@
 }
 
 .statusPaired .statusDot {
-  background: #16a34a;
+  background: #e6ae12;
 }
 
 .statusUnpaired .statusDot {
-  background: #d97706;
+  background: #e6ae12;
 }
 
 /* ── Info Grid (read-only device facts) ─────── */
@@ -255,7 +255,7 @@
 
 .input:focus {
   outline: none;
-  border-color: #0f4c75;
+  border-color: #e06f29;
   box-shadow: 0 0 0 3px rgba(15, 76, 117, 0.1);
 }
 
@@ -280,12 +280,12 @@
 
 .select:focus {
   outline: none;
-  border-color: #0f4c75;
+  border-color: #e06f29;
   box-shadow: 0 0 0 3px rgba(15, 76, 117, 0.1);
 }
 
 .errorMsg {
-  color: #ef4444;
+  color: #dc323f;
   font-size: 12.5px;
   font-weight: 500;
   margin: 4px 0 0;
@@ -301,7 +301,7 @@
   flex: 1;
   height: 40px;
   border-radius: 8px;
-  background: #0f4c75;
+  background: #e06f29;
   color: #ffffff;
   border: none;
   font-size: 13.5px;
@@ -315,7 +315,7 @@
 }
 
 .btnSave:hover:not(:disabled) {
-  background: #0c3b5e;
+  background: #c95f20;
 }
 
 .btnSave:disabled {
@@ -397,36 +397,36 @@
 }
 
 .btnUnpair {
-  background: #fffbeb;
-  border-color: #fde68a;
-  color: #92400e;
+  background: #fff8e8;
+  border-color: #fff0cf;
+  color: #b98b0e;
 }
 
 .btnUnpair:hover {
-  background: #fef3c7;
+  background: #fff8e8;
   border-color: #fbbf24;
 }
 
 .btnRepair {
-  background: #eff6ff;
-  border-color: #bfdbfe;
-  color: #1d4ed8;
+  background: #f5f1ff;
+  border-color: #d8ccff;
+  color: #3d09d0;
 }
 
 .btnRepair:hover {
-  background: #dbeafe;
-  border-color: #93c5fd;
+  background: #ede7ff;
+  border-color: #bca9ff;
 }
 
 .btnRemove {
-  background: #fef2f2;
-  border-color: #fecaca;
-  color: #b91c1c;
+  background: #fff0f1;
+  border-color: #f4a6ad;
+  color: #a92731;
 }
 
 .btnRemove:hover {
-  background: #fee2e2;
-  border-color: #fca5a5;
+  background: #ffe1e4;
+  border-color: #ec7c86;
 }
 
 /* ── Responsive ──────────────────────────────── */

@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/router";
 import {
   LineChart,
   Line,
@@ -8,17 +9,25 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import {
-  MoreVert as MoreVertIcon,
   Search as SearchIcon,
   CheckCircle as CheckCircleIcon,
   Block as BlockIcon,
   Cancel as CancelIcon,
+  Group as GroupIcon,
+  VerifiedUser as VerifiedUserIcon,
+  ReportProblem as ReportProblemIcon,
+  PersonOff as PersonOffIcon,
+  Refresh as RefreshIcon,
+  ArrowForward as ArrowForwardIcon,
 } from "@mui/icons-material";
 import styles from "./DashboardOverview.module.css";
 import adminService from "../../../services/adminService";
-import { CardSkeleton, ChartSkeleton, TableSkeleton } from "../../ui/loaders";
+import { ChartSkeleton, TableSkeleton } from "../../ui/loaders";
+import DashboardStatCard from "../common/DashboardStatCard";
 
 export default function DashboardOverview() {
+  const router = useRouter();
+  const tableRef = useRef(null);
   const [userData, setUserData] = useState({
     allUsers: 0,
     approvedAccounts: 0,
@@ -31,6 +40,7 @@ export default function DashboardOverview() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [statsError, setStatsError] = useState("");
 
   const formatDate = (value) => {
     if (!value) return "-";
@@ -60,6 +70,7 @@ export default function DashboardOverview() {
   const fetchStats = async () => {
     try {
       setIsLoadingStats(true);
+      setStatsError("");
       const [allRes, blockedRes, verifiedRes, unverifiedRes] = await Promise.all([
         adminService.getAllUsers(),
         adminService.getBlockedUsers(),
@@ -74,6 +85,7 @@ export default function DashboardOverview() {
         flaggedUsers: unverifiedRes?.count ?? unverifiedRes?.verifiedUsers?.length ?? 0,
       });
     } catch (error) {
+      setStatsError(error?.message || "Unable to load user stats.");
       setUserData({
         allUsers: 0,
         approvedAccounts: 0,
@@ -130,6 +142,11 @@ export default function DashboardOverview() {
     }
   };
 
+  const showTableFor = (tab) => {
+    setActiveTab(tab);
+    tableRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   useEffect(() => {
     fetchStats();
   }, []);
@@ -164,31 +181,79 @@ export default function DashboardOverview() {
     );
   }, [users, searchQuery]);
 
+  const adminStatCards = [
+    {
+      title: "All Users",
+      value: userData.allUsers,
+      meta: "Total registered accounts",
+      Icon: GroupIcon,
+      tone: "purple",
+      status: "Directory",
+      statusTone: "neutral",
+      actions: [
+        { label: "View details", icon: ArrowForwardIcon, onSelect: () => showTableFor("All") },
+        { label: "Refresh", icon: RefreshIcon, onSelect: fetchStats },
+        { label: "Go to page", icon: ArrowForwardIcon, onSelect: () => router.push("/dashboard/users") },
+      ],
+    },
+    {
+      title: "Approved Accounts",
+      value: userData.approvedAccounts,
+      meta: "Verified user accounts",
+      Icon: VerifiedUserIcon,
+      tone: "yellow",
+      status: "Verified",
+      statusTone: "positive",
+      actions: [
+        { label: "View details", icon: ArrowForwardIcon, onSelect: () => showTableFor("Approved") },
+        { label: "Refresh", icon: RefreshIcon, onSelect: fetchStats },
+        { label: "Go to page", icon: ArrowForwardIcon, onSelect: () => router.push("/dashboard/users") },
+      ],
+    },
+    {
+      title: "Blocked Accounts",
+      value: userData.blockedAccounts,
+      meta: "Accounts currently restricted",
+      Icon: PersonOffIcon,
+      tone: "red",
+      status: userData.blockedAccounts > 0 ? "Restricted" : "Clear",
+      statusTone: userData.blockedAccounts > 0 ? "danger" : "positive",
+      actions: [
+        { label: "View details", icon: ArrowForwardIcon, onSelect: () => showTableFor("Blocked") },
+        { label: "Refresh", icon: RefreshIcon, onSelect: fetchStats },
+        { label: "Go to page", icon: ArrowForwardIcon, onSelect: () => router.push("/dashboard/users") },
+      ],
+    },
+    {
+      title: "Flagged Users",
+      value: userData.flaggedUsers,
+      meta: "Unverified accounts needing review",
+      Icon: ReportProblemIcon,
+      tone: "orange",
+      status: userData.flaggedUsers > 0 ? "Review" : "Clear",
+      statusTone: userData.flaggedUsers > 0 ? "attention" : "positive",
+      actions: [
+        { label: "View details", icon: ArrowForwardIcon, onSelect: () => showTableFor("Flagged") },
+        { label: "Refresh", icon: RefreshIcon, onSelect: fetchStats },
+        { label: "Go to page", icon: ArrowForwardIcon, onSelect: () => router.push("/dashboard/users") },
+      ],
+    },
+  ];
+
   return (
     <div className={styles.dashboardOverview}>
       {/* Stats Cards */}
-      {isLoadingStats ? (
-        <CardSkeleton variant="stat" count={4} className={styles.statsGrid} />
-      ) : (
-        <div className={styles.statsGrid}>
-          <div className={styles.statCard}>
-            <h3 className={styles.statLabel}>All Users</h3>
-            <p className={styles.statValue}>{userData.allUsers}</p>
-          </div>
-          <div className={styles.statCard}>
-            <h3 className={styles.statLabel}>Approved Accounts</h3>
-            <p className={styles.statValue}>{userData.approvedAccounts}</p>
-          </div>
-          <div className={styles.statCard}>
-            <h3 className={styles.statLabel}>Blocked Accounts</h3>
-            <p className={styles.statValue}>{userData.blockedAccounts}</p>
-          </div>
-          <div className={styles.statCard}>
-            <h3 className={styles.statLabel}>Flagged Users</h3>
-            <p className={styles.statValue}>{userData.flaggedUsers}</p>
-          </div>
-        </div>
-      )}
+      <div className={styles.statsGrid}>
+        {adminStatCards.map((card) => (
+          <DashboardStatCard
+            key={card.title}
+            {...card}
+            loading={isLoadingStats}
+            error={statsError}
+            emptyText="No matching users"
+          />
+        ))}
+      </div>
 
       {/* Charts Section */}
       {isLoadingStats ? (
@@ -225,7 +290,7 @@ export default function DashboardOverview() {
                   <Line
                     type="monotone"
                     dataKey="value"
-                    stroke="#10b981"
+                    stroke="#e6ae12"
                     strokeWidth={2.5}
                     dot={false}
                   />
@@ -263,7 +328,7 @@ export default function DashboardOverview() {
                   <Line
                     type="monotone"
                     dataKey="value"
-                    stroke="#10b981"
+                    stroke="#e6ae12"
                     strokeWidth={2.5}
                     dot={false}
                   />
@@ -275,7 +340,7 @@ export default function DashboardOverview() {
       )}
 
       {/* Users Table */}
-      <div className={styles.tableSection}>
+      <div className={styles.tableSection} ref={tableRef}>
         <div className={styles.tableHeader}>
           <h3 className={styles.tableTitle}>All Users</h3>
         </div>
@@ -355,7 +420,7 @@ export default function DashboardOverview() {
                 ))}
                 {!isLoadingUsers && filteredUsers.length === 0 && (
                   <tr>
-                    <td colSpan={6} style={{ textAlign: "center", padding: "16px" }}>
+                    <td colSpan={6} className={styles.emptyTableCell}>
                       No users found.
                     </td>
                   </tr>

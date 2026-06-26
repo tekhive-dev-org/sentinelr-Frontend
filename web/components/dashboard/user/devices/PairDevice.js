@@ -251,8 +251,8 @@ export default function PairDevice({
         <div
           className={styles.errorMessage}
           style={{
-            color: "#EF4444",
-            backgroundColor: "#FEE2E2",
+            color: "#dc323f",
+            backgroundColor: "#ffe1e4",
             padding: "12px",
             borderRadius: "8px",
             marginBottom: "16px",
@@ -458,8 +458,8 @@ export default function PairDevice({
         <div
           className={styles.errorMessage}
           style={{
-            color: "#EF4444",
-            backgroundColor: "#FEE2E2",
+            color: "#dc323f",
+            backgroundColor: "#ffe1e4",
             padding: "12px",
             borderRadius: "8px",
             marginBottom: "16px",
@@ -747,8 +747,8 @@ export default function PairDevice({
         <div
           className={styles.errorMessage}
           style={{
-            color: "#EF4444",
-            backgroundColor: "#FEE2E2",
+            color: "#dc323f",
+            backgroundColor: "#ffe1e4",
             padding: "12px",
             borderRadius: "8px",
             marginBottom: "16px",
@@ -769,7 +769,7 @@ export default function PairDevice({
   const renderExpiredStep = () => (
     <div className={styles.pairingCard}>
       <div className={styles.expiredIcon}>
-        <ErrorOutlineIcon style={{ fontSize: 36, color: "#EF4444" }} />
+        <ErrorOutlineIcon style={{ fontSize: 36, color: "#dc323f" }} />
       </div>
 
       <h2 className={styles.cardTitle}>Code Expired</h2>
@@ -782,8 +782,8 @@ export default function PairDevice({
         <div
           className={styles.errorMessage}
           style={{
-            color: "#EF4444",
-            backgroundColor: "#FEE2E2",
+            color: "#dc323f",
+            backgroundColor: "#ffe1e4",
             padding: "12px",
             borderRadius: "8px",
             marginBottom: "16px",

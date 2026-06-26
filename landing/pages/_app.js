@@ -45,8 +45,8 @@ export default function App({ Component, pageProps }) {
         <meta name="twitter:image" content={siteImage} />
         
         {/* Additional SEO */}
-        <meta name="theme-color" content="#e07030" />
-        <meta name="msapplication-TileColor" content="#e07030" />
+        <meta name="theme-color" content="#e06f29" />
+        <meta name="msapplication-TileColor" content="#e06f29" />
         <link rel="canonical" href={siteUrl} />
         
         {/* Preconnect for performance */}

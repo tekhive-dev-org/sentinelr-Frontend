@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Snackbar, Alert } from '@mui/material';
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+import WorkspacePremiumOutlinedIcon from '@mui/icons-material/WorkspacePremiumOutlined';
 import styles from './UserSubscription.module.css';
 
 // Import sub-components
@@ -207,14 +209,23 @@ export default function UserSubscription() {
     <>
       <div className={styles.methodHeader}>
         <div className={styles.headerNav}>
-          <button className={styles.backButton} onClick={handleBackNavigation}>
-            ← {isPaymentDetailsOpen ? 'Back to payment methods' : 'Back to plans'}
+          <button type="button" className={styles.backButton} onClick={handleBackNavigation}>
+            <ArrowBackRoundedIcon />
+            {isPaymentDetailsOpen ? 'Back to payment methods' : 'Back to plans'}
           </button>
         </div>
-        <h3 className={styles.methodTitle}>Payment Method</h3>
+        <span className={styles.pricingBadge}>Secure Checkout</span>
+        <h1 className={styles.methodTitle}>Complete your subscription</h1>
         <p className={styles.methodSubtitle}>
           Kindly {isPaymentDetailsOpen ? 'input the correct data' : 'select the payment option'} to complete your payment.
         </p>
+        {selectedPlan && (
+          <div className={styles.checkoutPlanPill}>
+            <WorkspacePremiumOutlinedIcon />
+            <span>{selectedPlan.name}</span>
+            <strong>{selectedPlan.billingCycle}</strong>
+          </div>
+        )}
       </div>
 
       <div className={styles.paymentContainer}>

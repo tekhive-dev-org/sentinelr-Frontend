@@ -50,7 +50,7 @@ export default function DeleteAccountModal({
         <div className={styles.modalHeader}>
           <h3 className={styles.modalTitle}>Deleting Your Account</h3>
           <button className={styles.closeButton} onClick={handleClose}>
-            <CloseIcon style={{ fontSize: '20px' }} />
+            <CloseIcon className={styles.closeIcon} />
           </button>
         </div>
         <div className={styles.modalContent}>
@@ -78,7 +78,7 @@ export default function DeleteAccountModal({
             <span>Personally identifiable information in your profile will be removed.</span>
           </label>
 
-          <div className={styles.formGroup} style={{ marginTop: '20px', marginBottom: 0 }}>
+          <div className={`${styles.formGroup} ${styles.modalPasswordGroup}`}>
             <label className={styles.label}>Confirm Password</label>
             <div className={styles.passwordWrapper}>
               <input
@@ -94,15 +94,15 @@ export default function DeleteAccountModal({
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  <VisibilityOffOutlinedIcon style={{ fontSize: '20px' }} />
+                  <VisibilityOffOutlinedIcon className={styles.passwordIcon} />
                 ) : (
-                  <VisibilityOutlinedIcon style={{ fontSize: '20px' }} />
+                  <VisibilityOutlinedIcon className={styles.passwordIcon} />
                 )}
               </button>
             </div>
             {deleteError && (
               <div className={styles.errorText}>
-                <ErrorOutlineIcon style={{ fontSize: '14px' }} />
+                <ErrorOutlineIcon className={styles.errorIcon} />
                 {deleteError}
               </div>
             )}

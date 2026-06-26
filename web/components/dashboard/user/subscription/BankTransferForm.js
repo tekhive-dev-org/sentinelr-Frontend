@@ -23,36 +23,34 @@ export default function BankTransferForm({
     <div className={styles.methodDetails}>
       <div className={styles.formGroup}>
         <label className={styles.label}>Bank Name</label>
-        <div className={styles.input} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className={styles.copyField}>
           <span>{bankDetails.bankName}</span>
-          <span style={{ fontWeight: 'bold', color: '#0F4C75' }}>M</span>
+          <span className={styles.bankInitial}>M</span>
         </div>
       </div>
       <div className={styles.formGroup}>
         <label className={styles.label}>Account Number</label>
         <div 
-          className={styles.input} 
-          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+          className={`${styles.copyField} ${styles.copyFieldButton}`}
           onClick={() => onCopy(bankDetails.accountNumber, 'Account number')}
         >
           <b>{bankDetails.accountNumber}</b>
-          <ContentCopyIcon className={styles.copyIcon} style={{ fontSize: 18 }} />
+          <ContentCopyIcon className={styles.copyIcon} />
         </div>
       </div>
       <div className={styles.formGroup}>
         <label className={styles.label}>Transfer Amount</label>
         <div 
-          className={styles.input} 
-          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+          className={`${styles.copyField} ${styles.copyFieldButton}`}
           onClick={() => onCopy(bankDetails.amount.replace(/[^0-9]/g, ''), 'Amount')}
         >
           <b>{bankDetails.amount}</b>
-          <ContentCopyIcon className={styles.copyIcon} style={{ fontSize: 18 }} />
+          <ContentCopyIcon className={styles.copyIcon} />
         </div>
       </div>
       
       <div className={styles.warningBox}>
-        <InfoIcon style={{ fontSize: 16, marginTop: 2, marginRight: 4 }} />
+        <InfoIcon className={styles.warningIcon} />
         <div>
           <p>Ensure you send the exact amount indicated</p>
           <p>This account would expire in <strong className={isExpired ? styles.expired : ''}>{countdown || '...'}</strong> do not save for future use.</p>

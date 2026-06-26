@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import MarkEmailReadOutlinedIcon from '@mui/icons-material/MarkEmailReadOutlined';
+import LockResetOutlinedIcon from '@mui/icons-material/LockResetOutlined';
+import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
 import Toast from '../../../common/Toast';
 import SettingsService from './SettingsService';
 import styles from './Settings.module.css';
@@ -47,6 +50,7 @@ export default function PasswordTab({ formik, apiError, onClearError, isSubmitti
   const strength = getPasswordStrength(formik.values.newPassword);
   const allChecksValid = passwordChecks.every((c) => c.check(formik.values.newPassword));
   const passwordsMatch = formik.values.newPassword && formik.values.newPassword === formik.values.confirmPassword;
+  const strengthLabel = strength === 'none' ? 'Not started' : strength;
 
   return (
     <div className={styles.section}>
@@ -62,152 +66,192 @@ export default function PasswordTab({ formik, apiError, onClearError, isSubmitti
       <h3 className={styles.sectionTitle}>Password</h3>
       <p className={styles.sectionDescription}>Update your password to ensure your account remains private and secure.</p>
 
-      <div>
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Email Address</label>
-          <p className={styles.sectionDescription} style={{ marginBottom: '8px', marginTop: '-4px' }}>
-            We'll send a verification code to reset your password
-          </p>
-          <input
-            type="email"
-            name="email"
-            className={`${styles.input} ${(formik.touched.email && formik.errors.email) || apiError ? styles.inputError : ''}`}
-            value={formik.values.email}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            disabled={otpSent}
-          />
-          {formik.touched.email && formik.errors.email && (
-            <div className={styles.errorText}>
-              <ErrorOutlineIcon style={{ fontSize: '14px' }} />
-              {formik.errors.email}
+      <div className={styles.passwordFlow}>
+        <div className={styles.passwordStepCard}>
+          <div className={styles.passwordStepIcon}>
+            <MarkEmailReadOutlinedIcon />
+          </div>
+          <div className={styles.passwordStepContent}>
+            <div className={styles.passwordStepHeader}>
+              <div>
+                <span className={styles.passwordStepLabel}>Step 1</span>
+                <h4>Verify your email</h4>
+              </div>
+              <span className={`${styles.passwordStepBadge} ${otpSent ? styles.passwordStepBadgeSuccess : ''}`}>
+                {otpSent ? 'Code sent' : 'Required'}
+              </span>
             </div>
-          )}
-          {apiError && !otpSent && (
-            <div className={styles.errorText}>
-              <ErrorOutlineIcon style={{ fontSize: '14px' }} />
-              {apiError}
+            <p>We will send a one-time verification code before allowing password changes.</p>
+
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Email Address</label>
+              <input
+                type="email"
+                name="email"
+                className={`${styles.input} ${(formik.touched.email && formik.errors.email) || apiError ? styles.inputError : ''}`}
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                disabled={otpSent}
+              />
+              {formik.touched.email && formik.errors.email && (
+                <div className={styles.errorText}>
+                  <ErrorOutlineIcon className={styles.errorIcon} />
+                  {formik.errors.email}
+                </div>
+              )}
+              {apiError && !otpSent && (
+                <div className={styles.errorText}>
+                  <ErrorOutlineIcon className={styles.errorIcon} />
+                  {apiError}
+                </div>
+              )}
             </div>
-          )}
-          {!otpSent && (
-            <button
-              type="button"
-              className={`${styles.primaryButton}`}
-              onClick={handleSendOTP}
-              disabled={sendingOtp || !formik.values.email || (formik.touched.email && formik.errors.email)}
-              style={{ marginTop: '12px', width: '100%' }}
-            >
-              {sendingOtp ? 'Sending...' : 'Send OTP'}
-            </button>
-          )}
+
+            {!otpSent ? (
+              <button
+                type="button"
+                className={`${styles.primaryButton} ${styles.otpButton}`}
+                onClick={handleSendOTP}
+                disabled={sendingOtp || !formik.values.email || (formik.touched.email && formik.errors.email)}
+              >
+                {sendingOtp ? 'Sending code...' : 'Send verification code'}
+              </button>
+            ) : (
+              <div className={styles.otpSentNotice}>
+                <ShieldOutlinedIcon />
+                <span>Verification code sent. Check your inbox and continue below.</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {otpSent && (
-          <>
-            <div className={styles.formGroup}>
-              <label className={styles.label}>Verification Code</label>
-              <input
-                type="text"
-                name="otp"
-                className={`${styles.input} ${(formik.touched.otp && formik.errors.otp) ? styles.inputError : ''}`}
-                value={formik.values.otp || ''}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                placeholder="Enter the code sent to your email"
-              />
-              {formik.touched.otp && formik.errors.otp && (
-                <div className={styles.errorText}>
-                  <ErrorOutlineIcon style={{ fontSize: '14px' }} />
-                  {formik.errors.otp}
-                </div>
-              )}
+          <div className={styles.passwordStepCard}>
+            <div className={styles.passwordStepIcon}>
+              <LockResetOutlinedIcon />
             </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.label}>New Password</label>
-              <div className={styles.passwordWrapper}>
-                <input
-                  type={showNewPassword ? "text" : "password"}
-                  name="newPassword"
-                  className={`${styles.input} ${formik.touched.newPassword && formik.errors.newPassword ? styles.inputError : ''}`}
-                  value={formik.values.newPassword}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
-                <button 
-                  type="button"
-                  className={styles.togglePassword}
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                >
-                  {showNewPassword ? (
-                    <VisibilityOffOutlinedIcon style={{ fontSize: '20px' }} />
-                  ) : (
-                    <VisibilityOutlinedIcon style={{ fontSize: '20px' }} />
-                  )}
-                </button>
+            <div className={styles.passwordStepContent}>
+              <div className={styles.passwordStepHeader}>
+                <div>
+                  <span className={styles.passwordStepLabel}>Step 2</span>
+                  <h4>Create a new password</h4>
+                </div>
+                <span className={`${styles.passwordStepBadge} ${allChecksValid && passwordsMatch ? styles.passwordStepBadgeSuccess : ''}`}>
+                  {allChecksValid && passwordsMatch ? 'Ready' : 'In progress'}
+                </span>
               </div>
-              {formik.touched.newPassword && formik.errors.newPassword && (
-                <div className={styles.errorText}>
-                  <ErrorOutlineIcon style={{ fontSize: '14px' }} />
-                  {formik.errors.newPassword}
-                </div>
-              )}
-              
-              
-            </div>
+              <p>Enter the verification code and choose a password that satisfies every security requirement.</p>
 
-            <div className={styles.formGroup}>
-              <label className={styles.label}>Confirm New Password</label>
-              <div className={styles.passwordWrapper}>
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  className={`${styles.input} ${formik.touched.confirmPassword && formik.errors.confirmPassword ? styles.inputError : ''}`}
-                  value={formik.values.confirmPassword || ''}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
-                <button 
-                  type="button"
-                  className={styles.togglePassword}
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? (
-                    <VisibilityOffOutlinedIcon style={{ fontSize: '20px' }} />
-                  ) : (
-                    <VisibilityOutlinedIcon style={{ fontSize: '20px' }} />
+              <div className={styles.passwordFieldsGrid}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Verification Code</label>
+                  <input
+                    type="text"
+                    name="otp"
+                    className={`${styles.input} ${(formik.touched.otp && formik.errors.otp) ? styles.inputError : ''}`}
+                    value={formik.values.otp || ''}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    placeholder="Enter code"
+                  />
+                  {formik.touched.otp && formik.errors.otp && (
+                    <div className={styles.errorText}>
+                      <ErrorOutlineIcon className={styles.errorIcon} />
+                      {formik.errors.otp}
+                    </div>
                   )}
-                </button>
-              </div>
-              {formik.touched.confirmPassword && formik.errors.confirmPassword && (
-                <div className={styles.errorText}>
-                  <ErrorOutlineIcon style={{ fontSize: '14px' }} />
-                  {formik.errors.confirmPassword}
                 </div>
-              )}
-            </div>
-{formik.values.newPassword && (
-                <div style={{ marginTop: '10px' }}>
-                  {/* Password Strength Bars */}
-                  <div className={styles.passwordStrengthBars}>
-                    <div className={`${styles.strengthBar} ${strength === 'weak' ? styles.strengthBarWeak : strength === 'moderate' ? styles.strengthBarModerate : strength === 'strong' ? styles.strengthBarStrong : ''}`}></div>
-                    <div className={`${styles.strengthBar} ${strength === 'moderate' ? styles.strengthBarModerate : strength === 'strong' ? styles.strengthBarStrong : ''}`}></div>
-                    <div className={`${styles.strengthBar} ${strength === 'moderate' ? styles.strengthBarModerate : strength === 'strong' ? styles.strengthBarStrong : ''}`}></div>
-                    <div className={`${styles.strengthBar} ${strength === 'strong' ? styles.strengthBarStrong : ''}`}></div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>New Password</label>
+                  <div className={styles.passwordWrapper}>
+                    <input
+                      type={showNewPassword ? "text" : "password"}
+                      name="newPassword"
+                      className={`${styles.input} ${formik.touched.newPassword && formik.errors.newPassword ? styles.inputError : ''}`}
+                      value={formik.values.newPassword}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      placeholder="Enter new password"
+                    />
+                    <button 
+                      type="button"
+                      className={styles.togglePassword}
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      aria-label={showNewPassword ? 'Hide new password' : 'Show new password'}
+                    >
+                      {showNewPassword ? (
+                        <VisibilityOffOutlinedIcon className={styles.passwordIcon} />
+                      ) : (
+                        <VisibilityOutlinedIcon className={styles.passwordIcon} />
+                      )}
+                    </button>
                   </div>
+                  {formik.touched.newPassword && formik.errors.newPassword && (
+                    <div className={styles.errorText}>
+                      <ErrorOutlineIcon className={styles.errorIcon} />
+                      {formik.errors.newPassword}
+                    </div>
+                  )}
+                </div>
 
-                  {/* Password Checklist */}
-                  <div className={styles.passwordChecklist}>
-                    {passwordChecks.map((check) => (
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Confirm New Password</label>
+                  <div className={styles.passwordWrapper}>
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      name="confirmPassword"
+                      className={`${styles.input} ${formik.touched.confirmPassword && formik.errors.confirmPassword ? styles.inputError : ''}`}
+                      value={formik.values.confirmPassword || ''}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      placeholder="Confirm new password"
+                    />
+                    <button 
+                      type="button"
+                      className={styles.togglePassword}
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      aria-label={showConfirmPassword ? 'Hide confirmation password' : 'Show confirmation password'}
+                    >
+                      {showConfirmPassword ? (
+                        <VisibilityOffOutlinedIcon className={styles.passwordIcon} />
+                      ) : (
+                        <VisibilityOutlinedIcon className={styles.passwordIcon} />
+                      )}
+                    </button>
+                  </div>
+                  {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+                    <div className={styles.errorText}>
+                      <ErrorOutlineIcon className={styles.errorIcon} />
+                      {formik.errors.confirmPassword}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.passwordStrengthPanel}>
+                <div className={styles.passwordStrengthHeader}>
+                  <span>Password strength</span>
+                  <strong className={styles[`strengthLabel_${strength}`]}>{strengthLabel}</strong>
+                </div>
+                <div className={styles.passwordStrengthBars} aria-hidden="true">
+                  <div className={`${styles.strengthBar} ${strength === 'weak' ? styles.strengthBarWeak : strength === 'moderate' ? styles.strengthBarModerate : strength === 'strong' ? styles.strengthBarStrong : ''}`}></div>
+                  <div className={`${styles.strengthBar} ${strength === 'moderate' ? styles.strengthBarModerate : strength === 'strong' ? styles.strengthBarStrong : ''}`}></div>
+                  <div className={`${styles.strengthBar} ${strength === 'moderate' ? styles.strengthBarModerate : strength === 'strong' ? styles.strengthBarStrong : ''}`}></div>
+                  <div className={`${styles.strengthBar} ${strength === 'strong' ? styles.strengthBarStrong : ''}`}></div>
+                </div>
+                <div className={styles.passwordChecklist}>
+                  {passwordChecks.map((check) => {
+                    const isValid = check.check(formik.values.newPassword);
+                    return (
                       <div
                         key={check.label}
                         className={`${styles.checklistItem} ${
-                          check.check(formik.values.newPassword)
-                            ? styles.checklistItemValid
-                            : styles.checklistItemInvalid
+                          isValid ? styles.checklistItemValid : styles.checklistItemInvalid
                         }`}
                       >
-                        {check.check(formik.values.newPassword) ? (
+                        {isValid ? (
                           <svg className={styles.checklistIcon} fill="currentColor" viewBox="0 0 20 20" width="16" height="16">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                           </svg>
@@ -218,23 +262,24 @@ export default function PasswordTab({ formik, apiError, onClearError, isSubmitti
                         )}
                         <span>{check.label}</span>
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {apiError && (
+                <div className={`${styles.errorText} ${styles.errorTextSpaced}`}>
+                  <ErrorOutlineIcon className={styles.errorIcon} />
+                  {apiError}
                 </div>
               )}
-            {apiError && (
-              <div className={styles.errorText} style={{ marginTop: '12px' }}>
-                <ErrorOutlineIcon style={{ fontSize: '14px' }} />
-                {apiError}
-              </div>
-            )}
-          </>
+            </div>
+          </div>
         )}
-
       </div>
 
       {/* Actions */}
-      <div className={styles.actions} style={{ marginTop: '20px' }}>
+      <div className={styles.actions}>
         <button 
           type="button" 
           className={styles.secondaryButton} 

@@ -52,7 +52,7 @@ export default function CardPaymentForm({
         {errors.number && <span className={styles.errorText}>{errors.number}</span>}
       </div>
       <div className={styles.formRow}>
-        <div className={styles.formGroup} style={{ flex: 1 }}>
+        <div className={styles.formGroup}>
           <label className={styles.label}>Expiry Date</label>
           <input 
             type="text" 
@@ -65,7 +65,7 @@ export default function CardPaymentForm({
           />
           {errors.expiry && <span className={styles.errorText}>{errors.expiry}</span>}
         </div>
-        <div className={styles.formGroup} style={{ flex: 1 }}>
+        <div className={styles.formGroup}>
           <label className={styles.label}>CVV</label>
           <input 
             type="password" 

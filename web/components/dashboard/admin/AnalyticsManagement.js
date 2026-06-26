@@ -51,11 +51,11 @@ export default function AnalyticsManagement() {
   const getBarColor = (tab) => {
     switch (tab) {
       case 'Active Users':
-        return '#10b981';
+        return '#e6ae12';
       case 'Churn Rates':
-        return '#0e7490';
+        return '#3d09d0';
       default:
-        return '#10b981';
+        return '#e6ae12';
     }
   };
 
@@ -107,7 +107,7 @@ export default function AnalyticsManagement() {
                         className={styles.bar}
                         style={{
                           width: `${(item.value / maxValue) * 100}%`,
-                          backgroundColor: '#10b981'
+                          backgroundColor: '#e6ae12'
                         }}
                       ></div>
                     </div>

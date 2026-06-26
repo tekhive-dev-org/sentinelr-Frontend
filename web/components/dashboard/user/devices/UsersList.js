@@ -81,9 +81,9 @@ export default function UsersList({
               alignItems: "center",
               gap: "6px",
               fontSize: "12px",
-              color: "#b45309",
-              backgroundColor: "#fffbeb",
-              border: "1px solid #fcd34d",
+              color: "#b98b0e",
+              backgroundColor: "#fff8e8",
+              border: "1px solid #f3d476",
               borderRadius: "8px",
               padding: "6px 12px",
             }}

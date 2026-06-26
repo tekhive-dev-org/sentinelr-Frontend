@@ -192,7 +192,7 @@ export default function Footer() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  className="flex items-center gap-2 text-green-600 py-3"
+                  className="flex items-center gap-2 text-[#e6ae12] py-3"
                 >
                   <CheckCircleIcon className="text-lg" />
                   <span className="font-body text-sm font-medium">{message}</span>
@@ -229,14 +229,14 @@ export default function Footer() {
                       disabled={isSubmitting}
                       className={`w-full px-4 py-3 bg-white border rounded-xl font-body text-sm text-deep-forest placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-all disabled:opacity-50 ${
                         status === 'error' 
-                          ? 'border-red-300 focus:border-red-400 focus:ring-red-100' 
+                          ? 'border-[#f4a6ad] focus:border-[#dc323f] focus:ring-[#fff0f1]' 
                           : 'border-gray-200 focus:border-primary-green focus:ring-primary-green/20'
                       }`}
                       aria-label="Email for newsletter"
                       aria-invalid={status === 'error'}
                     />
                     {status === 'error' && (
-                      <ErrorOutlineIcon className="absolute right-3 top-1/2 -translate-y-1/2 text-red-400 text-lg" />
+                      <ErrorOutlineIcon className="absolute right-3 top-1/2 -translate-y-1/2 text-[#dc323f] text-lg" />
                     )}
                   </div>
                   
@@ -244,7 +244,7 @@ export default function Footer() {
                     <motion.p
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="text-red-500 text-xs font-body"
+                      className="text-[#dc323f] text-xs font-body"
                     >
                       {message}
                     </motion.p>

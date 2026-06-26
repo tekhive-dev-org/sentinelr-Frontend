@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import DevicesIcon from '@mui/icons-material/Devices';
 import SosIcon from '@mui/icons-material/Sos';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import DashboardStatCard from '../common/DashboardStatCard';
 import styles from './UserDashboardOverview.module.css';
-import { devicesService } from '../../../services/devicesService';
 import MapSkeleton from '../../ui/loaders/MapSkeleton';
+import useUserDashboardStats from './useUserDashboardStats';
 
 // Google Maps requires the DOM — disable SSR for this component
 const LiveLocationMap = dynamic(
@@ -20,64 +20,106 @@ const LiveLocationMap = dynamic(
   }
 );
 
-const usageData = [
-  { name: 'Mon', value: 4, full: 8 },
-  { name: 'Tue', value: 5, full: 8 },
-  { name: 'Wed', value: 6, full: 8 },
-  { name: 'Thur', value: 5, full: 8 },
-  { name: 'Fri', value: 7, full: 8 },
-];
+const ALERT_TYPE_LABELS = {
+  sos: 'Manual SOS',
+  intruder: 'Intruder alert',
+  geofence: 'Geofence alert',
+  screen_time: 'Screen time alert',
+  impact: 'Impact detected',
+};
 
-const subscriptionData = [
-  { name: 'Jan', value: 0 },
-  { name: 'Feb', value: 500 },
-  { name: 'Mar', value: 0 },
-  { name: 'Apr', value: 450 },
-  { name: 'May', value: 0 },
-  { name: 'Jun', value: 800 },
-];
+const titleCase = (value) => String(value || 'Alert')
+  .replace(/[_-]+/g, ' ')
+  .replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+const getAlertDate = (alert) => alert?.createdAt || alert?.timestamp || alert?.updatedAt || alert?.date;
+
+const formatRelativeTime = (value) => {
+  const date = new Date(value);
+  if (!value || Number.isNaN(date.getTime())) return 'Recently';
+
+  const diffSeconds = Math.round((date.getTime() - Date.now()) / 1000);
+  const divisions = [
+    { amount: 60, name: 'second' },
+    { amount: 60, name: 'minute' },
+    { amount: 24, name: 'hour' },
+    { amount: 7, name: 'day' },
+    { amount: 4.34524, name: 'week' },
+    { amount: 12, name: 'month' },
+    { amount: Number.POSITIVE_INFINITY, name: 'year' },
+  ];
+
+  let duration = diffSeconds;
+  for (const division of divisions) {
+    if (Math.abs(duration) < division.amount) {
+      return new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(Math.round(duration), division.name);
+    }
+    duration /= division.amount;
+  }
+
+  return 'Recently';
+};
+
+const getAlertTitle = (alert) => {
+  if (alert?.title) return alert.title;
+  if (alert?.message) return alert.message;
+  const type = String(alert?.type || '').toLowerCase();
+  return ALERT_TYPE_LABELS[type] || titleCase(type || alert?.category || 'Alert event');
+};
+
+const getAlertMeta = (alert) => {
+  if (alert?.description) {
+    return String(alert.description).split('\n')[0];
+  }
+
+  if (alert?.userName) {
+    return `Triggered by ${alert.userName}`;
+  }
+
+  const deviceName = alert?.device?.deviceName || alert?.device?.name || alert?.deviceName || alert?.deviceId;
+  const childName = alert?.child?.name || alert?.user?.name || alert?.assignedUser?.name;
+  const coordinates = alert?.location?.latitude && alert?.location?.longitude
+    ? `${Number(alert.location.latitude).toFixed(4)}, ${Number(alert.location.longitude).toFixed(4)}`
+    : '';
+  const location = alert?.location?.address || alert?.address || coordinates;
+  return childName || deviceName || location || 'Sentinelr activity';
+};
+
+const getAlertContext = (alert) => {
+  const context = [];
+
+  if (alert?.userName) context.push(alert.userName);
+  if (alert?.deviceId) context.push(`Device #${alert.deviceId}`);
+  if (alert?.priority) context.push(`${titleCase(alert.priority)} priority`);
+
+  return context.join(' · ');
+};
+
+const getAlertTone = (alert) => {
+  const status = String(alert?.status || '').toLowerCase();
+  const type = String(alert?.type || '').toLowerCase();
+  if (status === 'resolved' || status === 'dismissed') return 'resolved';
+  if (type === 'sos' || status === 'active' || status === 'unresolved') return 'critical';
+  if (type === 'geofence' || type === 'screen_time') return 'attention';
+  return 'neutral';
+};
 
 export default function UserDashboardOverview() {
   const router = useRouter();
-  const [devices, setDevices] = useState([]);
-  const [deviceMenuOpen, setDeviceMenuOpen] = useState(false);
   const [showMapDetails, setShowMapDetails] = useState(true);
-  const deviceMenuRef = useRef(null);
+  const { stats, loading, errors, refresh } = useUserDashboardStats();
+  // console.log('UserDashboardOverview stats:', stats, 'loading:', loading, 'errors:', errors);
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (deviceMenuRef.current && !deviceMenuRef.current.contains(e.target)) {
-        setDeviceMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    devicesService
-      .getFamilyDevices({ pairStatus: 'Paired' })
-      .then((data) => setDevices(data.devices || []))
-      .catch((err) => console.error('[Overview] fetch devices:', err));
-  }, []);
-
-  // Devices whose status is 'online'
-  const activeDevices = devices.filter((d) => d.status === 'online');
-
-  // Build avatar list: up to 3 unique assigned-user initials, then a +N badge
-  const seen = new Set();
-  const avatarUsers = [];
-  for (const d of activeDevices) {
-    const name = d.assignedUser?.name || d.name || '?';
-    const key  = d.assignedUser?.id ?? name;
-    if (!seen.has(key)) {
-      seen.add(key);
-      avatarUsers.push(name);
-    }
-  }
-  const visibleAvatars = avatarUsers.slice(0, 3);
-  const extraCount     = avatarUsers.length > 3 ? avatarUsers.length - 3 : 0;
+  const statActions = {
+    devices: [
+      { label: 'View details', kind: 'navigate', icon: ArrowForwardIcon, onSelect: () => router.push('/dashboard/devices') },
+      { label: 'Refresh', kind: 'refresh', icon: RefreshIcon, onSelect: refresh },
+    ],
+    alerts: [
+      { label: 'View alerts', kind: 'navigate', icon: ArrowForwardIcon, onSelect: () => router.push('/dashboard/alerts') },
+      { label: 'Refresh', kind: 'refresh', icon: RefreshIcon, onSelect: refresh },
+    ],
+  };
 
   return (
     <div className={styles.container}>
@@ -96,77 +138,47 @@ export default function UserDashboardOverview() {
 
       {/* Stat Cards */}
       <div className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <div className={styles.statHeader}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div className={`${styles.statIcon} ${styles.blue}`}>
-                <DevicesIcon />
-              </div>
-              <span className={styles.statTitle}>Active Devices</span>
-            </div>
-            <div ref={deviceMenuRef} className={styles.menuWrapper}>
-              <MoreVertIcon
-                style={{ color: '#999', cursor: 'pointer' }}
-                onClick={() => setDeviceMenuOpen((o) => !o)}
-              />
-              {deviceMenuOpen && (
-                <div className={styles.dropdownMenu}>
-                  <button
-                    className={styles.dropdownItem}
-                    onClick={() => { setDeviceMenuOpen(false); router.push('/dashboard/devices'); }}
-                  >
-                    View all devices
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-            <div className={styles.avatars}>
-              {visibleAvatars.length === 0 ? (
-                <span style={{ fontSize: '12px', color: '#9ca3af' }}>No active devices</span>
-              ) : (
-                <>
-                  {visibleAvatars.map((name, i) => (
-                    <div key={i} className={styles.avatar} title={name}>
-                      {name.charAt(0).toUpperCase()}
-                    </div>
-                  ))}
-                  {extraCount > 0 && (
-                    <div className={styles.avatar}>+{extraCount}</div>
-                  )}
-                </>
-              )}
-            </div>
-            <div className={styles.statValue}>{activeDevices.length}</div>
-          </div>
-        </div>
+        <DashboardStatCard
+          title="Active Devices"
+          value={stats.activeDevices.length}
+          meta={`${stats.pairedDevices.length} paired device${stats.pairedDevices.length === 1 ? '' : 's'} tracked`}
+          Icon={DevicesIcon}
+          tone="purple"
+          status={stats.activeDevices.length > 0 ? 'Online' : 'Quiet'}
+          statusTone={stats.activeDevices.length > 0 ? 'positive' : 'neutral'}
+          loading={loading}
+          error={errors.devices}
+          emptyText="No active devices online"
+          actions={statActions.devices}
+        />
 
-        <div className={styles.statCard}>
-          <div className={styles.statHeader}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div className={`${styles.statIcon} ${styles.red}`}>
-                <WarningAmberIcon />
-              </div>
-              <span className={styles.statTitle}>Alerts Today</span>
-            </div>
-            <MoreVertIcon style={{ color: '#999', cursor: 'pointer' }} />
-          </div>
-          <div className={styles.statValue} style={{ marginTop: '24px' }}>0</div>
-        </div>
+        <DashboardStatCard
+          title="Alerts Today"
+          value={stats.alertsToday.length}
+          meta="Live alert events received today"
+          Icon={WarningAmberIcon}
+          tone="orange"
+          status={stats.alertsToday.length > 0 ? 'Needs review' : 'Clear'}
+          statusTone={stats.alertsToday.length > 0 ? 'attention' : 'positive'}
+          loading={loading}
+          error={errors.alerts}
+          emptyText="No alerts received today"
+          actions={statActions.alerts}
+        />
 
-        <div className={styles.statCard}>
-          <div className={styles.statHeader}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div className={`${styles.statIcon} ${styles.red}`}>
-                <SosIcon />
-              </div>
-              <span className={styles.statTitle}>SOS Active</span>
-            </div>
-            <MoreVertIcon style={{ color: '#999', cursor: 'pointer' }} />
-          </div>
-          <div className={styles.statValue} style={{ marginTop: '24px' }}>0</div>
-        </div>
+        <DashboardStatCard
+          title="SOS Active"
+          value={stats.activeSos.length}
+          meta="Unresolved SOS incidents"
+          Icon={SosIcon}
+          tone="red"
+          status={stats.activeSos.length > 0 ? 'Critical' : 'Clear'}
+          statusTone={stats.activeSos.length > 0 ? 'danger' : 'positive'}
+          loading={loading}
+          error={errors.sos}
+          emptyText="No active SOS incidents"
+          actions={statActions.alerts}
+        />
       </div>
 
       <div className={styles.mainContentGrid}>
@@ -174,8 +186,8 @@ export default function UserDashboardOverview() {
           {/* Charts Row */}
           <div className={styles.chartsGrid}>
             <div className={styles.chartCard}>
-              <h3 className={styles.sectionTitle} style={{ marginBottom: '16px' }}>Usage Insight</h3>
-              <div style={{ height: '200px' }}>
+              <h3 className={styles.sectionTitle}>Usage Insight</h3>
+              <div className={styles.comingSoonPanel}>
                 <div className={styles.comingSoonWrapper}>
                   <span className={styles.comingSoonBadge}>Coming Soon</span>
                   <p className={styles.comingSoonLabel}>Usage analytics will appear here</p>
@@ -184,8 +196,8 @@ export default function UserDashboardOverview() {
             </div>
 
             <div className={styles.chartCard}>
-              <h3 className={styles.sectionTitle} style={{ marginBottom: '16px' }}>Subscription</h3>
-              <div style={{ height: '200px' }}>
+              <h3 className={styles.sectionTitle}>Subscription</h3>
+              <div className={styles.comingSoonPanel}>
                 <div className={styles.comingSoonWrapper}>
                   <span className={styles.comingSoonBadge}>Coming Soon</span>
                   <p className={styles.comingSoonLabel}>Subscription trends will appear here</p>
@@ -211,11 +223,85 @@ export default function UserDashboardOverview() {
           <div className={styles.activityCard}>
             <div className={styles.sectionHeader}>
               <h3 className={styles.sectionTitle}>Recent Activity / Alert Feeds</h3>
+              <div className={styles.activityActions}>
+                <button
+                  type="button"
+                  className={styles.activityIconButton}
+                  onClick={refresh}
+                  disabled={loading}
+                  aria-label="Refresh alert feed"
+                  title="Refresh"
+                >
+                  <RefreshIcon fontSize="small" />
+                </button>
+                <button
+                  type="button"
+                  className={styles.viewAllButton}
+                  onClick={() => router.push('/dashboard/alerts')}
+                >
+                  View all
+                  <ArrowForwardIcon fontSize="small" />
+                </button>
+              </div>
             </div>
-            <div className={styles.comingSoonWrapper}>
-              <span className={styles.comingSoonBadge}>Coming Soon</span>
-              <p className={styles.comingSoonLabel}>Live activity and alert feeds will appear here</p>
-            </div>
+            {loading ? (
+              <div className={styles.activityList} aria-label="Loading recent alert feed">
+                {[0, 1, 2].map((item) => (
+                  <div key={item} className={`${styles.activityItem} ${styles.activitySkeleton}`}>
+                    <span className={styles.activityPulseIcon} />
+                    <div className={styles.activitySkeletonContent}>
+                      <span />
+                      <span />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : errors.alerts ? (
+              <div className={styles.activityState}>
+                <span className={styles.activityStateBadge}>Feed unavailable</span>
+                <p>{errors.alerts}</p>
+                <button type="button" className={styles.activityRetryButton} onClick={refresh}>
+                  Try again
+                </button>
+              </div>
+            ) : stats.recentAlerts.length === 0 ? (
+              <div className={styles.activityState}>
+                <span className={styles.activityStateBadge}>All clear</span>
+                <p>No recent alerts or activity events found.</p>
+              </div>
+            ) : (
+              <div className={styles.activityList}>
+                {stats.recentAlerts.map((alert, index) => {
+                  const tone = getAlertTone(alert);
+                  const key = alert.id || alert._id || `${getAlertDate(alert)}-${index}`;
+                  return (
+                    <button
+                      type="button"
+                      key={key}
+                      className={styles.activityItem}
+                      onClick={() => router.push('/dashboard/alerts')}
+                    >
+                      <span className={`${styles.activityDot} ${styles[`activityDot_${tone}`]}`} />
+                      <span className={styles.activityContent}>
+                        <span className={styles.activityHeader}>
+                          <span className={styles.activityTitle}>{getAlertTitle(alert)}</span>
+                          <span className={styles.activityTime}>{formatRelativeTime(getAlertDate(alert))}</span>
+                        </span>
+                        {getAlertContext(alert) && (
+                          <span className={styles.activityContext}>{getAlertContext(alert)}</span>
+                        )}
+                        <span className={styles.activityStatus}>
+                          <span>{getAlertMeta(alert)}</span>
+                          <span className={`${styles.statusBadge} ${styles[`statusBadge_${tone}`]}`}>
+                            {titleCase(alert.status || alert.type || 'New')}
+                          </span>
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>

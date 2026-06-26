@@ -8,9 +8,9 @@ import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
 import styles from '../ParentalControl.module.css';
 
 const ACTIVITY_CONFIG = {
-  app_install: { icon: <GetAppRoundedIcon sx={{ fontSize: 16, color: '#16a34a' }} />, bg: '#dcfce7', color: '#16a34a' },
-  web_blocked: { icon: <BlockRoundedIcon sx={{ fontSize: 16, color: '#dc2626' }} />, bg: '#fee2e2', color: '#dc2626' },
-  screen_time_limit: { icon: <TimerRoundedIcon sx={{ fontSize: 16, color: '#4f46e5' }} />, bg: '#e0e7ff', color: '#4f46e5' },
+  app_install: { icon: <GetAppRoundedIcon sx={{ fontSize: 16, color: '#e6ae12' }} />, bg: '#fff0cf', color: '#e6ae12' },
+  web_blocked: { icon: <BlockRoundedIcon sx={{ fontSize: 16, color: '#dc323f' }} />, bg: '#ffe1e4', color: '#dc323f' },
+  screen_time_limit: { icon: <TimerRoundedIcon sx={{ fontSize: 16, color: '#4f46e5' }} />, bg: '#ede7ff', color: '#4f46e5' },
   geofence: { icon: <PlaceRoundedIcon sx={{ fontSize: 16, color: '#ca8a04' }} />, bg: '#fef9c3', color: '#ca8a04' },
   app_blocked: { icon: <LockRoundedIcon sx={{ fontSize: 16, color: '#db2777' }} />, bg: '#fce7f3', color: '#db2777' },
 };

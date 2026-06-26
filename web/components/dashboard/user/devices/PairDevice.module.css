@@ -257,7 +257,7 @@
   width: 32px;
   height: 32px;
   border: 3px solid #E5E7EB;
-  border-top-color: #3B82F6;
+  border-top-color: #3d09d0;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto
@@ -268,7 +268,7 @@
 }
 
 .deviceNameHighlight {
-  color: #3B82F6;
+  color: #3d09d0;
 }
 
 /* Progress */
@@ -295,7 +295,7 @@
 
 .progressFill {
   height: 100%;
-  background: linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%);
+  background: linear-gradient(90deg, #3d09d0 0%, #60A5FA 100%);
   border-radius: 3px;
   transition: width 0.3s ease;
 }
@@ -377,7 +377,7 @@
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: #D1FAE5;
+  background: #fff0cf;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -388,7 +388,7 @@
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: #FEF3C7;
+  background: #fff8e8;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -399,7 +399,7 @@
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: #FEE2E2;
+  background: #ffe1e4;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -431,7 +431,7 @@
 }
 
 .formInput:focus {
-  border-color: #3B82F6;
+  border-color: #3d09d0;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -452,7 +452,7 @@
 }
 
 .formSelect:focus {
-  border-color: #3B82F6;
+  border-color: #3d09d0;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -534,7 +534,7 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: #D1FAE5;
+  background: #fff0cf;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -643,7 +643,7 @@
 .deviceTypeDot {
   width: 6px;
   height: 6px;
-  background: #10B981;
+  background: #e6ae12;
   border-radius: 50%;
 }
 
@@ -661,7 +661,7 @@
 
 .deviceStatusText {
   font-size: 13px;
-  color: #10B981;
+  color: #e6ae12;
 }
 
 .deviceThumbnail {

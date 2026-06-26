@@ -26,18 +26,18 @@ const BASE_MAP_OPTIONS = {
 };
 
 const SAFE_CIRCLE_OPTIONS = {
-  strokeColor: '#0f3c5f',
+  strokeColor: '#3d09d0',
   strokeOpacity: 0.6,
   strokeWeight: 2,
-  fillColor: '#3b82f6',
+  fillColor: '#3d09d0',
   fillOpacity: 0.12,
 };
 
 const DANGER_CIRCLE_OPTIONS = {
-  strokeColor: '#ef4444',
+  strokeColor: '#dc323f',
   strokeOpacity: 0.5,
   strokeWeight: 2,
-  fillColor: '#ef4444',
+  fillColor: '#dc323f',
   fillOpacity: 0.1,
 };
 

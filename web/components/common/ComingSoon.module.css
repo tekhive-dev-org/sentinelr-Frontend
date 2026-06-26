@@ -32,7 +32,7 @@
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ede9fe 0%, #e0e7ff 100%);
+  background: linear-gradient(135deg, #f5f1ff 0%, #ede7ff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -41,15 +41,15 @@
 
 .icon {
   font-size: 34px !important;
-  color: #6366f1;
+  color: #3d09d0;
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, #ede9fe 0%, #e0e7ff 100%);
-  color: #6366f1;
+  background: linear-gradient(135deg, #f5f1ff 0%, #ede7ff 100%);
+  color: #3d09d0;
   font-size: 11px;
   font-weight: 700;
   padding: 4px 16px;

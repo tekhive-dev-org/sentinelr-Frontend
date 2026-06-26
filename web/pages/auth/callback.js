@@ -47,7 +47,7 @@ export default function AuthCallback() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #0E4B68 0%, #0C3D54 50%, #083344 100%)',
+        background: 'linear-gradient(135deg, #e06f29 0%, #c95f20 50%, #3d09d0 100%)',
         color: 'white',
         fontFamily: 'sans-serif',
       }}

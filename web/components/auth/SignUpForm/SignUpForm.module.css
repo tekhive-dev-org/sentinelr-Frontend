@@ -4,7 +4,7 @@
 }
 
 .leftSection {
-  @apply hidden md:flex md:w-1/2 justify-center rounded-r-3xl items-center bg-[#4A4742] relative;
+  @apply hidden md:flex md:w-1/2 justify-center rounded-r-3xl items-center bg-[#3d09d0] relative;
 }
 
 .lockImageWrapper {
@@ -13,7 +13,7 @@
 }
 
 .rightSection {
-  @apply w-full md:w-1/2 flex flex-col justify-center items-center sm:px-6 sm:py-10 sm:justify-start  bg-white sm:max-h-[100dvh] overflow-y-auto mobile:bg-[#0E4B68];
+  @apply w-full md:w-1/2 flex flex-col justify-center items-center sm:px-6 sm:py-10 sm:justify-start  bg-white sm:max-h-[100dvh] overflow-y-auto mobile:bg-[#e06f29];
 }
 
 .formContainer {
@@ -38,7 +38,7 @@
 }
 
 .loginLink {
-  @apply text-[#5C8A3A] font-medium hover:underline;
+  @apply text-[#e6ae12] font-medium hover:underline;
 }
 
 .socialButton {
@@ -66,7 +66,7 @@
 }
 
 .input {
-  @apply w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E4B68] focus:border-[#0E4B68] outline-none transition-all text-[15px];
+  @apply w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#e06f29] focus:border-[#e06f29] outline-none transition-all text-[15px];
 }
 
 .inputError {
@@ -94,7 +94,7 @@
 }
 
 .strengthBarWeak {
-  @apply bg-red-500;
+  @apply bg-[#dc323f];
 }
 
 .strengthBarModerate {
@@ -102,7 +102,7 @@
 }
 
 .strengthBarStrong {
-  @apply bg-[#5C8A3A];
+  @apply bg-[#e6ae12];
 }
 
 .passwordStrengthText {
@@ -118,7 +118,7 @@
 }
 
 .strongText {
-  @apply text-[#5C8A3A];
+  @apply text-[#e6ae12];
 }
 
 .passwordChecklist {
@@ -130,7 +130,7 @@
 }
 
 .checklistItemValid {
-  @apply text-[#5C8A3A];
+  @apply text-[#e6ae12];
 }
 
 .checklistItemInvalid {
@@ -146,7 +146,7 @@
 }
 
 .checkbox {
-  @apply mt-1 w-4 h-4 accent-[#0E4B68] cursor-pointer;
+  @apply mt-1 w-4 h-4 accent-[#e06f29] cursor-pointer;
 }
 
 .checkboxLabel {
@@ -154,15 +154,15 @@
 }
 
 .termsLink {
-  @apply text-[#5C8A3A] hover:underline;
+  @apply text-[#e6ae12] hover:underline;
 }
 
 .submitButton {
-  @apply w-full bg-[#0E4B68] text-white py-3 rounded-lg transition-all text-[15px] font-medium mt-6;
+  @apply w-full bg-[#e06f29] text-white py-3 rounded-lg transition-all text-[15px] font-medium mt-6;
 }
 
 .submitButtonEnabled {
-  @apply hover:bg-[#0C3D54];
+  @apply hover:bg-[#c95f20];
 }
 
 .submitButtonDisabled {
@@ -214,7 +214,7 @@
 
 .loginLink,
 .termsLink {
-  @apply text-[#0E4B68];
+  @apply text-[#e06f29];
 }
 
 .input {
@@ -267,12 +267,12 @@
 
 .submitButton {
   @apply rounded-2xl;
-  background: #0e4b68;
+  background: #e06f29;
   box-shadow: 10px 10px 20px #bdc6cc, -10px -10px 20px #ffffff;
 }
 
 .submitButtonEnabled:hover {
-  background: #0c3d54;
+  background: #c95f20;
   transform: translateY(-1px);
 }
 
@@ -283,7 +283,7 @@
 }
 
 .errorText {
-  @apply text-red-500 text-xs mt-1 text-left;
+  @apply text-[#dc323f] text-xs mt-1 text-left;
 }
 
 @media (max-width: 767px) {

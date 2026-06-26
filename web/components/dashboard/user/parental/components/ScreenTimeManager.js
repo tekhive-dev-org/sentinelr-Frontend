@@ -128,7 +128,7 @@ export default function ScreenTimeManager({
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <span className={styles.cardTitle}>
-            <span className={styles.cardTitleIcon} style={{ background: '#eff6ff', color: '#3b82f6' }}>
+            <span className={styles.cardTitleIcon} style={{ background: '#f5f1ff', color: '#3d09d0' }}>
               <BarChartRoundedIcon sx={{ fontSize: 18 }} />
             </span>
             Daily Screen Time
@@ -177,7 +177,7 @@ export default function ScreenTimeManager({
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <span className={styles.cardTitle}>
-            <span className={styles.cardTitleIcon} style={{ background: '#e0e7ff', color: '#4f46e5' }}>
+            <span className={styles.cardTitleIcon} style={{ background: '#ede7ff', color: '#4f46e5' }}>
               <TimerRoundedIcon sx={{ fontSize: 18 }} />
             </span>
             Configure Daily Limit
@@ -236,7 +236,7 @@ export default function ScreenTimeManager({
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <span className={styles.cardTitle}>
-            <span className={styles.cardTitleIcon} style={{ background: '#fef3c7', color: '#d97706' }}>
+            <span className={styles.cardTitleIcon} style={{ background: '#fff8e8', color: '#e6ae12' }}>
               <BedtimeRoundedIcon sx={{ fontSize: 18 }} />
             </span>
             Bedtime Schedule

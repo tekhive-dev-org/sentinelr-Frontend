@@ -25,6 +25,7 @@ export default {
           'Sentinelr needs continuous access to your location for real-time tracking and safety alerts.',
         UIBackgroundModes: ['location', 'fetch'],
         LSApplicationQueriesSchemes: ['mailto', 'http', 'https'],
+        ITSAppUsesNonExemptEncryption: false,
       },
     },
     android: {

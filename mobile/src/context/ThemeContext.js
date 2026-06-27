@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useColorScheme } from 'react-native';
+import { FONT_FAMILIES, typography } from '../utils/typography';
 
 const ThemeContext = createContext(null);
 
@@ -140,6 +141,8 @@ export function ThemeProvider({ children }) {
     theme,
     isDark,
     colors,
+    fonts: FONT_FAMILIES,
+    typography,
     setTheme,
     toggleTheme,
     isLoading,

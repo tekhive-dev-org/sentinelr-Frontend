@@ -16,6 +16,7 @@ import { apiService } from '../services/api';
 import { storageService } from '../services/storageService';
 import NavigationHeader from '../components/NavigationHeader';
 import GlassCard from '../components/GlassCard';
+import { typography } from '../utils/typography';
 
 const HOLD_DURATION_MS = 3000;
 const HOLD_SECONDS = 3;
@@ -459,8 +460,8 @@ const sosStyles = StyleSheet.create({
     marginTop: 16,
   },
   heroTitle: {
+    ...typography.headingBlack,
     fontSize: 28,
-    fontWeight: '800',
     marginBottom: 12,
   },
   heroSub: {
@@ -512,19 +513,19 @@ const sosStyles = StyleSheet.create({
     elevation: 15,
   },
   countdown: {
+    ...typography.bodyBold,
     color: '#ffffff',
     fontSize: 56,
-    fontWeight: '800',
   },
   sosText: {
+    ...typography.headingBlack,
     color: '#ffffff',
     fontSize: 42,
-    fontWeight: '900',
     letterSpacing: 6,
   },
   statusText: {
+    ...typography.bodyBold,
     fontSize: 14,
-    fontWeight: '800',
     letterSpacing: 2,
     marginTop: 16,
     textTransform: 'uppercase',
@@ -552,8 +553,8 @@ const sosStyles = StyleSheet.create({
     marginRight: 12,
   },
   locationLabel: {
+    ...typography.bodyBold,
     fontSize: 10,
-    fontWeight: '700',
     letterSpacing: 0.8,
     marginBottom: 2,
   },
@@ -580,10 +581,10 @@ const sosStyles = StyleSheet.create({
     elevation: 8,
   },
   toastText: {
+    ...typography.bodySemiBold,
     flex: 1,
     color: '#fff',
     fontSize: 14,
-    fontWeight: '600',
     lineHeight: 20,
   },
 });

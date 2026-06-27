@@ -222,7 +222,7 @@ export default function UserDashboardOverview() {
           {/* Recent Activity */}
           <div className={styles.activityCard}>
             <div className={styles.sectionHeader}>
-              <h3 className={styles.sectionTitle}>Recent Activity / Alert Feeds</h3>
+              <h3 className={styles.sectionTitle}> Activities</h3>
               <div className={styles.activityActions}>
                 <button
                   type="button"

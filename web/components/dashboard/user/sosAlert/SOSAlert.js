@@ -16,6 +16,7 @@ export default function SOSAlert() {
     setSelectedAlert,
     loading,
     toast,
+    setToast,
     pendingAction,
     realtimeStatus,
     dashboardStats,

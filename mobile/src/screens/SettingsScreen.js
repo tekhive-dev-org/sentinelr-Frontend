@@ -17,6 +17,7 @@ import { useTheme } from "../context/ThemeContext";
 import NavigationHeader from "../components/NavigationHeader";
 import GlassCard from "../components/GlassCard";
 import { APP_NAME, APP_VERSION } from "../utils/constants";
+import { typography } from "../utils/typography";
 
 // Maps icon name to a background tint for the colored icon pill
 const ICON_COLORS = {
@@ -55,8 +56,19 @@ export default function SettingsScreen({ navigation }) {
   const { isDark, toggleTheme, colors } = useTheme();
   const [isUnpairing, setIsUnpairing] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [locationAlerts, setLocationAlerts] = useState(true);
+
+  const openStackScreen = (screenName) => {
+    const parentNavigation = navigation.getParent?.();
+    if (parentNavigation) {
+      parentNavigation.navigate(screenName);
+      return;
+    }
+    navigation.navigate(screenName);
+  };
+
+  const openPermissions = () => {
+    openStackScreen("Permissions");
+  };
 
   const handleUnpair = () => {
     Alert.alert(
@@ -235,42 +247,15 @@ export default function SettingsScreen({ navigation }) {
             />
           </GlassCard>
 
-          {/* ── Notifications ── */}
-          <SectionLabel label="NOTIFICATIONS" />
-          <GlassCard noPadding>
-            <ToggleRow
-              icon="notifications-outline"
-              iconColor="#e06f29"
-              title="Push Notifications"
-              subtitle="Alerts, SOS, and status updates"
-              value={notificationsEnabled}
-              onValueChange={setNotificationsEnabled}
-            />
-            <ToggleRow
-              icon="location-outline"
-              iconColor="#3d09d0"
-              title="Location Alerts"
-              subtitle="Geofence and movement events"
-              value={locationAlerts}
-              onValueChange={setLocationAlerts}
-              isLast
-            />
-          </GlassCard>
-
           {/* ── Privacy & Security ── */}
           <SectionLabel label="PRIVACY & SECURITY" />
           <GlassCard noPadding>
             <NavRow
-              icon="lock-closed-outline"
-              iconColor="#dc323f"
-              title="App Lock"
-              subtitle="Require PIN or biometrics"
-            />
-            <NavRow
-              icon="finger-print-outline"
+              icon="shield-checkmark-outline"
               iconColor="#3d09d0"
-              title="Biometric Auth"
-              subtitle="Use Face ID or fingerprint"
+              title="App Permissions"
+              subtitle="Location, notifications, and device access"
+              onPress={openPermissions}
               isLast
             />
           </GlassCard>
@@ -288,7 +273,7 @@ export default function SettingsScreen({ navigation }) {
               icon="git-branch-outline"
               iconColor="#e6ae12"
               title="App Version"
-              value="1.1.2 (Build 2)"
+              value="1.1.2"
             />
             <InfoRow
               icon="checkmark-circle-outline"
@@ -307,17 +292,19 @@ export default function SettingsScreen({ navigation }) {
               iconColor="#e6ae12"
               title="Help Center"
               subtitle="FAQs and troubleshooting"
+              onPress={() => openStackScreen("HelpCenter")}
             />
             <NavRow
               icon="shield-outline"
               iconColor="#3d09d0"
               title="Privacy Policy"
-              onPress={() => navigation.navigate("PrivacyPolicy")}
+              onPress={() => openStackScreen("PrivacyPolicy")}
             />
             <NavRow
               icon="document-text-outline"
               iconColor="#64748b"
               title="Terms of Service"
+              onPress={() => openStackScreen("TermsOfService")}
               isLast
             />
           </GlassCard>
@@ -330,12 +317,14 @@ export default function SettingsScreen({ navigation }) {
               iconColor="#3d09d0"
               title="About Sentinelr"
               subtitle="Version history & licenses"
+              onPress={() => openStackScreen("AboutSentinelr")}
             />
             <NavRow
               icon="star-outline"
               iconColor="#e6ae12"
               title="Rate the App"
               subtitle="Share your feedback"
+              onPress={() => openStackScreen("RateApp")}
               isLast
             />
           </GlassCard>
@@ -380,10 +369,10 @@ export default function SettingsScreen({ navigation }) {
                 <IconBadge name="trash-outline" bgColor="#dc323f" />
                 <View>
                   <Text style={[setStyles.rowTitle, { color: colors.danger }]}>
-                    {isRemoving ? "Removing…" : "Remove from Dashboard"}
+                    {isRemoving ? "Deleting..." : "Delete Account"}
                   </Text>
                   <Text style={[setStyles.rowSubtitle, { color: colors.textMuted }]}>
-                    Hides device from the web dashboard
+                    Deletes your data from the database
                   </Text>
                 </View>
               </View>
@@ -423,14 +412,14 @@ const setStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   deviceName: {
+    ...typography.heading,
     fontSize: 16,
-    fontWeight: '700',
     letterSpacing: 0.2,
     marginBottom: 2,
   },
   deviceId: {
+    ...typography.bodyMedium,
     fontSize: 12,
-    fontWeight: '500',
     marginBottom: 6,
     letterSpacing: 0.3,
   },
@@ -445,8 +434,8 @@ const setStyles = StyleSheet.create({
     borderRadius: 4,
   },
   statusText: {
+    ...typography.bodySemiBold,
     fontSize: 12,
-    fontWeight: '600',
   },
   versionTag: {
     paddingHorizontal: 10,
@@ -455,15 +444,15 @@ const setStyles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   versionTagText: {
+    ...typography.bodyBold,
     fontSize: 11,
-    fontWeight: '700',
     letterSpacing: 0.4,
   },
 
   /* ── Section label ── */
   sectionLabel: {
+    ...typography.bodyBold,
     fontSize: 11,
-    fontWeight: '700',
     letterSpacing: 1.1,
     marginTop: 28,
     marginBottom: 8,
@@ -496,8 +485,8 @@ const setStyles = StyleSheet.create({
     paddingRight: 12,
   },
   rowTitle: {
+    ...typography.bodySemiBold,
     fontSize: 15,
-    fontWeight: '600',
     letterSpacing: 0.1,
   },
   rowSubtitle: {

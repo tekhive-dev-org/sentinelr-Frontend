@@ -13,6 +13,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useDevice } from '../context/DeviceContext';
 import NavigationHeader from '../components/NavigationHeader';
 import GlassCard from '../components/GlassCard';
+import { typography } from '../utils/typography';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function formatMinutes(mins) {
@@ -359,13 +360,13 @@ const s = StyleSheet.create({
     gap: 12,
   },
   loadingText: {
+    ...typography.bodyMedium,
     fontSize: 13,
-    fontWeight: '500',
     marginTop: 8,
   },
   emptyTitle: {
+    ...typography.heading,
     fontSize: 18,
-    fontWeight: '700',
     marginTop: 8,
   },
   emptySubtitle: {
@@ -399,9 +400,9 @@ const s = StyleSheet.create({
     justifyContent: 'center',
   },
   frozenBannerText: {
+    ...typography.bodyBold,
     color: '#fff',
     fontSize: 15,
-    fontWeight: '800',
     letterSpacing: 0.2,
   },
 
@@ -412,8 +413,8 @@ const s = StyleSheet.create({
     alignItems: 'center',
   },
   statusLabel: {
+    ...typography.bodyBold,
     fontSize: 15,
-    fontWeight: '700',
   },
   statusPill: {
     flexDirection: 'row',
@@ -430,8 +431,8 @@ const s = StyleSheet.create({
     borderRadius: 4,
   },
   statusPillText: {
+    ...typography.bodyBold,
     fontSize: 12,
-    fontWeight: '700',
   },
 
   // Section label
@@ -450,8 +451,8 @@ const s = StyleSheet.create({
     backgroundColor: '#e06f29',
   },
   sectionLabel: {
+    ...typography.bodyBold,
     fontSize: 11,
-    fontWeight: '800',
     letterSpacing: 1.3,
     color: '#e06f29',
   },
@@ -464,8 +465,8 @@ const s = StyleSheet.create({
     marginBottom: 4,
   },
   bigValue: {
+    ...typography.headingBlack,
     fontSize: 34,
-    fontWeight: '900',
     letterSpacing: -1,
   },
   targetLabel: {
@@ -484,8 +485,8 @@ const s = StyleSheet.create({
     borderRadius: 10,
   },
   remainingText: {
+    ...typography.bodyBold,
     fontSize: 12,
-    fontWeight: '700',
     marginTop: 6,
     marginBottom: 12,
   },
@@ -505,8 +506,8 @@ const s = StyleSheet.create({
     letterSpacing: 0.6,
   },
   breakdownValue: {
+    ...typography.bodyBold,
     fontSize: 14,
-    fontWeight: '800',
     marginTop: 2,
   },
 

@@ -20,6 +20,7 @@ import { heartbeatService } from "../services/heartbeatService";
 import NavigationHeader from "../components/NavigationHeader";
 import GlassCard from "../components/GlassCard";
 import { APP_NAME } from "../utils/constants";
+import { typography, FONT_FAMILIES } from "../utils/typography";
 
 // ── Relative time helper ───────────────────────────────────────────────────
 const relativeTime = (date) => {
@@ -304,7 +305,7 @@ export default function TrackingScreen({ navigation }) {
               iconColor={colors.textSecondary}
               iconBg={colors.neuInset}
             >
-              <Text style={[styles.tileValue, { color: colors.text, fontFamily: "monospace" }]}>
+              <Text style={[styles.tileValue, { color: colors.text, fontFamily: FONT_FAMILIES.mono }]}>
                 {shortId}
               </Text>
             </StatTile>
@@ -431,13 +432,13 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   statusLabel: {
+    ...typography.bodyBold,
     fontSize: 11,
-    fontWeight: "800",
     letterSpacing: 3,
   },
   heroTitle: {
+    ...typography.heading,
     fontSize: 19,
-    fontWeight: "700",
     letterSpacing: -0.3,
   },
   heroSub: {
@@ -465,13 +466,13 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   tileLabel: {
+    ...typography.bodyBold,
     fontSize: 9.5,
-    fontWeight: "700",
     letterSpacing: 1.2,
   },
   tileValue: {
+    ...typography.bodySemiBold,
     fontSize: 13,
-    fontWeight: "600",
     lineHeight: 18,
   },
   batteryTrack: {
@@ -506,8 +507,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   toggleTitle: {
+    ...typography.heading,
     fontSize: 16,
-    fontWeight: "700",
     letterSpacing: -0.2,
   },
   toggleSub: {
@@ -526,8 +527,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   sosBtnText: {
+    ...typography.bodyBold,
     fontSize: 15,
-    fontWeight: "700",
   },
 
   // Background banner
@@ -562,4 +563,3 @@ const styles = StyleSheet.create({
     fontSize: 11.5,
   },
 });
-

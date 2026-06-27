@@ -7,6 +7,7 @@ import { useTheme } from '../context/ThemeContext';
 import { apiService } from '../services/api';
 import { APP_NAME, PAIRING_CODE_LENGTH } from '../utils/constants';
 import GlassCard from '../components/GlassCard';
+import { typography } from '../utils/typography';
 
 export default function PairingScreen({ navigation }) {
   const [code, setCode] = useState('');
@@ -228,8 +229,8 @@ const pairStyles = StyleSheet.create({
     marginBottom: 16,
   },
   brandTitle: {
+    ...typography.headingBlack,
     fontSize: 30,
-    fontWeight: '700',
     marginBottom: 8,
     letterSpacing: 1,
   },
@@ -244,8 +245,8 @@ const pairStyles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   dash: {
+    ...typography.bodyBold,
     fontSize: 22,
-    fontWeight: '700',
     alignSelf: 'center',
     marginHorizontal: 2,
   },
@@ -259,8 +260,8 @@ const pairStyles = StyleSheet.create({
     height: 52,
   },
   codeChar: {
+    ...typography.bodyBold,
     fontSize: 20,
-    fontWeight: '700',
   },
   charCount: {
     fontSize: 12,
@@ -276,9 +277,9 @@ const pairStyles = StyleSheet.create({
     marginBottom: 16,
   },
   pairBtnText: {
+    ...typography.bodyBold,
     color: '#fff',
     fontSize: 17,
-    fontWeight: '700',
     marginLeft: 8,
   },
   dividerRow: {
@@ -303,8 +304,8 @@ const pairStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   qrBtnText: {
+    ...typography.bodyBold,
     fontSize: 17,
-    fontWeight: '700',
     marginLeft: 8,
   },
   footer: {

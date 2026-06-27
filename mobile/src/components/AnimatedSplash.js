@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Image, Text, Animated, Dimensions, StyleSheet } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { APP_NAME } from '../utils/constants';
+import { typography } from '../utils/typography';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -205,8 +206,8 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   appName: {
+    ...typography.headingBlack,
     fontSize: 32,
-    fontWeight: 'bold',
     letterSpacing: 2,
   },
   tagline: {

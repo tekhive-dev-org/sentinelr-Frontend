@@ -70,6 +70,11 @@ export const geofencingService = {
 
     try {
       const response = await apiService.getGeofences();
+      if (response?.authError) {
+        await this.stop();
+        console.log("[Geofencing] Sync skipped: device token was not accepted");
+        return;
+      }
       const geofences = response.geofences || [];
 
       // Filter to active geofences only
@@ -102,7 +107,10 @@ export const geofencingService = {
         `[Geofencing] Monitoring ${regions.length} active geofence(s)`,
       );
     } catch (err) {
-      console.error("[Geofencing] Failed to sync and start:", err);
+      console.warn(
+        "[Geofencing] Sync skipped:",
+        err?.message || err,
+      );
     }
   },
 

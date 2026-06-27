@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { APP_NAME } from '../utils/constants';
+import { typography } from '../utils/typography';
 
 const FEATURES = [
   {
@@ -239,8 +240,8 @@ const styles = StyleSheet.create({
     height: 100,
   },
   appName: {
+    ...typography.headingBlack,
     fontSize: 36,
-    fontWeight: '800',
     letterSpacing: -0.5,
     marginBottom: 8,
   },
@@ -278,8 +279,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   featureTitle: {
+    ...typography.bodyBold,
     fontSize: 14,
-    fontWeight: '700',
     marginBottom: 2,
   },
   featureDescription: {
@@ -328,8 +329,8 @@ const styles = StyleSheet.create({
       : { elevation: 4 }),
   },
   stepsHeading: {
+    ...typography.heading,
     fontSize: 15,
-    fontWeight: '700',
     marginBottom: 4,
   },
   stepRow: {
@@ -349,8 +350,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   stepTitle: {
+    ...typography.bodyBold,
     fontSize: 14,
-    fontWeight: '700',
     marginBottom: 2,
   },
   stepDesc: {

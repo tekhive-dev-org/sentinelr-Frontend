@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../context/ThemeContext';
 import { APP_NAME } from '../utils/constants';
+import { typography } from '../utils/typography';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const MENU_WIDTH = SCREEN_WIDTH * 0.75;
@@ -82,7 +83,6 @@ export default function NavigationHeader({
 
   const defaultMenuItems = [
     { id: 'tracking', label: 'Tracking', icon: 'location', screen: 'Tracking' },
-    { id: 'permissions', label: 'Permissions', icon: 'shield-checkmark', screen: 'Permissions' },
     { id: 'settings', label: 'Settings', icon: 'settings', screen: 'Settings' },
   ];
 
@@ -281,8 +281,8 @@ const navStyles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
+    ...typography.heading,
     fontSize: 18,
-    fontWeight: '700',
     letterSpacing: 0.5,
   },
   subtitle: {
@@ -308,8 +308,8 @@ const navStyles = StyleSheet.create({
     marginRight: 6,
   },
   backLabel: {
+    ...typography.bodySemiBold,
     fontSize: 14,
-    fontWeight: '600',
   },
   menuPanel: {
     position: 'absolute',
@@ -333,8 +333,8 @@ const navStyles = StyleSheet.create({
     marginBottom: 12,
   },
   menuTitle: {
+    ...typography.headingBlack,
     fontSize: 22,
-    fontWeight: '800',
     letterSpacing: 1,
   },
   menuSubtitle: {
@@ -360,8 +360,8 @@ const navStyles = StyleSheet.create({
     borderRadius: 12,
   },
   menuItemLabel: {
+    ...typography.bodySemiBold,
     fontSize: 16,
-    fontWeight: '600',
     flex: 1,
     marginLeft: 16,
   },

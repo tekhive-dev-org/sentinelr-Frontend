@@ -19,6 +19,7 @@ import { useTheme } from '../context/ThemeContext';
 import NavigationHeader from '../components/NavigationHeader';
 import GlassCard from '../components/GlassCard';
 import { APP_NAME } from '../utils/constants';
+import { typography } from '../utils/typography';
 import {
   isAndroidAccessibilityEnabled,
   isAndroidParentalEnforcementAvailable,
@@ -244,7 +245,12 @@ export default function PermissionsScreen({ navigation }) {
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
-        <NavigationHeader title="Permissions" subtitle="Required access" showMenu={false} />
+        <NavigationHeader
+          title="Permissions"
+          subtitle="Required access"
+          onBack={() => navigation.goBack()}
+          showMenu={false}
+        />
 
         <ScrollView
           style={{ flex: 1 }}
@@ -497,8 +503,8 @@ const s = StyleSheet.create({
     marginBottom: 4,
   },
   heroTitle: {
+    ...typography.headingExtraBold,
     fontSize: 20,
-    fontWeight: '800',
     letterSpacing: -0.3,
   },
   heroSub: {
@@ -523,8 +529,8 @@ const s = StyleSheet.create({
     borderRadius: 3,
   },
   progressLabel: {
+    ...typography.bodySemiBold,
     fontSize: 11,
-    fontWeight: '600',
     textAlign: 'center',
     letterSpacing: 0.4,
   },
@@ -535,8 +541,8 @@ const s = StyleSheet.create({
     paddingTop: 4,
   },
   sectionTitle: {
+    ...typography.bodyBold,
     fontSize: 10,
-    fontWeight: '700',
     letterSpacing: 1.2,
   },
 
@@ -562,8 +568,8 @@ const s = StyleSheet.create({
     gap: 2,
   },
   permTitle: {
+    ...typography.bodyBold,
     fontSize: 14.5,
-    fontWeight: '700',
     letterSpacing: -0.1,
   },
   permDesc: {
@@ -581,8 +587,8 @@ const s = StyleSheet.create({
     borderWidth: 1,
   },
   permBtnText: {
+    ...typography.bodyBold,
     fontSize: 11.5,
-    fontWeight: '700',
   },
 
   // Open settings link
@@ -632,8 +638,8 @@ const s = StyleSheet.create({
     marginBottom: 14,
   },
   modalTitle: {
+    ...typography.headingExtraBold,
     fontSize: 19,
-    fontWeight: '800',
     textAlign: 'center',
     marginBottom: 10,
     letterSpacing: -0.3,
@@ -660,8 +666,8 @@ const s = StyleSheet.create({
     marginTop: 1,
   },
   modalBulletLabel: {
+    ...typography.bodyBold,
     fontSize: 13.5,
-    fontWeight: '700',
     marginBottom: 2,
   },
   modalBulletDetail: {
@@ -695,9 +701,7 @@ const s = StyleSheet.create({
     justifyContent: 'center',
   },
   modalBtnText: {
+    ...typography.bodyBold,
     fontSize: 15,
-    fontWeight: '700',
   },
 });
-
-

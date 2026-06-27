@@ -6,21 +6,26 @@ import {
   StyleSheet,
   Animated,
   Easing,
-  Dimensions,
+  useWindowDimensions,
   StatusBar,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useDevice } from "../context/DeviceContext";
 import { useTheme } from "../context/ThemeContext";
 import { apiService } from "../services/api";
+import { typography } from "../utils/typography";
 
-const { width, height } = Dimensions.get("window");
-const SCAN_SIZE = width * 0.7; // 70% of screen width
 const SCAN_DURATION = 2000;
 
 export default function QRScannerScreen({ navigation }) {
+  const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const scanSize = width * 0.7;
+  const usableHeight = height - insets.top - insets.bottom;
+  const scanWindowTop = insets.top + Math.max(0, (usableHeight - scanSize) / 2);
+
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -156,7 +161,7 @@ export default function QRScannerScreen({ navigation }) {
 
   const translateY = scanAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, SCAN_SIZE],
+    outputRange: [0, scanSize],
   });
 
   return (
@@ -177,10 +182,10 @@ export default function QRScannerScreen({ navigation }) {
 
       {/* Dark Overlay Mask */}
       <View style={styles.overlay}>
-        <View style={styles.overlayTop} />
-        <View style={styles.overlayCenterRow}>
+        <View style={[styles.overlayTop, { height: scanWindowTop }]} />
+        <View style={[styles.overlayCenterRow, { height: scanSize }]}>
           <View style={styles.overlaySide} />
-          <View style={styles.scanWindow}>
+          <View style={[styles.scanWindow, { width: scanSize, height: scanSize }]}>
             {/* Animated Scan Line */}
             {!scanned && !isProcessing && (
               <Animated.View
@@ -288,14 +293,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   textLink: {
+    ...typography.bodyBold,
     marginTop: 20,
     fontSize: 16,
-    fontWeight: "bold",
     textDecorationLine: "underline",
   },
   title: {
+    ...typography.heading,
     fontSize: 24,
-    fontWeight: "bold",
     marginTop: 16,
     marginBottom: 8,
   },
@@ -305,33 +310,25 @@ const styles = StyleSheet.create({
   // Overlay Mask Styles
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: "center",
-    alignItems: "center",
     zIndex: 1,
   },
   overlayTop: {
-    flex: 1,
-    width: "100%",
     backgroundColor: "rgba(0,0,0,0.7)",
   },
   overlayCenterRow: {
     flexDirection: "row",
-    height: SCAN_SIZE,
   },
   overlaySide: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.7)",
   },
   scanWindow: {
-    width: SCAN_SIZE,
-    height: SCAN_SIZE,
     backgroundColor: "transparent",
     position: "relative",
     overflow: "hidden", // Clip the scan line
   },
   overlayBottom: {
     flex: 1,
-    width: "100%",
     backgroundColor: "rgba(0,0,0,0.7)",
   },
   // Scan UI
@@ -397,9 +394,9 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   headerTitle: {
+    ...typography.heading,
     color: "white",
     fontSize: 24,
-    fontWeight: "bold",
     marginBottom: 8,
     textShadowColor: "rgba(0,0,0,0.5)",
     textShadowOffset: { width: 0, height: 1 },
@@ -428,8 +425,8 @@ const styles = StyleSheet.create({
     minWidth: 200,
   },
   processingText: {
+    ...typography.bodySemiBold,
     marginTop: 16,
     fontSize: 16,
-    fontWeight: "600",
   },
 });

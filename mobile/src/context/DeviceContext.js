@@ -12,6 +12,7 @@ const DeviceContext = createContext(null);
 
 const STORAGE_KEYS = {
   DEVICE_ID: "@sentinelr/device_id",
+  DEVICE_USER_ID: "@sentinelr/device_user_id",
   UPLOAD_TOKEN: "@sentinelr/upload_token",
   IS_PAIRED: "@sentinelr/is_paired",
   TRACKING_ENABLED: "@sentinelr/tracking_enabled",
@@ -70,7 +71,7 @@ export function DeviceProvider({ children }) {
       setParentalSyncError('network');
       console.warn("[DeviceContext] parental control sync failed:", error?.message || error);
     }
-  }, [isPaired]);
+  }, [isPaired, deviceId]);
 
   // Query the database directly for the device's current pairStatus
   const checkPairStatusInDb = useCallback(async (id) => {
@@ -116,6 +117,7 @@ export function DeviceProvider({ children }) {
 
     await Promise.all([
       AsyncStorage.removeItem(STORAGE_KEYS.DEVICE_ID),
+      AsyncStorage.removeItem(STORAGE_KEYS.DEVICE_USER_ID),
       AsyncStorage.removeItem(STORAGE_KEYS.UPLOAD_TOKEN),
       AsyncStorage.removeItem(STORAGE_KEYS.IS_PAIRED),
       AsyncStorage.removeItem(STORAGE_KEYS.TRACKING_ENABLED),

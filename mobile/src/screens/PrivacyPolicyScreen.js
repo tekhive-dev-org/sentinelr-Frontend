@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import NavigationHeader from "../components/NavigationHeader";
 import GlassCard from "../components/GlassCard";
 import { useTheme } from "../context/ThemeContext";
+import { typography } from "../utils/typography";
 
 const LAST_UPDATED = "April 11, 2026";
 
@@ -32,7 +33,7 @@ export default function PrivacyPolicyScreen({ navigation }) {
 
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 28 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 28, paddingTop: 10 }}
           showsVerticalScrollIndicator={false}
         >
           <GlassCard>
@@ -95,8 +96,8 @@ export default function PrivacyPolicyScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   updatedText: {
+    ...typography.bodySemiBold,
     fontSize: 12,
-    fontWeight: "600",
     marginBottom: 14,
     letterSpacing: 0.4,
   },
@@ -104,8 +105,8 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   sectionTitle: {
+    ...typography.heading,
     fontSize: 16,
-    fontWeight: "700",
     marginBottom: 6,
   },
   bodyText: {

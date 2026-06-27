@@ -1,7 +1,21 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, Platform, Text, TextInput } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
+import { useFonts } from 'expo-font';
+import {
+  PlayfairDisplay_600SemiBold,
+  PlayfairDisplay_700Bold,
+  PlayfairDisplay_800ExtraBold,
+  PlayfairDisplay_900Black,
+} from '@expo-google-fonts/playfair-display';
+import {
+  SpaceGrotesk_300Light,
+  SpaceGrotesk_400Regular,
+  SpaceGrotesk_500Medium,
+  SpaceGrotesk_600SemiBold,
+  SpaceGrotesk_700Bold,
+} from '@expo-google-fonts/space-grotesk';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -12,6 +26,7 @@ import { DeviceProvider, useDevice } from './src/context/DeviceContext';
 import AnimatedSplash from './src/components/AnimatedSplash';
 import { locationService } from './src/services/locationService';
 import { geofencingService } from './src/services/geofencingService';
+import { FONT_FAMILIES } from './src/utils/typography';
 
 // Screens
 import LandingScreen from './src/screens/LandingScreen';
@@ -23,9 +38,25 @@ import SettingsScreen from './src/screens/SettingsScreen';
 import SOSScreen from './src/screens/SOSScreen';
 import ParentalControlScreen from './src/screens/ParentalControlScreen';
 import PrivacyPolicyScreen from './src/screens/PrivacyPolicyScreen';
+import HelpCenterScreen from './src/screens/HelpCenterScreen';
+import TermsOfServiceScreen from './src/screens/TermsOfServiceScreen';
+import AboutSentinelrScreen from './src/screens/AboutSentinelrScreen';
+import RateAppScreen from './src/screens/RateAppScreen';
 
 // Prevent auto-hiding of native splash screen
 SplashScreen.preventAutoHideAsync();
+
+Text.defaultProps = Text.defaultProps || {};
+Text.defaultProps.style = [
+  { fontFamily: FONT_FAMILIES.body },
+  Text.defaultProps.style,
+];
+
+TextInput.defaultProps = TextInput.defaultProps || {};
+TextInput.defaultProps.style = [
+  { fontFamily: FONT_FAMILIES.body },
+  TextInput.defaultProps.style,
+];
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -51,8 +82,8 @@ function MainTabs() {
         tabBarActiveTintColor: colors.text,
         tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: {
+          fontFamily: FONT_FAMILIES.bodySemiBold,
           fontSize: 11,
-          fontWeight: '600',
         },
       }}
     >
@@ -63,19 +94,6 @@ function MainTabs() {
           tabBarIcon: ({ focused, color, size }) => (
             <Ionicons
               name={focused ? 'home' : 'home-outline'}
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Permissions"
-        component={PermissionsScreen}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons
-              name={focused ? 'shield-checkmark' : 'shield-checkmark-outline'}
               size={size}
               color={color}
             />
@@ -155,7 +173,12 @@ function AppNavigator() {
       ) : (
         <>
           <Stack.Screen name="MainTabs" component={MainTabs} />
+          <Stack.Screen name="Permissions" component={PermissionsScreen} />
           <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+          <Stack.Screen name="HelpCenter" component={HelpCenterScreen} />
+          <Stack.Screen name="TermsOfService" component={TermsOfServiceScreen} />
+          <Stack.Screen name="AboutSentinelr" component={AboutSentinelrScreen} />
+          <Stack.Screen name="RateApp" component={RateAppScreen} />
         </>
       )}
     </Stack.Navigator>
@@ -209,6 +232,22 @@ function AppContent() {
 }
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    PlayfairDisplay_600SemiBold,
+    PlayfairDisplay_700Bold,
+    PlayfairDisplay_800ExtraBold,
+    PlayfairDisplay_900Black,
+    SpaceGrotesk_300Light,
+    SpaceGrotesk_400Regular,
+    SpaceGrotesk_500Medium,
+    SpaceGrotesk_600SemiBold,
+    SpaceGrotesk_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <SafeAreaProvider>
       <ThemeProvider>

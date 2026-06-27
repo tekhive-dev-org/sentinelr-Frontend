@@ -76,6 +76,7 @@ export const storageService = {
   async clearAll() {
     await AsyncStorage.multiRemove([
       STORAGE_KEYS.DEVICE_ID,
+      STORAGE_KEYS.DEVICE_USER_ID,
       STORAGE_KEYS.UPLOAD_TOKEN,
       STORAGE_KEYS.AUTH_TOKEN,
       STORAGE_KEYS.IS_PAIRED,

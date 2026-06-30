@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { isRunningInExpoGo } from 'expo';
+import * as Device from 'expo-device';
 import * as Location from 'expo-location';
 import { useTheme } from '../context/ThemeContext';
 import NavigationHeader from '../components/NavigationHeader';
@@ -21,12 +22,14 @@ import GlassCard from '../components/GlassCard';
 import { APP_NAME } from '../utils/constants';
 import { typography } from '../utils/typography';
 import {
-  isAndroidAccessibilityEnabled,
+  isEnforcementPermissionGranted,
   isAndroidParentalEnforcementAvailable,
-  openAndroidAccessibilitySettings,
+  openEnforcementSettings,
+  requestEnforcementPermission,
 } from '../services/androidParentalEnforcement';
 
 const isExpoGoAndroid = Platform.OS === 'android' && isRunningInExpoGo();
+const isSimulator = !Device.isDevice;
 
 async function getNotificationsModule() {
   if (isExpoGoAndroid) return null;
@@ -88,9 +91,7 @@ export default function PermissionsScreen({ navigation }) {
   const [locationStatus, setLocationStatus] = useState('pending');
   const [notificationStatus, setNotificationStatus] = useState('pending');
   const [backgroundStatus, setBackgroundStatus] = useState('pending');
-  const [accessibilityStatus, setAccessibilityStatus] = useState(
-    Platform.OS === 'android' ? 'pending' : 'unavailable'
-  );
+  const [accessibilityStatus, setAccessibilityStatus] = useState('pending');
   const [showBgDisclosure, setShowBgDisclosure] = useState(false);
   const [showAccessibilityDisclosure, setShowAccessibilityDisclosure] = useState(false);
 
@@ -132,16 +133,45 @@ export default function PermissionsScreen({ navigation }) {
         if (isExpoGoAndroid) {
           setAccessibilityStatus('unavailable');
         } else if (isAndroidParentalEnforcementAvailable()) {
-          setAccessibilityStatus(isAndroidAccessibilityEnabled() ? 'granted' : 'denied');
+          setAccessibilityStatus(isEnforcementPermissionGranted() ? 'granted' : 'denied');
         } else {
           // Production build but native module not yet linked — keep as denied so Enable is shown
           setAccessibilityStatus('denied');
+        }
+      } else if (Platform.OS === 'ios') {
+        if (isSimulator) {
+          // Family Controls / Screen Time APIs are unavailable on iOS simulator
+          setAccessibilityStatus('unavailable');
+        } else {
+          setAccessibilityStatus(isEnforcementPermissionGranted() ? 'granted' : 'denied');
         }
       }
     } catch {}
   };
 
   const requestAccessibilityPermission = () => {
+    if (Platform.OS === 'ios') {
+      if (isSimulator) {
+        Alert.alert(
+          'Real Device Required',
+          'Screen Time and Family Controls APIs are not available on the iOS simulator. Please test parental control features on a physical iPhone or iPad.',
+        );
+        return;
+      }
+      // iOS uses Family Controls authorization — show native system dialog first,
+      // then open Settings as fallback so the user can enable it manually
+      requestEnforcementPermission();
+      // If already denied, the system dialog won't appear — open Settings instead
+      if (!isEnforcementPermissionGranted()) {
+        // Short delay so the native dialog has a chance to appear first
+        setTimeout(() => {
+          if (!isEnforcementPermissionGranted()) {
+            openEnforcementSettings();
+          }
+        }, 800);
+      }
+      return;
+    }
     if (Platform.OS !== 'android') {
       setAccessibilityStatus('unavailable');
       return;
@@ -164,7 +194,7 @@ export default function PermissionsScreen({ navigation }) {
       Linking.openSettings();
       return;
     }
-    const opened = openAndroidAccessibilitySettings();
+    const opened = openEnforcementSettings();
     if (!opened) {
       Alert.alert('Accessibility Service', 'Unable to open accessibility settings on this device.');
     }
@@ -235,10 +265,7 @@ export default function PermissionsScreen({ navigation }) {
   };
 
   // Progress count
-  const requiredStatuses = [locationStatus, backgroundStatus, notificationStatus];
-  if (Platform.OS === 'android') {
-    requiredStatuses.push(accessibilityStatus);
-  }
+  const requiredStatuses = [locationStatus, backgroundStatus, notificationStatus, accessibilityStatus];
   const grantedCount = requiredStatuses.filter(s => s === 'granted').length;
   const totalRequired = requiredStatuses.length;
 
@@ -318,21 +345,23 @@ export default function PermissionsScreen({ navigation }) {
             onDisable={() => openSettingsToDisable('Notifications')}
             colors={colors}
           />
-          {Platform.OS === 'android' && (
-            <PermissionRow
-              icon="shield-half-outline"
-              title="Parental Control Access"
-              description={
-                isExpoGoAndroid
-                  ? 'Requires development build on Android'
-                  : 'Required for real app blocking, freeze, and bedtime enforcement'
-              }
-              status={accessibilityStatus}
-              onEnable={requestAccessibilityPermission}
-              onDisable={requestAccessibilityPermission}
-              colors={colors}
-            />
-          )}
+          <PermissionRow
+            icon="shield-half-outline"
+            title="Parental Control Access"
+            description={
+              isExpoGoAndroid
+                ? 'Requires development build on Android'
+                : Platform.OS === 'ios' && isSimulator
+                  ? 'Screen Time APIs unavailable on iOS simulator — test on a real device'
+                  : Platform.OS === 'ios'
+                    ? 'Required for app blocking, freeze, and bedtime enforcement via Screen Time'
+                    : 'Required for real app blocking, freeze, and bedtime enforcement'
+            }
+            status={accessibilityStatus}
+            onEnable={requestAccessibilityPermission}
+            onDisable={requestAccessibilityPermission}
+            colors={colors}
+          />
 
           {/* ── Open Settings ─────────────────────────────────────────────── */}
           <TouchableOpacity

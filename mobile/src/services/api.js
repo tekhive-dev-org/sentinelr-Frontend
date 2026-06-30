@@ -7,6 +7,7 @@ import { storageService } from "./storageService";
 
 // Global callback invoked on 401/404 auth failures
 let authFailureCallback = null;
+const API_REQUEST_TIMEOUT_MS = 20000;
 
 function requireApiBaseUrl() {
   if (!API_BASE_URL) {
@@ -37,29 +38,6 @@ function buildDeviceAuthHeaders(token, useRawAuthorization = false, context = {}
   }
 
   return headers;
-}
-
-async function getParentalRequestContext(deviceId) {
-  const [token, storedUserId, storedDeviceId] = await Promise.all([
-    storageService.getUploadToken(),
-    storageService.getDeviceUserId(),
-    storageService.getDeviceId(),
-  ]);
-  const resolvedDeviceId = deviceId || storedDeviceId;
-
-  if (!storedUserId || !resolvedDeviceId) {
-    const error = new Error(
-      "Missing paired device identifiers. Please pair this device again.",
-    );
-    error.code = "MISSING_PARENTAL_IDENTIFIERS";
-    throw error;
-  }
-
-  return {
-    token,
-    userId: String(storedUserId),
-    deviceId: String(resolvedDeviceId),
-  };
 }
 
 // Helper for alert endpoints that require the device token
@@ -99,18 +77,33 @@ async function alertApiRequest(endpoint, data = {}) {
 async function apiRequest(endpoint, data = {}) {
   const token = await storageService.getUploadToken();
   const url = `${API_BASE_URL}${ENDPOINTS[endpoint]}`;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_REQUEST_TIMEOUT_MS);
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token && {
-        Authorization: `Bearer ${token}`,
-        "x-device-token": token,
-      }),
-    },
-    body: JSON.stringify(data),
-  });
+  let response;
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && {
+          Authorization: `Bearer ${token}`,
+          "x-device-token": token,
+        }),
+      },
+      body: JSON.stringify(data),
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error.name === "AbortError") {
+      const timeoutError = new Error("API request timed out");
+      timeoutError.code = "API_REQUEST_TIMEOUT";
+      throw timeoutError;
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({}));
@@ -442,101 +435,6 @@ export const apiService = {
    */
   onAuthFailure(callback) {
     authFailureCallback = callback;
-  },
-
-  /**
-   * Get full parental control status for the current device.
-   * Primary: GET /parental-controls/{userId}/device-status/{deviceId}
-   * Fallback: GET /parental-controls/{userId}?deviceId={deviceId}
-   * @returns {Promise<{ success: boolean, controls: object }>}
-   */
-  async getParentalStatus(deviceId) {
-    const context = await getParentalRequestContext(deviceId);
-    const { token, userId } = context;
-    console.log("[API] getParentalStatus — hasToken:", !!token);
-    console.log("[API] getParentalStatus — userId:", userId);
-    console.log("[API] getParentalStatus — deviceId:", context.deviceId);
-    const url = `${requireApiBaseUrl()}/parental-controls/${encodeURIComponent(userId)}/device-status/${encodeURIComponent(context.deviceId)}`;
-    console.log("[API] getParentalStatus — url:", url);
-
-    let response = await fetch(url, {
-      method: "GET",
-      headers: buildDeviceAuthHeaders(token, false, context),
-    });
-
-    if ((response.status === 401 || response.status === 403) && token) {
-      console.log("[API] getParentalStatus — retrying with raw Authorization header");
-      response = await fetch(url, {
-        method: "GET",
-        headers: buildDeviceAuthHeaders(token, true, context),
-      });
-    }
-
-    console.log("[API] getParentalStatus — HTTP", response.status);
-
-    if (!response.ok) {
-      const errorBody = await response.json().catch(() => ({}));
-      console.warn("[API] getParentalStatus error body:", errorBody);
-      if (response.status === 401 || response.status === 403) {
-        return { success: false, controls: null, authError: true };
-      }
-      const error = new Error(
-        errorBody.message || `API Error: ${response.status}`,
-      );
-      error.status = response.status;
-      throw error;
-    }
-
-    const data = await response.json();
-    console.log("[API] getParentalStatus response:", JSON.stringify(data, null, 2));
-    return data;
-  },
-
-  /**
-   * Get recent parental control activity for the current device.
-   * GET /parental-controls/{userId}/activity?deviceId={deviceId}&limit={limit}
-   * @param {number} [limit=10]
-   * @returns {Promise<{ success: boolean, activities: array }>}
-   */
-  async getParentalActivity(deviceId, limit = 10) {
-    const context = await getParentalRequestContext(deviceId);
-    const { token, userId } = context;
-
-    const params = new URLSearchParams({
-      deviceId: context.deviceId,
-      limit: String(limit),
-    });
-    const url = `${requireApiBaseUrl()}/parental-controls/${encodeURIComponent(userId)}/activity?${params.toString()}`;
-    console.log("[API] getParentalActivity — url:", url);
-
-    let response = await fetch(url, {
-      method: "GET",
-      headers: buildDeviceAuthHeaders(token, false, context),
-    });
-
-    if ((response.status === 401 || response.status === 403) && token) {
-      console.log("[API] getParentalActivity — retrying with raw Authorization header");
-      response = await fetch(url, {
-        method: "GET",
-        headers: buildDeviceAuthHeaders(token, true, context),
-      });
-    }
-
-    console.log("[API] getParentalActivity — HTTP", response.status);
-
-    if (!response.ok) {
-      const errorBody = await response.json().catch(() => ({}));
-      console.warn("[API] getParentalActivity error body:", errorBody);
-      if (response.status === 401 || response.status === 403) {
-        return { success: false, activities: [], authError: true };
-      }
-      return { success: false, activities: [] };
-    }
-
-    const data = await response.json();
-    const activities = data?.activities || [];
-    console.log("[API] getParentalActivity response (count):", activities.length);
-    return { success: true, activities };
   },
 
   /**

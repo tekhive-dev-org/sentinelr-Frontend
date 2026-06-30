@@ -16,7 +16,6 @@ import { useDevice } from "../context/DeviceContext";
 import { useTheme } from "../context/ThemeContext";
 import { locationService } from "../services/locationService";
 import { locationEvents } from "../services/locationService";
-import { heartbeatService } from "../services/heartbeatService";
 import NavigationHeader from "../components/NavigationHeader";
 import GlassCard from "../components/GlassCard";
 import { APP_NAME } from "../utils/constants";
@@ -144,8 +143,6 @@ export default function TrackingScreen({ navigation }) {
   const startTracking = async () => {
     try {
       await locationService.start();
-      // Pass updateBattery so displayed value === sent value
-      heartbeatService.start(undefined, updateBattery);
       updateConnectionStatus("online");
     } catch {
       updateConnectionStatus("offline");
@@ -155,7 +152,6 @@ export default function TrackingScreen({ navigation }) {
   const stopTracking = async () => {
     try {
       await locationService.stop();
-      heartbeatService.stop();
       updateConnectionStatus("offline");
     } catch {}
   };
@@ -345,12 +341,11 @@ export default function TrackingScreen({ navigation }) {
           {/* ── SOS Button ───────────────────────────────────────────────── */}
           <TouchableOpacity
             onPress={() => navigation.navigate("SOS")}
-            style={[styles.sosBtn, { backgroundColor: colors.dangerSoft, borderColor: colors.danger }]}
+            style={[styles.sosBtn, { backgroundColor: colors.dangerSoft }]}
             activeOpacity={0.75}
           >
-            <Ionicons name="alert-circle" size={20} color={colors.danger} />
-            <Text style={[styles.sosBtnText, { color: colors.danger }]}>Emergency Alert</Text>
-            <Ionicons name="chevron-forward" size={16} color={colors.danger} style={{ marginLeft: "auto" }} />
+            <Ionicons name="alert-circle" size={15} color={colors.danger} />
+            <Text style={[styles.sosBtnText, { color: colors.danger }]}>SOS</Text>
           </TouchableOpacity>
 
           {/* ── Background Notice ────────────────────────────────────────── */}
@@ -518,17 +513,19 @@ const styles = StyleSheet.create({
 
   // SOS
   sosBtn: {
+    alignSelf: "flex-end",
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    height: 52,
-    borderRadius: 14,
-    borderWidth: 1.5,
-    paddingHorizontal: 16,
+    gap: 6,
+    minHeight: 34,
+    borderRadius: 17,
+    paddingHorizontal: 12,
+    marginTop: -4,
   },
   sosBtnText: {
     ...typography.bodyBold,
-    fontSize: 15,
+    fontSize: 12,
+    letterSpacing: 0.6,
   },
 
   // Background banner

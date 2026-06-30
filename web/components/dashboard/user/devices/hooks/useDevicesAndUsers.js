@@ -1,7 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { familyService } from "../../../../../services/familyService";
 import { devicesService } from "../../../../../services/devicesService";
-import { supabase } from "../../../../../services/supabaseClient";
+import {
+  useDevicesSubscription,
+  useFamilyMembersSubscription,
+} from "../../../../../context/RealtimeSubscriptionContext";
 
 export const VIEW_MODES = {
   LIST: "list",
@@ -53,8 +56,12 @@ export function useDevicesAndUsers({ user }) {
     }, 3000);
   };
 
-  // Fetch family members helper
-  const fetchMembers = async () => {
+  // Keep a ref to pairStatusFilter so real-time callbacks always use the latest value
+  const pairStatusFilterRef = useRef(pairStatusFilter);
+  pairStatusFilterRef.current = pairStatusFilter;
+
+  // Fetch family members helper (memoized — no external deps)
+  const fetchMembers = useCallback(async () => {
     try {
       const membersResponse = await familyService.getFamilyMembers();
       const family = membersResponse?.family;
@@ -81,20 +88,34 @@ export function useDevicesAndUsers({ user }) {
     } catch (err) {
       console.error("Failed to fetch family members:", err);
     }
-  };
+  }, []);
 
-  // Fetch devices helper
-  const fetchDevices = async () => {
+  // Fetch devices helper (memoized — depends on pairStatusFilter)
+  const fetchDevices = useCallback(async ({ silent = false } = {}) => {
     try {
-      setLoadingDevices(true);
+      if (!silent) setLoadingDevices(true);
+      const currentFilter = pairStatusFilterRef.current;
       const response = await devicesService.getFamilyDevices({
-        pairStatus: pairStatusFilter,
+        pairStatus: currentFilter,
         limit: 50,
       });
 
       if (response && response.devices) {
+        // Fetch each device's details in parallel to get brand
+        const enrichedDevices = await Promise.all(
+          response.devices.map(async (d) => {
+            try {
+              const detail = await devicesService.getDevice(d.id);
+              
+              return { ...d, brand: detail?.brand || detail?.device?.brand || null };
+            } catch {
+              return { ...d, brand: null };
+            }
+          })
+        );
+
         setDevices(
-          response.devices.map((d) => ({
+          enrichedDevices.map((d) => ({
             ...d,
             status:
               d.status ||
@@ -107,9 +128,9 @@ export function useDevicesAndUsers({ user }) {
     } catch (err) {
       console.error("Failed to fetch devices:", err);
     } finally {
-      setLoadingDevices(false);
+      if (!silent) setLoadingDevices(false);
     }
-  };
+  }, []);
 
   // Load data on mount
   useEffect(() => {
@@ -124,54 +145,37 @@ export function useDevicesAndUsers({ user }) {
     };
 
     loadData();
-  }, [user]);
+  }, [user, fetchMembers, fetchDevices]);
 
   // Fetch devices when filter changes
   useEffect(() => {
     if (!user) return;
     fetchDevices();
-  }, [pairStatusFilter]);
+  }, [pairStatusFilter, fetchDevices]);
 
-  // Real-time subscriptions
+  // Real-time subscriptions via centralized service
+  // deps [] is intentional — onDataRef in the hook always calls the latest callback,
+  // so we don't need to resubscribe when the callback reference changes
+  useFamilyMembersSubscription(
+    () => { fetchMembers(); },
+    { familyId },
+    [],
+  );
+
+  useDevicesSubscription(
+    () => { fetchDevices({ silent: true }); },
+    [],
+  );
+
+  // Polling fallback: re-fetch devices every 30s so the table stays current
+  // even if Supabase Realtime isn't enabled for the Devices table
   useEffect(() => {
-    if (!familyId) return;
-
-    const membersChannel = supabase
-      .channel("family-members-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "FamilyMembers",
-          filter: `familyId=eq.${familyId}`,
-        },
-        () => {
-          fetchMembers();
-        },
-      )
-      .subscribe();
-
-    const devicesChannel = supabase
-      .channel("family-devices-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "Devices",
-        },
-        () => {
-          fetchDevices();
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(membersChannel);
-      supabase.removeChannel(devicesChannel);
-    };
-  }, [familyId]);
+    if (!user) return;
+    const interval = setInterval(() => {
+      fetchDevices({ silent: true });
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [user, fetchDevices]);
 
   const handleAddMember = async (memberData, apiResponse) => {
     if (apiResponse) {
@@ -286,6 +290,32 @@ export function useDevicesAndUsers({ user }) {
     });
   };
 
+  const handleRemoveMember = (member) => {
+    if (!familyId) {
+      showNotification("No family found. Cannot remove member.", "error");
+      return;
+    }
+
+    setConfirmationModal({
+      isOpen: true,
+      title: "Remove Family Member",
+      message: `Are you sure you want to remove "${member.name}" from your family? This action cannot be undone. ${member.name} will lose access to all family features and their devices will be unlinked.`,
+      confirmText: "Remove Member",
+      isDanger: true,
+      onConfirm: async () => {
+        try {
+          await familyService.removeFamilyMember(familyId, member.id);
+          await fetchMembers();
+          setSelectedUser(null);
+          showNotification(`${member.name} has been removed from the family.`, "success");
+        } catch (err) {
+          console.error("Failed to remove family member:", err);
+          showNotification("Failed to remove family member. Please try again.", "error");
+        }
+      },
+    });
+  };
+
   const handleUpdateDevice = async (deviceId, updates) => {
     const response = await devicesService.updateDevice(deviceId, updates);
     await fetchDevices();
@@ -336,6 +366,7 @@ export function useDevicesAndUsers({ user }) {
     users,
     maxMembers,
     repairingDevice,
+    setRepairingDevice,
     notification,
     setNotification,
     pairStatusFilter,
@@ -351,6 +382,7 @@ export function useDevicesAndUsers({ user }) {
     handleUnpairDevice,
     handleRepairDevice,
     handleRemoveDevice,
+    handleRemoveMember,
     handleUpdateDevice,
     filteredDevices,
     filteredUsers,

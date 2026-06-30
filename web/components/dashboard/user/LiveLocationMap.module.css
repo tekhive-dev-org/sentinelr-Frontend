@@ -3,6 +3,57 @@
    Refactored using Tailwind CSS @apply directives for premium SaaS aesthetics.
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* ── Keyframe Animations ───────────────────────────────────────────────── */
+@keyframes radarPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+  }
+}
+
+@keyframes radarSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes locatingBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes locatingDot {
+  0%, 20% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 .mapSection {
   @apply flex flex-col w-full rounded-2xl overflow-hidden shadow-sm bg-gray-100 border border-gray-200/50;
 }
@@ -106,7 +157,62 @@
 }
 
 .noDataState {
-  @apply py-4 text-center text-[13px] text-gray-400 font-medium;
+  @apply py-5 text-center text-[13px] text-gray-400 font-medium flex flex-col items-center gap-2;
+}
+
+.noDataIcon {
+  animation: locatingBounce 1.4s ease-in-out infinite;
+  @apply text-[#3d09d0]/60 text-[28px];
+}
+
+.noDataDots {
+  @apply inline-flex gap-0.5 items-center;
+}
+
+.noDataDots span {
+  @apply inline-block w-1 h-1 rounded-full bg-[#3d09d0]/50;
+  animation: locatingDot 1.4s ease-in-out infinite;
+}
+
+.noDataDots span:nth-child(1) { animation-delay: 0s; }
+.noDataDots span:nth-child(2) { animation-delay: 0.2s; }
+.noDataDots span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ── Full-map locating overlay (radar aesthetic) ────────────────────────── */
+.locatingOverlay {
+  @apply absolute inset-0 z-[3] flex items-center justify-center pointer-events-none;
+  background:
+    radial-gradient(ellipse at center, rgba(61,9,208,0.06) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(249,250,251,0.3) 0%, rgba(249,250,251,0.6) 100%);
+}
+
+.locatingRadar {
+  @apply relative w-32 h-32 flex items-center justify-center;
+}
+
+.locatingRadarInner {
+  @apply absolute w-4 h-4 rounded-full bg-[#3d09d0] z-[2];
+  box-shadow: 0 0 20px rgba(61,9,208,0.5), 0 0 40px rgba(61,9,208,0.25);
+  animation: locatingBounce 1.4s ease-in-out infinite;
+}
+
+.locatingRadarRing {
+  @apply absolute inset-0 rounded-full border border-[#3d09d0]/30;
+  animation: radarPulse 2s ease-out infinite;
+}
+
+.locatingRadarRing:nth-child(2) {
+  animation-delay: 0.6s;
+}
+
+.locatingRadarRing:nth-child(3) {
+  animation-delay: 1.2s;
+}
+
+.locatingLabel {
+  @apply absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-semibold text-[#3d09d0]/70;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 /* ── Map Style toggle (top-right pill) ─────────────────────────────────── */

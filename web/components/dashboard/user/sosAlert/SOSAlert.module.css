@@ -23,7 +23,7 @@
   box-shadow:
     0 16px 40px rgba(15, 23, 42, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  overflow: hidden;
+  overflow-x: hidden !important;
 }
 
 .commandHeader::before {
@@ -38,12 +38,12 @@
 .commandHeader::after {
   content: '';
   position: absolute;
-  right: -80px;
+  right: 0;
   top: -120px;
-  width: 280px;
+  width: 220px;
   height: 280px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(61, 9, 208, 0.12), transparent 68%);
+  background: radial-gradient(circle at 100% 50%, rgba(61, 9, 208, 0.12), transparent 68%);
   z-index: -1;
 }
 
@@ -147,6 +147,63 @@
   font-size: 14px;
   line-height: 1.65;
   color: #475569;
+}
+
+.commandIntro {
+  position: relative;
+  z-index: 40;
+}
+
+.deviceFilterBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.deviceFilterLabel {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6b5d82;
+}
+
+.deviceFilterSelect {
+  min-width: min(100%, 260px);
+  position: relative;
+  z-index: 30;
+}
+
+.deviceFilterTrigger {
+  min-width: min(100%, 260px);
+  min-height: 42px;
+  padding: 9px 14px;
+  border-color: rgba(61, 9, 208, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow:
+    0 12px 28px rgba(31, 22, 54, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+  color: #160f24;
+  font-weight: 800;
+}
+
+.deviceFilterDropdown {
+  left: 0;
+  right: auto;
+  min-width: 260px;
+  border-color: rgba(61, 9, 208, 0.12);
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 18px 42px rgba(31, 22, 54, 0.14);
+  z-index: 300;
+}
+
+.deviceFilterOption {
+  font-size: 13px;
+  font-weight: 700;
 }
 
 /* ── Dashboard stat cards ──────────────────────────────────── */
@@ -774,6 +831,7 @@
 
 /* ── No active alert card ──────────────────────────────────── */
 .noAlertCard {
+  grid-column: 1 / -1;
   width: 100%;
   padding: 64px 28px;
   border-radius: 20px;
@@ -1451,6 +1509,19 @@
     grid-template-columns: 1fr 1fr;
   }
 
+  .deviceFilterBar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .deviceFilterSelect,
+  .deviceFilterTrigger,
+  .deviceFilterDropdown {
+    width: 100%;
+    min-width: 0;
+  }
+
   .contentPad {
     padding: 16px 16px 24px;
   }
@@ -1557,6 +1628,7 @@
   margin: 18px auto 0;
   padding: 28px;
   border-radius: 26px;
+  overflow: visible;
 }
 
 .commandHeader::before {
@@ -1568,16 +1640,24 @@
 }
 
 .commandHeader::after {
-  right: -120px;
+  right: 0;
   top: -150px;
-  width: 340px;
+  width: 220px;
   height: 340px;
-  background: radial-gradient(circle, rgba(61, 9, 208, 0.14), transparent 68%);
+  background: radial-gradient(circle at 100% 50%, rgba(61, 9, 208, 0.14), transparent 68%);
 }
 
 .commandHeader > * {
   position: relative;
   z-index: 1;
+}
+
+.commandHeader .commandIntro {
+  z-index: 60;
+}
+
+.commandHeader .commandStats {
+  z-index: 2;
 }
 
 .commandEyebrow {

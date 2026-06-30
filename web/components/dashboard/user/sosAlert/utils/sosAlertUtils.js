@@ -237,19 +237,34 @@ export function createContextMaps(members, devices, locations) {
 }
 
 export function normalizeAlert(alert, context) {
-  const userId = alert?.userId == null ? null : String(alert.userId);
-  const alertDeviceId = alert?.deviceId == null ? null : String(alert.deviceId);
-  const member = userId ? context.memberByUserId.get(userId) : null;
-  const fallbackDevice = userId ? (context.devicesByUserId.get(userId) || [])[0] : null;
-  const device = (alertDeviceId && context.deviceById.get(alertDeviceId)) || fallbackDevice || null;
+  const userId = alert?.user?.id != null ? String(alert.user.id)
+    : alert?.userId != null ? String(alert.userId)
+    : null;
+  const alertDeviceId = alert?.device?.id != null ? String(alert.device.id)
+    : alert?.deviceId != null ? String(alert.deviceId)
+    : null;
+
+  // Look up device from alert's deviceId
+  const device = alertDeviceId ? context.deviceById.get(alertDeviceId) : null;
+
+  // Fallback: if alert has no userId, try to resolve it from the device
+  const resolvedUserId = userId || device?.userId || null;
+
+  const fallbackDevice = resolvedUserId
+    ? (context.devicesByUserId.get(resolvedUserId) || [])[0]
+    : null;
+  const resolvedDevice = device || fallbackDevice || null;
+
+  const member = resolvedUserId ? context.memberByUserId.get(resolvedUserId) : null;
+
   const liveLocation =
-    (device?.id && context.locationByDeviceId.get(device.id)) ||
+    (resolvedDevice?.id && context.locationByDeviceId.get(resolvedDevice.id)) ||
     (alertDeviceId && context.locationByDeviceId.get(alertDeviceId)) ||
-    (userId && context.locationByUserId.get(userId)) ||
+    (resolvedUserId && context.locationByUserId.get(resolvedUserId)) ||
     null;
 
-  const latitude = toNumber(alert?.location?.latitude ?? liveLocation?.latitude);
-  const longitude = toNumber(alert?.location?.longitude ?? liveLocation?.longitude);
+  const latitude = toNumber(alert?.location?.latitude ?? alert?.location?.lat ?? liveLocation?.latitude);
+  const longitude = toNumber(alert?.location?.longitude ?? alert?.location?.lng ?? liveLocation?.longitude);
   const coordinateLabel =
     latitude != null && longitude != null
       ? `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`
@@ -261,16 +276,16 @@ export function normalizeAlert(alert, context) {
 
   const createdAt = alert?.createdAt || alert?.timestamp || liveLocation?.timestamp || new Date().toISOString();
   const resolvedAt = alert?.resolvedAt || alert?.updatedAt || null;
-  const batteryLevel = alert?.deviceInfo?.batteryLevel ?? device?.batteryLevel ?? null;
-  const speed = alert?.deviceInfo?.speed ?? device?.speed ?? null;
-  const speedUnit = asText(alert?.deviceInfo?.speedUnit, device?.speedUnit, 'km/h');
-  const heading = alert?.deviceInfo?.heading ?? device?.heading ?? null;
+  const batteryLevel = alert?.device?.batteryLevel ?? alert?.deviceInfo?.batteryLevel ?? resolvedDevice?.batteryLevel ?? null;
+  const speed = alert?.device?.speed ?? alert?.deviceInfo?.speed ?? resolvedDevice?.speed ?? null;
+  const speedUnit = asText(alert?.device?.speedUnit, alert?.deviceInfo?.speedUnit, resolvedDevice?.speedUnit, 'km/h');
+  const heading = alert?.device?.heading ?? alert?.deviceInfo?.heading ?? resolvedDevice?.heading ?? null;
   const incidentTitle = asText(
     alert?.title,
     alert?.type === 'sos' ? 'SOS emergency alert' : `${titleCase(alert?.type)} alert`,
     'Emergency alert',
   );
-  const userName = asText(alert?.userName, member?.name, liveLocation?.userName, 'Tracked member');
+  const userName = asText(alert?.user?.userName, alert?.userName, member?.name, liveLocation?.userName, 'Tracked member');
 
   return {
     id: String(alert?.id ?? alert?.alertId ?? buildIncidentCode(alert)),
@@ -287,15 +302,15 @@ export function normalizeAlert(alert, context) {
     priority: asText(alert?.priority, alert?.type === 'sos' ? 'critical' : 'high').toLowerCase(),
     priorityLabel: formatPriority(asText(alert?.priority, alert?.type === 'sos' ? 'critical' : 'high').toLowerCase()),
     triggerLabel: formatTriggerLabel(alert?.type),
-    userId,
+    userId: resolvedUserId,
     userName,
-    email: asText(alert?.email, member?.email, 'No email on file'),
-    phone: asText(alert?.phone, member?.phone, 'Emergency contact unavailable'),
+    email: asText(alert?.user?.email, alert?.email, member?.email, 'No email on file'),
+    phone: asText(alert?.user?.phone, alert?.phone, member?.phone, 'Emergency contact unavailable'),
     relationship: asText(member?.relationship, 'Family member'),
-    deviceId: device?.id || alertDeviceId || 'pending-sync',
-    deviceName: asText(device?.name, alert?.deviceName, 'Protected mobile device'),
-    deviceType: asText(device?.type, 'Mobile device'),
-    deviceStatus: asText(device?.status, liveLocation ? 'Online' : 'Syncing'),
+    deviceId: resolvedDevice?.id || alertDeviceId || 'pending-sync',
+    deviceName: asText(alert?.device?.deviceName, resolvedDevice?.name, alert?.deviceName, 'Protected mobile device'),
+    deviceType: asText(resolvedDevice?.type, 'Mobile device'),
+    deviceStatus: asText(resolvedDevice?.status, liveLocation ? 'Online' : 'Syncing'),
     createdAt,
     resolvedAt,
     lastUpdatedAt: liveLocation?.timestamp || resolvedAt || createdAt,
@@ -321,7 +336,7 @@ export function normalizeAlert(alert, context) {
     movementType: asText(
       alert?.deviceInfo?.movementType,
       typeof speed === 'number' && speed > 0 ? 'In motion' : '',
-      device?.movementType,
+      resolvedDevice?.movementType,
       'Location monitoring',
     ),
     headingLabel: typeof heading === 'number' ? `${Math.round(heading)}°` : 'Heading syncing',

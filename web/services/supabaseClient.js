@@ -15,7 +15,13 @@ function getClient() {
           "NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be set."
       );
     }
-    _client = createClient(supabaseUrl, supabaseAnonKey);
+    _client = createClient(supabaseUrl, supabaseAnonKey, {
+      realtime: {
+        params: {
+          eventsPerSecond: 10,
+        },
+      },
+    });
   }
   return _client;
 }

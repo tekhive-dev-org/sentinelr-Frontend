@@ -36,6 +36,8 @@ export const STORAGE_KEYS = {
   AUTH_TOKEN: "@sentinelr/auth_token",
   IS_PAIRED: "@sentinelr/is_paired",
   TRACKING_ENABLED: "@sentinelr/tracking_enabled",
+  LAST_PING_LOCATION: "@sentinelr/last_ping_location",
+  LAST_HEARTBEAT_STATUS: "@sentinelr/last_heartbeat_status",
 };
 
 // Colors (matching Tailwind config)

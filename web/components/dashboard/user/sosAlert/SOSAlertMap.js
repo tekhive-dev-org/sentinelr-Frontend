@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { Circle, GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import styles from './SOSAlert.module.css';
@@ -16,6 +16,15 @@ const MAP_OPTIONS = {
   gestureHandling: 'greedy',
 };
 
+function toFiniteNumber(value) {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value === 'string' && value.trim()) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
 function formatDateTime(dateValue) {
   if (!dateValue) return 'Awaiting sync';
 
@@ -31,9 +40,10 @@ function formatDateTime(dateValue) {
 }
 
 export default function SOSAlertMap({ alert, onOpenMap, onViewDetails }) {
-  const latitude = alert?.location?.latitude;
-  const longitude = alert?.location?.longitude;
-  const hasCoordinates = typeof latitude === 'number' && typeof longitude === 'number';
+  const latitude = toFiniteNumber(alert?.location?.latitude ?? alert?.location?.lat);
+  const longitude = toFiniteNumber(alert?.location?.longitude ?? alert?.location?.lng);
+  const accuracy = toFiniteNumber(alert?.location?.accuracy);
+  const hasCoordinates = latitude != null && longitude != null;
 
   const center = useMemo(() => {
     if (!hasCoordinates) {
@@ -46,6 +56,30 @@ export default function SOSAlertMap({ alert, onOpenMap, onViewDetails }) {
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
+
+  const markerIcon = useMemo(() => {
+    if (!isLoaded || typeof window === 'undefined' || !window.google) return undefined;
+
+    const svg =
+      '<svg width="54" height="64" viewBox="0 0 54 64" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+      '<ellipse cx="27" cy="59" rx="13" ry="4" fill="rgba(15,23,42,0.24)"/>' +
+      '<path d="M27 2C13.8 2 3 12.6 3 25.7C3 43.1 27 59 27 59C27 59 51 43.1 51 25.7C51 12.6 40.2 2 27 2Z" fill="#dc323f" stroke="#fff" stroke-width="5"/>' +
+      '<circle cx="27" cy="26" r="9" fill="#fff"/>' +
+      '<circle cx="27" cy="26" r="4.5" fill="#dc323f"/>' +
+      '</svg>';
+
+    const encodedSvg =
+      typeof window.btoa === 'function'
+        ? `data:image/svg+xml;base64,${window.btoa(svg)}`
+        : `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+
+    return {
+      url: encodedSvg,
+      size: new window.google.maps.Size(54, 64),
+      scaledSize: new window.google.maps.Size(54, 64),
+      anchor: new window.google.maps.Point(27, 59),
+    };
+  }, [isLoaded]);
 
   return (
     <div className={styles.mapSection}>
@@ -88,7 +122,27 @@ export default function SOSAlertMap({ alert, onOpenMap, onViewDetails }) {
             zoom={15}
             options={MAP_OPTIONS}
           >
-            <Marker position={center} title={`${alert.userName} · ${alert.incidentCode}`} />
+            {accuracy != null && (
+              <Circle
+                center={center}
+                radius={accuracy}
+                options={{
+                  strokeColor: '#dc323f',
+                  strokeOpacity: 0.26,
+                  strokeWeight: 1,
+                  fillColor: '#dc323f',
+                  fillOpacity: 0.08,
+                  clickable: false,
+                  zIndex: 1,
+                }}
+              />
+            )}
+            <Marker
+              position={center}
+              title={`${alert.userName} · ${alert.incidentCode}`}
+              icon={markerIcon}
+              zIndex={10}
+            />
           </GoogleMap>
         ) : (
           <div className={styles.mapEmptyState}>

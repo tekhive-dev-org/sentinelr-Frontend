@@ -3,6 +3,9 @@
  * Handles all geofence CRUD and event API calls
  */
 
+import { cachedFetch } from '../utils/apiCache';
+import { enqueueMutation } from '../utils/requestQueue';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const getAuthToken = () => {
@@ -13,33 +16,49 @@ const getAuthToken = () => {
 };
 
 async function apiRequest(endpoint, options = {}) {
-  const token = getAuthToken();
+  return cachedFetch(endpoint, options, async () => {
+    const token = getAuthToken();
 
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && {
-        Authorization: `Bearer ${token}`,
-        'x-access-token': token,
-      }),
-      ...options.headers,
-    },
-    ...options,
-  };
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && {
+          Authorization: `Bearer ${token}`,
+          'x-access-token': token,
+        }),
+        ...options.headers,
+      },
+      ...options,
+    };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    const maxRetries = options.skipRetry ? 1 : 3;
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    if (response.status === 401 && typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+
+      // 429 — retry with exponential backoff
+      if (response.status === 429 && attempt < maxRetries) {
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 8000);
+        console.warn(`[geofencingService] 429 on ${endpoint}, retrying in ${delay}ms (attempt ${attempt}/${maxRetries})`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
+      }
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        if (response.status === 401 && typeof window !== 'undefined') {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+        }
+        throw new Error(error.message || `API Error: ${response.status}`);
+      }
+
+      return response.json();
     }
-    throw new Error(error.message || `API Error: ${response.status}`);
-  }
 
-  return response.json();
+    throw new Error("API Error: 429");
+  });
 }
 
 export const geofencingService = {
@@ -56,10 +75,12 @@ export const geofencingService = {
    * @param {object} geofence - { name, type, center, radius, address, notifyOnEntry, notifyOnExit, assignedUserIds, schedule }
    */
   async createGeofence(geofence) {
-    return apiRequest('/create/geofence', {
-      method: 'POST',
-      body: JSON.stringify(geofence),
-    });
+    return enqueueMutation(() =>
+      apiRequest('/create/geofence', {
+        method: 'POST',
+        body: JSON.stringify(geofence),
+      })
+    );
   },
 
   /**
@@ -68,10 +89,12 @@ export const geofencingService = {
    * @param {object} updates
    */
   async updateGeofence(geofenceId, updates) {
-    return apiRequest(`/geofences/${encodeURIComponent(geofenceId)}`, {
-      method: 'PUT',
-      body: JSON.stringify(updates),
-    });
+    return enqueueMutation(() =>
+      apiRequest(`/geofences/${encodeURIComponent(geofenceId)}`, {
+        method: 'PUT',
+        body: JSON.stringify(updates),
+      })
+    );
   },
 
   /**
@@ -79,9 +102,11 @@ export const geofencingService = {
    * @param {string|number} geofenceId
    */
   async deleteGeofence(geofenceId) {
-    return apiRequest(`/geofences/${encodeURIComponent(geofenceId)}`, {
-      method: 'DELETE',
-    });
+    return enqueueMutation(() =>
+      apiRequest(`/geofences/${encodeURIComponent(geofenceId)}`, {
+        method: 'DELETE',
+      })
+    );
   },
 
   /**
@@ -90,10 +115,12 @@ export const geofencingService = {
    * @param {boolean} isActive
    */
   async toggleGeofence(geofenceId, isActive) {
-    return apiRequest(`/geofences/${encodeURIComponent(geofenceId)}/toggle`, {
-      method: 'PATCH',
-      body: JSON.stringify({ isActive }),
-    });
+    return enqueueMutation(() =>
+      apiRequest(`/geofences/${encodeURIComponent(geofenceId)}/toggle`, {
+        method: 'PATCH',
+        body: JSON.stringify({ isActive }),
+      })
+    );
   },
 
   /**

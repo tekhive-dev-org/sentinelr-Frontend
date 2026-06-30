@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
+import { useAlertsSubscription } from '../../context/RealtimeSubscriptionContext';
 import Sidebar from './Sidebar';
 import BottomAppBar from './BottomAppBar';
 import PageHeader from './PageHeader';
@@ -118,26 +119,30 @@ export default function DashboardLayout({ children }) {
     };
   }
 
-  // Close sidebar on mobile by default
-  useEffect(() => {
+  // Active alert count for the notification bell — fetched on mount
+  // and kept up-to-date via the centralized Alerts realtime subscription.
+  const fetchActiveAlertCount = useCallback(async (silent = false) => {
     if (!user) return;
-    let cancelled = false;
-    const fetchCount = async () => {
-      try {
-        const data = await alertsService.getAlerts({ status: 'active', limit: 50 });
-        const alerts = data?.alerts || [];
-        if (!cancelled) setActiveAlertCount(alerts.filter((a) => {
-          const s = (a.status || '').toLowerCase();
-          return s === 'active' || s === 'unresolved';
-        }).length);
-      } catch {
-        // silently ignore — count stays at last known value
-      }
-    };
-    fetchCount();
-    const interval = window.setInterval(fetchCount, 30000);
-    return () => { cancelled = true; window.clearInterval(interval); };
+    try {
+      const data = await alertsService.getAlerts({ status: 'active', limit: 50 });
+      const alerts = data?.alerts || [];
+      setActiveAlertCount(alerts.filter((a) => {
+        const s = (a.status || '').toLowerCase();
+        return s === 'active' || s === 'unresolved';
+      }).length);
+    } catch {
+      if (!silent) { /* ignore silently on realtime refresh */ }
+    }
   }, [user]);
+
+  useEffect(() => {
+    fetchActiveAlertCount();
+  }, [fetchActiveAlertCount]);
+
+  // Subscribe to Alerts table changes so the bell badge stays current
+  useAlertsSubscription(() => {
+    fetchActiveAlertCount(true);
+  }, [fetchActiveAlertCount]);
 
   // Auto-close sidebar on mobile, auto-open when returning to desktop
   useEffect(() => {

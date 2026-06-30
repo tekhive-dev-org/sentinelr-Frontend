@@ -9,3 +9,15 @@ export { default as adminService } from './adminService';
 export { alertsService } from './alertsService';
 export { geofencingService } from './geofencingService';
 export { parentalControlService } from './parentalControlService';
+export {
+  subscribe,
+  subscribeToParentalControls,
+  subscribeToParentalControlActivities,
+  subscribeToAlerts,
+  subscribeToLocations,
+  subscribeToDevices,
+  subscribeToFamilyMembers,
+  getConnectionStatus,
+  onStatusChange,
+  destroyAll,
+} from './realtimeSubscriptionService';

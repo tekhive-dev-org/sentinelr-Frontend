@@ -76,3 +76,4 @@ web-build/
 /.agents/*.md
 
 test-parental-controls.js
+/postman/*

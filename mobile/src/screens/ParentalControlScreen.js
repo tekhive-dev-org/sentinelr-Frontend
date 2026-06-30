@@ -48,6 +48,44 @@ export default function ParentalControlScreen() {
 
   const loading = isPaired && controls === null && parentalSyncError === null;
 
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
+        <NavigationHeader title="Parental Controls" subtitle="Protection status" showMenu={false} />
+
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
+        >
+          <ParentalControlsContent embedded />
+        </ScrollView>
+      </SafeAreaView>
+    </View>
+  );
+}
+
+/**
+ * ParentalControlsContent – the core controls UI without outer chrome.
+ * Can be embedded in SettingsScreen or used standalone via ParentalControlScreen.
+ * @param {object} props
+ * @param {boolean} [props.embedded] – when true, the loading/empty states render inline
+ *   instead of as full-screen placeholders (avoids nested centering)
+ */
+export function ParentalControlsContent({ embedded = false }) {
+  const { colors } = useTheme();
+  const { parentalControls: controls, parentalActivities: activities, parentalSyncError, syncParentalControls, isPaired } = useDevice();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await syncParentalControls().catch(() => {});
+    setRefreshing(false);
+  };
+
+  const loading = isPaired && controls === null && parentalSyncError === null;
+
   const st = controls?.screenTimeLimit;
   const bedtime = controls?.bedtime;
   const quickPause = controls?.quickPause;
@@ -81,6 +119,14 @@ export default function ParentalControlScreen() {
   );
 
   if (loading) {
+    if (embedded) {
+      return (
+        <View style={s.inlineState}>
+          <ActivityIndicator size="small" color={colors.primary} />
+          <Text style={[s.loadingText, { color: colors.textMuted }]}>Loading controls…</Text>
+        </View>
+      );
+    }
     return (
       <View style={{ flex: 1, backgroundColor: colors.background }}>
         <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
@@ -95,6 +141,29 @@ export default function ParentalControlScreen() {
   }
 
   if (!controls) {
+    if (embedded) {
+      return (
+        <View style={s.inlineState}>
+          {parentalSyncError === 'auth' ? (
+            <>
+              <Ionicons name="key-outline" size={36} color="#e6ae12" />
+              <Text style={[s.emptyTitle, { color: colors.text }]}>Session Expired</Text>
+              <Text style={[s.emptySubtitleSmall, { color: colors.textSecondary }]}>
+                Your device session has expired. Ask a parent to unpair and re-pair this device.
+              </Text>
+            </>
+          ) : (
+            <>
+              <Ionicons name="shield-outline" size={36} color={colors.textMuted} />
+              <Text style={[s.emptyTitle, { color: colors.text }]}>No Controls Active</Text>
+              <Text style={[s.emptySubtitleSmall, { color: colors.textSecondary }]}>
+                Parental controls haven&apos;t been set up for this device yet.
+              </Text>
+            </>
+          )}
+        </View>
+      );
+    }
     return (
       <View style={{ flex: 1, backgroundColor: colors.background }}>
         <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
@@ -124,18 +193,9 @@ export default function ParentalControlScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
-        <NavigationHeader title="Parental Controls" subtitle="Protection status" showMenu={false} />
-
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
-          showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
-        >
-          {/* ── Device Frozen Banner ──────────────────────────────────────── */}
-          {isFrozen && (
+    <>
+      {/* ── Device Frozen Banner ──────────────────────────────────────── */}
+      {isFrozen && (
             <View style={s.frozenBanner}>
               <View style={s.frozenBannerIcon}>
                 <Ionicons name="snow" size={18} color="#fff" />
@@ -323,9 +383,7 @@ export default function ParentalControlScreen() {
               </GlassCard>
             </>
           )}
-        </ScrollView>
-      </SafeAreaView>
-    </View>
+    </>
   );
 }
 
@@ -373,6 +431,19 @@ const s = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     lineHeight: 20,
+  },
+  emptySubtitleSmall: {
+    fontSize: 13,
+    textAlign: 'center',
+    lineHeight: 18,
+    paddingHorizontal: 16,
+  },
+  inlineState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+    gap: 10,
   },
 
   // Frozen banner

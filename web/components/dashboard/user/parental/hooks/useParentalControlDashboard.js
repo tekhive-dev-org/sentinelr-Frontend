@@ -1,5 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { parentalControlService } from '../../../../../services/parentalControlService';
+import {
+  useParentalControlsSubscription,
+  useParentalControlActivitiesSubscription,
+} from '../../../../../context/RealtimeSubscriptionContext';
 
 export function useParentalControlDashboard() {
   // State
@@ -65,6 +69,22 @@ export function useParentalControlDashboard() {
 
   useEffect(() => { fetchMembers(); }, [fetchMembers]);
   useEffect(() => { if (selectedMember && selectedDevice) fetchControls(); }, [fetchControls]);
+
+  // ─── Real-time Subscriptions ────────────────────────────────────────────────
+
+  // Re-fetch controls whenever the ParentalControls table changes
+  useParentalControlsSubscription(() => {
+    if (selectedMember && selectedDevice) {
+      fetchControls();
+    }
+  }, [selectedMember, selectedDevice, fetchControls]);
+
+  // Re-fetch activity log whenever a new ParentalControlActivity is inserted
+  useParentalControlActivitiesSubscription(() => {
+    if (selectedMember && selectedDevice) {
+      fetchControls();
+    }
+  }, [selectedMember, selectedDevice, fetchControls]);
 
   // Handlers
   const handleSelectMember = (member) => {

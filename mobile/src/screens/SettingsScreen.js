@@ -16,6 +16,7 @@ import { useDevice } from "../context/DeviceContext";
 import { useTheme } from "../context/ThemeContext";
 import NavigationHeader from "../components/NavigationHeader";
 import GlassCard from "../components/GlassCard";
+import { ParentalControlsContent } from "./ParentalControlScreen";
 import { APP_NAME, APP_VERSION } from "../utils/constants";
 import { typography } from "../utils/typography";
 
@@ -245,6 +246,12 @@ export default function SettingsScreen({ navigation }) {
               onValueChange={toggleTheme}
               isLast
             />
+          </GlassCard>
+
+          {/* ── Parental Controls ── */}
+          <SectionLabel label="PARENTAL CONTROLS" />
+          <GlassCard>
+            <ParentalControlsContent embedded />
           </GlassCard>
 
           {/* ── Privacy & Security ── */}

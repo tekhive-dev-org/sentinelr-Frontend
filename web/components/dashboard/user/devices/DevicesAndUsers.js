@@ -41,6 +41,7 @@ export default function DevicesAndUsers() {
     users,
     maxMembers,
     repairingDevice,
+    setRepairingDevice,
     notification,
     setNotification,
     pairStatusFilter,
@@ -56,6 +57,7 @@ export default function DevicesAndUsers() {
     handleUnpairDevice,
     handleRepairDevice,
     handleRemoveDevice,
+    handleRemoveMember,
     handleUpdateDevice,
     filteredDevices,
     filteredUsers,
@@ -306,12 +308,35 @@ export default function DevicesAndUsers() {
           .map((d) => ({
             ...d,
           }))
-          .find((d) => d.assignedUser?.id === selectedUser?.id)} // Pass the device associated with the user, if any
+          .find((d) =>
+            String(
+              d.assignedUser?.id ??
+              d.assignedUserId ??
+              d.userId ??
+              d.memberUserId ??
+              "",
+            ) === String(selectedUser?.id ?? ""),
+          )} // Pass the device associated with the user, if any
         user={selectedUser}
-        onPairDevice={(user) => {
+        onPairDevice={(user, currentDevice) => {
           setSelectedUser(null);
-          handleStartPairing();
+          setRepairingDevice({
+            memberUserId: user.id,
+            assignedUserId: user.id,
+            userId: user.id,
+            deviceName: currentDevice
+              ? `${user.name || "Member"}'s new phone`
+              : `${user.name || "Member"}'s phone`,
+            name: currentDevice
+              ? `${user.name || "Member"}'s new phone`
+              : `${user.name || "Member"}'s phone`,
+            type: "Phone",
+            platform: currentDevice?.platform || "iOS",
+          });
+          setViewMode(VIEW_MODES.PAIRING);
         }}
+        onUnpairDevice={handleUnpairDevice}
+        onRemoveMember={handleRemoveMember}
       />
       <DeviceDetailModal
         isOpen={!!selectedDevice}

@@ -1,10 +1,12 @@
 import React from 'react';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import SOSAlertBanner from './SOSAlertBanner';
 import SOSAlertMap from './SOSAlertMap';
 import SOSAlertHistory from './SOSAlertHistory';
 import SOSAlertIncidentModal from './SOSAlertIncidentModal';
 import Toast from '../../../common/Toast';
+import CustomSelect from '../../../ui/CustomSelect';
 import styles from './SOSAlert.module.css';
 import { useSOSAlert } from './hooks/useSOSAlert';
 
@@ -20,6 +22,9 @@ export default function SOSAlert() {
     pendingAction,
     realtimeStatus,
     dashboardStats,
+    deviceOptions,
+    selectedDeviceId,
+    setSelectedDeviceId,
     handleCall,
     handleCopySummary,
     handleOpenMap,
@@ -30,7 +35,7 @@ export default function SOSAlert() {
   return (
     <div className={styles.container}>
       <div className={styles.commandHeader}>
-        <div>
+        <div className={styles.commandIntro}>
           <div className={styles.commandEyebrowRow}>
             <span className={styles.commandEyebrow}>Emergency operations</span>
             <span className={`${styles.realtimeBadge} ${realtimeStatus === 'live' ? styles.realtimeLive : realtimeStatus === 'polling' ? styles.realtimePolling : styles.realtimeConnecting}`}>
@@ -41,6 +46,19 @@ export default function SOSAlert() {
           <p className={styles.commandSubtitle}>
             Monitor live distress events, validate member context, and act on incidents from one operational view.
           </p>
+          <div className={styles.deviceFilterBar}>
+            <span className={styles.deviceFilterLabel}>Device scope</span>
+            <CustomSelect
+              value={selectedDeviceId}
+              onChange={setSelectedDeviceId}
+              options={deviceOptions}
+              icon={<PhoneAndroidIcon style={{ fontSize: 17 }} />}
+              className={styles.deviceFilterSelect}
+              triggerClassName={styles.deviceFilterTrigger}
+              dropdownClassName={styles.deviceFilterDropdown}
+              optionClassName={styles.deviceFilterOption}
+            />
+          </div>
         </div>
 
         <div className={styles.commandStats}>

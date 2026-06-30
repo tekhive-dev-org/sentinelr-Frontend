@@ -1,6 +1,8 @@
 import { Platform } from 'react-native';
 import NativeParentalControls from '../../modules/sentinelr-parental-controls';
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 function blockedPackagesFromControls(controls) {
   const explicit = Array.isArray(controls?.appBlocking?.blockedApps)
     ? controls.appBlocking.blockedApps
@@ -32,40 +34,98 @@ function toNativePayload(controls) {
   };
 }
 
-export function isAndroidParentalEnforcementAvailable() {
-  return Platform.OS === 'android' && NativeParentalControls.isNativeModuleAvailable();
+// ─── Cross-platform: is native module available at all? ─────────────────────
+
+export function isNativeEnforcementAvailable() {
+  return NativeParentalControls.isNativeModuleAvailable();
 }
 
-export async function applyAndroidParentalControls(controls) {
-  if (!isAndroidParentalEnforcementAvailable()) {
-    return false;
+// ─── Permission status ───────────────────────────────────────────────────────
+
+export function isEnforcementPermissionGranted() {
+  if (Platform.OS === 'android') {
+    return NativeParentalControls.isAccessibilityServiceEnabled?.() ?? false;
   }
+  if (Platform.OS === 'ios') {
+    return NativeParentalControls.isFamilyControlsAuthorized?.() ?? false;
+  }
+  return false;
+}
+
+// ─── Request permission ──────────────────────────────────────────────────────
+
+export function requestEnforcementPermission() {
+  if (Platform.OS === 'ios') {
+    NativeParentalControls.requestFamilyControlsAuthorization?.();
+  }
+  // Android: user must enable Accessibility Service manually via system settings.
+  // The openEnforcementSettings() function directs them there.
+}
+
+export function openEnforcementSettings() {
+  if (Platform.OS === 'android') {
+    return NativeParentalControls.openAccessibilitySettings?.() ?? false;
+  }
+  if (Platform.OS === 'ios') {
+    NativeParentalControls.openFamilyControlsSettings?.();
+    return true;
+  }
+  return false;
+}
+
+// ─── Apply / Clear controls ─────────────────────────────────────────────────
+
+export async function applyNativeControls(controls) {
+  if (!isNativeEnforcementAvailable()) return false;
   return NativeParentalControls.applyControls(toNativePayload(controls));
 }
 
-export async function clearAndroidParentalControls() {
-  if (!isAndroidParentalEnforcementAvailable()) {
-    return false;
-  }
+export async function clearNativeControls() {
+  if (!isNativeEnforcementAvailable()) return false;
   return NativeParentalControls.clearControls();
 }
 
-export function isAndroidAccessibilityEnabled() {
-  if (!isAndroidParentalEnforcementAvailable()) {
-    return false;
+// ─── Get enforcement state ───────────────────────────────────────────────────
+
+export function getNativeEnforcementState() {
+  if (!isNativeEnforcementAvailable()) {
+    return {
+      monitoringEnabled: false,
+      quickPauseEnabled: false,
+      bedtimeActive: false,
+      screenTimeExpired: false,
+      blockedPackagesCount: 0,
+      syncedAt: 0,
+      ...(Platform.OS === 'android' ? { accessibilityEnabled: false } : {}),
+      ...(Platform.OS === 'ios' ? { familyControlsAuthorized: false } : {}),
+    };
   }
-  return NativeParentalControls.isAccessibilityServiceEnabled();
+  return NativeParentalControls.getEnforcementState();
 }
 
-export function openAndroidAccessibilitySettings() {
-  if (!isAndroidParentalEnforcementAvailable()) {
-    return false;
-  }
-  return NativeParentalControls.openAccessibilitySettings();
+// ─── Backward-compatible Android aliases ─────────────────────────────────────
+
+export const isAndroidParentalEnforcementAvailable = () =>
+  Platform.OS === 'android' && isNativeEnforcementAvailable();
+
+export const isAndroidAccessibilityEnabled = () =>
+  Platform.OS === 'android' && isEnforcementPermissionGranted();
+
+export const openAndroidAccessibilitySettings = () =>
+  Platform.OS === 'android' ? openEnforcementSettings() : false;
+
+export async function applyAndroidParentalControls(controls) {
+  if (Platform.OS !== 'android') return false;
+  return applyNativeControls(controls);
+}
+
+export async function clearAndroidParentalControls() {
+  if (Platform.OS !== 'android') return false;
+  return clearNativeControls();
 }
 
 export function getAndroidParentalEnforcementState() {
-  if (!isAndroidParentalEnforcementAvailable()) {
+  if (Platform.OS !== 'android') {
     return {
       accessibilityEnabled: false,
       monitoringEnabled: false,
@@ -76,5 +136,6 @@ export function getAndroidParentalEnforcementState() {
       syncedAt: 0,
     };
   }
-  return NativeParentalControls.getEnforcementState();
+  return getNativeEnforcementState();
 }
+

@@ -2,7 +2,6 @@ import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
 import { apiService } from "./api";
 import { storageService } from "./storageService";
-import { heartbeatService } from "./heartbeatService";
 
 const LOCATION_TASK_NAME = "sentinelr-background-location";
 
@@ -39,20 +38,8 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   // Verify device is still active in DB before uploading anything
   const isActive = await storageService.checkDeviceActive();
   if (!isActive) {
-    heartbeatService.stop();
     await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
     return;
-  }
-
-  // Always attempt heartbeat when the background task wakes.
-  // sendHeartbeat() is internally throttled by keep-alive rules.
-  try {
-    await heartbeatService.sendHeartbeat();
-  } catch (heartbeatErr) {
-    if (heartbeatErr?.status === 401 || heartbeatErr?.status === 404) {
-      await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
-      return;
-    }
   }
 
   if (data?.locations?.length) {
@@ -73,8 +60,14 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
         };
 
       try {
+        const shouldUpload = await storageService.shouldUploadLocationPing(ping);
+        if (!shouldUpload) {
+          continue;
+        }
+
         console.log("[Location] Uploading ping:", JSON.stringify(ping));
         await apiService.uploadPing(ping);
+        await storageService.markLocationPingUploaded(ping);
         console.log("[Location] Ping uploaded successfully");
         locationEvents._emit(ping);
       } catch (err) {
@@ -82,7 +75,6 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
         locationEvents._emit(ping); // still update UI with latest coords
         if (err.status === 401 || err.status === 404) {
           await storageService.setTrackingEnabled(false);
-          heartbeatService.stop();
           await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
           return;
         }
@@ -120,6 +112,7 @@ export const locationService = {
     }
 
     // Start background location updates
+    await storageService.resetLastPingLocation();
     await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
       accuracy: Location.Accuracy.High,
       distanceInterval: 0, // send even when stationary (time-driven heartbeat)
@@ -151,6 +144,7 @@ export const locationService = {
     }
 
     await storageService.setTrackingEnabled(false);
+    await storageService.resetLastPingLocation();
   },
 
   /**

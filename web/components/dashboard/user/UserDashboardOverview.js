@@ -181,9 +181,10 @@ export default function UserDashboardOverview() {
         />
       </div>
 
-      <div className={styles.mainContentGrid}>
+      {/* TODO: Re-enable the leftColumn when Usage Insight / Subscription / Screen Time are wired up */}
+      <div className={`${styles.mainContentGrid} ${styles.mainContentGridFull}`}>
+        {false && (
         <div className={styles.leftColumn}>
-          {/* Charts Row */}
           <div className={styles.chartsGrid}>
             <div className={styles.chartCard}>
               <h3 className={styles.sectionTitle}>Usage Insight</h3>
@@ -206,7 +207,6 @@ export default function UserDashboardOverview() {
             </div>
           </div>
 
-          {/* Screen Time */}
           <div className={styles.screenTimeCard}>
             <div className={styles.sectionHeader}>
               <h3 className={styles.sectionTitle}>Screen Time</h3>
@@ -217,6 +217,7 @@ export default function UserDashboardOverview() {
             </div>
           </div>
         </div>
+        )}
 
         <div className={styles.rightColumn}>
           {/* Recent Activity */}

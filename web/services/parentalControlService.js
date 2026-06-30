@@ -3,6 +3,9 @@
  * Handles all parental control CRUD and action API calls.
  */
 
+import { cachedFetch } from '../utils/apiCache';
+import { enqueueMutation } from '../utils/requestQueue';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const getAuthToken = () => {
@@ -13,36 +16,52 @@ const getAuthToken = () => {
 };
 
 async function apiRequest(endpoint, options = {}) {
-  const token = getAuthToken();
+  return cachedFetch(endpoint, options, async () => {
+    const token = getAuthToken();
 
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-      ...(token && {
-        Authorization: `Bearer ${token}`,
-        "x-access-token": token,
-      }),
-      ...options.headers,
-    },
-    ...options,
-  };
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && {
+          Authorization: `Bearer ${token}`,
+          "x-access-token": token,
+        }),
+        ...options.headers,
+      },
+      ...options,
+    };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    const maxRetries = options.skipRetry ? 1 : 3;
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    if (response.status === 401 && typeof window !== "undefined") {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+
+      // 429 — retry with exponential backoff
+      if (response.status === 429 && attempt < maxRetries) {
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 8000);
+        console.warn(`[parentalControlService] 429 on ${endpoint}, retrying in ${delay}ms (attempt ${attempt}/${maxRetries})`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
+      }
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        if (response.status === 401 && typeof window !== "undefined") {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          window.location.href = "/login";
+        }
+        throw new Error(
+          error.message ||
+            `API Error ${response.status} on ${options.method || "GET"} ${endpoint}`,
+        );
+      }
+
+      return response.json();
     }
-    throw new Error(
-      error.message ||
-        `API Error ${response.status} on ${options.method || "GET"} ${endpoint}`,
-    );
-  }
 
-  return response.json();
+    throw new Error("API Error: 429");
+  });
 }
 
 function toNormalizedMembers(rawMembers = []) {
@@ -242,15 +261,17 @@ export const parentalControlService = {
    * @param {object} settings - { enabled, dailyLimit, schedule: { weekdays, weekends } }
    */
   async updateScreenTime(userId, deviceId, settings) {
-    return apiRequest(
-      `/parental-controls/${encodeURIComponent(userId)}/screentime/${encodeURIComponent(deviceId)}`,
-      {
-        method: "PUT",
-        body: JSON.stringify({
-          ...settings,
-          ...(deviceId ? { deviceId } : {}),
-        }),
-      },
+    return enqueueMutation(() =>
+      apiRequest(
+        `/parental-controls/${encodeURIComponent(userId)}/screentime/${encodeURIComponent(deviceId)}`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            ...settings,
+            ...(deviceId ? { deviceId } : {}),
+          }),
+        },
+      )
     );
   },
 
@@ -261,15 +282,17 @@ export const parentalControlService = {
    * @param {object} settings - { enabled, blockedApps, categoryBlocked }
    */
   async updateAppBlocking(userId, deviceId, settings) {
-    return apiRequest(
-      `/parental-controls/${encodeURIComponent(userId)}/app-blocking`,
-      {
-        method: "PUT",
-        body: JSON.stringify({
-          ...settings,
-          ...(deviceId ? { deviceId } : {}),
-        }),
-      },
+    return enqueueMutation(() =>
+      apiRequest(
+        `/parental-controls/${encodeURIComponent(userId)}/app-blocking`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            ...settings,
+            ...(deviceId ? { deviceId } : {}),
+          }),
+        },
+      )
     );
   },
 
@@ -281,16 +304,18 @@ export const parentalControlService = {
    * @param {boolean} enabled
    */
   async toggleCategoryBlock(userId, deviceId, category, enabled) {
-    return apiRequest(
-      `/parental-controls/${encodeURIComponent(userId)}/app-blocking/category/${encodeURIComponent(deviceId)}`,
-      {
-        method: "PATCH",
-        body: JSON.stringify({
-          category,
-          enabled,
-          ...(deviceId ? { deviceId } : {}),
-        }),
-      },
+    return enqueueMutation(() =>
+      apiRequest(
+        `/parental-controls/${encodeURIComponent(userId)}/app-blocking/category/${encodeURIComponent(deviceId)}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            category,
+            enabled,
+            ...(deviceId ? { deviceId } : {}),
+          }),
+        },
+      )
     );
   },
 
@@ -302,16 +327,18 @@ export const parentalControlService = {
    * @param {boolean} isBlocked
    */
   async toggleAppBlock(userId, deviceId, packageName, isBlocked) {
-    return apiRequest(
-      `/parental-controls/${encodeURIComponent(userId)}/app-blocking/app/${encodeURIComponent(deviceId)}`,
-      {
-        method: "PATCH",
-        body: JSON.stringify({
-          packageName,
-          isBlocked,
-          ...(deviceId ? { deviceId } : {}),
-        }),
-      },
+    return enqueueMutation(() =>
+      apiRequest(
+        `/parental-controls/${encodeURIComponent(userId)}/app-blocking/app/${encodeURIComponent(deviceId)}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            packageName,
+            isBlocked,
+            ...(deviceId ? { deviceId } : {}),
+          }),
+        },
+      )
     );
   },
 
@@ -322,15 +349,17 @@ export const parentalControlService = {
    * @param {object} settings
    */
   async updateWebFiltering(userId, deviceId, settings) {
-    return apiRequest(
-      `/parental-controls/${encodeURIComponent(userId)}/web-filtering/${encodeURIComponent(deviceId)}`,
-      {
-        method: "PUT",
-        body: JSON.stringify({
-          ...settings,
-          ...(deviceId ? { deviceId } : {}),
-        }),
-      },
+    return enqueueMutation(() =>
+      apiRequest(
+        `/parental-controls/${encodeURIComponent(userId)}/web-filtering/${encodeURIComponent(deviceId)}`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            ...settings,
+            ...(deviceId ? { deviceId } : {}),
+          }),
+        },
+      )
     );
   },
 
@@ -341,12 +370,14 @@ export const parentalControlService = {
    * @param {string} url
    */
   async addBlockedSite(userId, deviceId, url) {
-    return apiRequest(
-      `/parental-controls/${encodeURIComponent(userId)}/web-filtering/blocked-websites/${encodeURIComponent(deviceId)}`,
-      {
-        method: "POST",
-        body: JSON.stringify({ url, ...(deviceId ? { deviceId } : {}) }),
-      },
+    return enqueueMutation(() =>
+      apiRequest(
+        `/parental-controls/${encodeURIComponent(userId)}/web-filtering/blocked-websites/${encodeURIComponent(deviceId)}`,
+        {
+          method: "POST",
+          body: JSON.stringify({ url, ...(deviceId ? { deviceId } : {}) }),
+        },
+      )
     );
   },
 
@@ -357,12 +388,14 @@ export const parentalControlService = {
    * @param {string} url
    */
   async removeBlockedSite(userId, deviceId, url) {
-    return apiRequest(
-      `/parental-controls/${encodeURIComponent(userId)}/web-filtering/blocked-websites/${encodeURIComponent(deviceId)}`,
-      {
-        method: "DELETE",
-        body: JSON.stringify({ url, ...(deviceId ? { deviceId } : {}) }),
-      },
+    return enqueueMutation(() =>
+      apiRequest(
+        `/parental-controls/${encodeURIComponent(userId)}/web-filtering/blocked-websites/${encodeURIComponent(deviceId)}`,
+        {
+          method: "DELETE",
+          body: JSON.stringify({ url, ...(deviceId ? { deviceId } : {}) }),
+        },
+      )
     );
   },
 
@@ -374,15 +407,17 @@ export const parentalControlService = {
    * @param {object} settings - { enabled, startTime, endTime }
    */
   async updateBedtime(userId, deviceId, settings) {
-    return apiRequest(
-      `/parental-controls/${encodeURIComponent(userId)}/bedtime/${encodeURIComponent(deviceId)}`,
-      {
-        method: "PUT",
-        body: JSON.stringify({
-          ...settings,
-          ...(deviceId ? { deviceId } : {}),
-        }),
-      },
+    return enqueueMutation(() =>
+      apiRequest(
+        `/parental-controls/${encodeURIComponent(userId)}/bedtime/${encodeURIComponent(deviceId)}`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            ...settings,
+            ...(deviceId ? { deviceId } : {}),
+          }),
+        },
+      )
     );
   },
 
@@ -393,9 +428,11 @@ export const parentalControlService = {
    * @param {string} deviceId
    */
   async freezeDevice(userId, deviceId) {
-    return apiRequest(
-      `/parental-controls/${encodeURIComponent(userId)}/freeze/${encodeURIComponent(deviceId)}`,
-      { method: "POST", body: JSON.stringify({ deviceId }) },
+    return enqueueMutation(() =>
+      apiRequest(
+        `/parental-controls/${encodeURIComponent(userId)}/freeze/${encodeURIComponent(deviceId)}`,
+        { method: "POST", body: JSON.stringify({ deviceId }) },
+      )
     );
   },
 
@@ -406,9 +443,11 @@ export const parentalControlService = {
    * @param {string} deviceId
    */
   async unfreezeDevice(userId, deviceId) {
-    return apiRequest(
-      `/parental-controls/${encodeURIComponent(userId)}/unfreeze/${encodeURIComponent(deviceId)}`,
-      { method: "POST", body: JSON.stringify({ deviceId }) },
+    return enqueueMutation(() =>
+      apiRequest(
+        `/parental-controls/${encodeURIComponent(userId)}/unfreeze/${encodeURIComponent(deviceId)}`,
+        { method: "POST", body: JSON.stringify({ deviceId }) },
+      )
     );
   },
 
@@ -419,12 +458,14 @@ export const parentalControlService = {
    * @param {number} minutes
    */
   async grantBonusTime(userId, deviceId, minutes = 60) {
-    return apiRequest(
-      `/parental-controls/${encodeURIComponent(userId)}/bonus-time`,
-      {
-        method: "POST",
-        body: JSON.stringify({ deviceId, minutes }),
-      },
+    return enqueueMutation(() =>
+      apiRequest(
+        `/parental-controls/${encodeURIComponent(userId)}/bonus-time`,
+        {
+          method: "POST",
+          body: JSON.stringify({ deviceId, minutes }),
+        },
+      )
     );
   },
 
@@ -457,12 +498,14 @@ export const parentalControlService = {
    * @param {string} deviceId
    */
   async toggleMonitoring(userId, enabled, deviceId) {
-    return apiRequest(
-      `/parental-controls/${encodeURIComponent(userId)}/monitoring`,
-      {
-        method: "PATCH",
-        body: JSON.stringify({ enabled, deviceId }),
-      },
+    return enqueueMutation(() =>
+      apiRequest(
+        `/parental-controls/${encodeURIComponent(userId)}/monitoring`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ enabled, deviceId }),
+        },
+      )
     );
   },
 

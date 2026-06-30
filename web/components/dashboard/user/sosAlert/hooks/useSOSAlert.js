@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { alertsService } from '../../../../../services/alertsService';
-import { supabase } from '../../../../../services/supabaseClient';
 import { devicesService } from '../../../../../services/devicesService';
 import { familyService } from '../../../../../services/familyService';
+import {
+  useAlertsSubscription,
+} from '../../../../../context/RealtimeSubscriptionContext';
+import { onStatusChange } from '../../../../../services/realtimeSubscriptionService';
 import {
   asText,
   normalizeMembers,
@@ -16,24 +19,66 @@ import {
 } from '../utils/sosAlertUtils';
 
 export function useSOSAlert() {
-  const [activeAlert, setActiveAlert] = useState(null);
   const [allAlerts, setAllAlerts] = useState([]);
+  const [devices, setDevices] = useState([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState('all');
   const [selectedAlert, setSelectedAlert] = useState(null);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
   const [pendingAction, setPendingAction] = useState('');
   const [realtimeStatus, setRealtimeStatus] = useState('connecting');
-  const realtimeDisabledRef = useRef(false);
 
-  const fetchAlerts = useCallback(async (silent = false) => {
+  // Ref to always read latest selectedDeviceId in fetch callbacks
+  const selectedDeviceIdRef = useRef(selectedDeviceId);
+  selectedDeviceIdRef.current = selectedDeviceId;
+
+  const fetchAlerts = useCallback(async (silent = false, deviceId = selectedDeviceIdRef.current) => {
     if (!silent) setLoading(true);
 
     try {
+      // ── Device-specific fetch ──────────────────────────────────────────
+      if (deviceId && deviceId !== 'all') {
+        const [deviceAlertsResult, familyResult, devicesResult] = await Promise.allSettled([
+          alertsService.getDeviceAlerts(deviceId, { type: 'all', status: 'all', limit: 50, offset: 0 }),
+          familyService.getFamilyMembers(),
+          devicesService.getFamilyDevices({ pairStatus: 'Paired', limit: 100 }),
+        ]);
+
+        const deviceData = deviceAlertsResult.status === 'fulfilled' ? deviceAlertsResult.value : { alerts: [] };
+        const familyData = familyResult.status === 'fulfilled' ? familyResult.value : { members: [] };
+        const devicesData = devicesResult.status === 'fulfilled' ? devicesResult.value : { devices: [] };
+        const locationsData = { locations: [] };
+
+        const members = normalizeMembers(familyData);
+        const devices = normalizeDevices(devicesData);
+        const locations = normalizeLocations(locationsData);
+        const context = createContextMaps(members, devices, locations);
+
+        const alertsArray = deviceData.alerts || [];
+        const normalizedAlerts = alertsArray
+          .map((alert) => normalizeAlert(alert, context))
+          .sort((left, right) => {
+            if (Number(right.isActive) !== Number(left.isActive)) {
+              return Number(right.isActive) - Number(left.isActive);
+            }
+            return new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime();
+          });
+
+        setDevices(devices);
+        setAllAlerts(normalizedAlerts);
+        setSelectedAlert((currentAlert) => {
+          if (!currentAlert) return null;
+          return normalizedAlerts.find((alert) => alert.id === currentAlert.id) || null;
+        });
+        return;
+      }
+
+      // ── All-devices fetch ─────────────────────────────────────────────
       const [sosResult, alertsResult, familyResult, devicesResult] = await Promise.allSettled([
         alertsService.getSOSAlerts(),
         alertsService.getAlerts({ limit: 50 }),
         familyService.getFamilyMembers(),
-        devicesService.getFamilyDevices({ limit: 100 }),
+        devicesService.getFamilyDevices({ pairStatus: 'Paired', limit: 100 }),
       ]);
 
       const sosData = sosResult.status === 'fulfilled' ? sosResult.value : { alerts: [] };
@@ -53,16 +98,10 @@ export function useSOSAlert() {
           if (Number(right.isActive) !== Number(left.isActive)) {
             return Number(right.isActive) - Number(left.isActive);
           }
-
           return new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime();
         });
 
-      const nextActiveAlert =
-        normalizedAlerts.find((alert) => alert.type === 'sos' && alert.isActive) ||
-        normalizedAlerts.find((alert) => alert.isActive) ||
-        null;
-
-      setActiveAlert(nextActiveAlert);
+      setDevices(devices);
       setAllAlerts(normalizedAlerts);
       setSelectedAlert((currentAlert) => {
         if (!currentAlert) return null;
@@ -80,54 +119,101 @@ export function useSOSAlert() {
     fetchAlerts();
   }, [fetchAlerts]);
 
-  // Real-time subscription: refresh on every INSERT / UPDATE on Alerts
-  useEffect(() => {
-    let channel = null;
-    let pollingTimer = null;
+  const deviceOptions = useMemo(() => {
+    const optionMap = new Map();
+    const alertCounts = new Map();
+    const pairedDeviceIds = new Set(devices.map((d) => d.id).filter(Boolean));
 
-    const startPolling = () => {
-      if (pollingTimer) return;
-      pollingTimer = window.setInterval(() => fetchAlerts(true), 30000);
-      setRealtimeStatus('polling');
-    };
-
-    if (!realtimeDisabledRef.current) {
-      try {
-        channel = supabase
-          .channel('sos-alerts-live')
-          .on(
-            'postgres_changes',
-            { event: 'INSERT', schema: 'public', table: 'Alerts' },
-            () => fetchAlerts(true),
-          )
-          .on(
-            'postgres_changes',
-            { event: 'UPDATE', schema: 'public', table: 'Alerts' },
-            () => fetchAlerts(true),
-          )
-          .subscribe((status) => {
-            if (status === 'SUBSCRIBED') {
-              setRealtimeStatus('live');
-            } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-              realtimeDisabledRef.current = true;
-              startPolling();
-            }
-          });
-      } catch {
-        realtimeDisabledRef.current = true;
-        startPolling();
+    allAlerts.forEach((alert) => {
+      if (!alert.deviceId) return;
+      // Only include alert-based device options for paired devices
+      if (!pairedDeviceIds.has(alert.deviceId)) return;
+      alertCounts.set(alert.deviceId, (alertCounts.get(alert.deviceId) || 0) + 1);
+      if (!optionMap.has(alert.deviceId)) {
+        optionMap.set(alert.deviceId, {
+          value: alert.deviceId,
+          label: alert.deviceName || `Device ${alert.deviceId}`,
+        });
       }
-    } else {
-      startPolling();
-    }
+    });
 
-    return () => {
-      if (pollingTimer) window.clearInterval(pollingTimer);
-      if (channel) supabase.removeChannel(channel);
-    };
+    devices.forEach((device) => {
+      if (!device.id) return;
+      optionMap.set(device.id, {
+        value: device.id,
+        label: device.name || `Device ${device.id}`,
+      });
+    });
+
+    const deviceSpecificOptions = Array.from(optionMap.values())
+      .sort((left, right) => left.label.localeCompare(right.label))
+      .map((option) => {
+        const count = alertCounts.get(option.value) || 0;
+        return {
+          ...option,
+          label: count > 0 ? `${option.label} (${count})` : option.label,
+        };
+      });
+
+    return [
+      { value: 'all', label: `All devices (${allAlerts.length})` },
+      ...deviceSpecificOptions,
+    ];
+  }, [allAlerts, devices]);
+
+  const filteredAlerts = useMemo(() => {
+    // When a device is selected, the API already returns only that device's alerts
+    return allAlerts;
+  }, [allAlerts]);
+
+  // Re-fetch alerts when device filter changes
+  useEffect(() => {
+    fetchAlerts(false, selectedDeviceId);
+  }, [selectedDeviceId, fetchAlerts]);
+
+  const activeAlert = useMemo(() => (
+    filteredAlerts.find((alert) => alert.type === 'sos' && alert.isActive) ||
+    filteredAlerts.find((alert) => alert.isActive) ||
+    null
+  ), [filteredAlerts]);
+
+  useEffect(() => {
+    if (selectedDeviceId === 'all') return;
+    const hasSelectedDevice = deviceOptions.some((option) => option.value === selectedDeviceId);
+    if (!hasSelectedDevice) {
+      setSelectedDeviceId('all');
+    }
+  }, [deviceOptions, selectedDeviceId]);
+
+  useEffect(() => {
+    if (!selectedAlert) return;
+    const isStillVisible = filteredAlerts.some((alert) => alert.id === selectedAlert.id);
+    if (!isStillVisible) {
+      setSelectedAlert(null);
+    }
+  }, [filteredAlerts, selectedAlert]);
+
+  // ─── Centralized Realtime Subscriptions ─────────────────────────────────────
+
+  // Listen for connection status changes from the centralized service
+  useEffect(() => {
+    const unsub = onStatusChange((status) => {
+      // Map centralized status to UI-specific labels
+      if (status === 'live' || status === 'connecting') {
+        setRealtimeStatus(status);
+      } else {
+        setRealtimeStatus('polling');
+      }
+    });
+    return unsub;
+  }, []);
+
+  // Subscribe to Alerts table changes via the centralized channel
+  useAlertsSubscription(() => {
+    fetchAlerts(true);
   }, [fetchAlerts]);
 
-  const dashboardStats = useMemo(() => buildDashboardStats(allAlerts), [allAlerts]);
+  const dashboardStats = useMemo(() => buildDashboardStats(filteredAlerts), [filteredAlerts]);
 
   const handleCall = useCallback(async (alert = activeAlert) => {
     if (!alert) return;
@@ -217,7 +303,10 @@ export function useSOSAlert() {
 
   return {
     activeAlert,
-    allAlerts,
+    allAlerts: filteredAlerts,
+    deviceOptions,
+    selectedDeviceId,
+    setSelectedDeviceId,
     selectedAlert,
     setSelectedAlert,
     loading,

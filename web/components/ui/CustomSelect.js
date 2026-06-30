@@ -8,7 +8,10 @@ export default function CustomSelect({
   options = [], 
   placeholder = 'Select...', 
   icon,
-  className = ''
+  className = '',
+  triggerClassName = '',
+  dropdownClassName = '',
+  optionClassName = ''
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
@@ -34,7 +37,7 @@ export default function CustomSelect({
   return (
     <div className={`${styles.container} ${className}`} ref={containerRef}>
       <div 
-        className={`${styles.trigger} ${isOpen ? styles.open : ''}`} 
+        className={`${styles.trigger} ${triggerClassName} ${isOpen ? styles.open : ''}`} 
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className={styles.label}>{displayLabel}</span>
@@ -44,11 +47,11 @@ export default function CustomSelect({
       </div>
 
       {isOpen && (
-        <div className={styles.dropdown}>
+        <div className={`${styles.dropdown} ${dropdownClassName}`}>
           {options.map((option) => (
             <div
               key={option.value}
-              className={`${styles.option} ${value === option.value ? styles.selected : ''}`}
+              className={`${styles.option} ${optionClassName} ${value === option.value ? styles.selected : ''}`}
               onClick={() => handleSelect(option.value)}
             >
               {option.label}

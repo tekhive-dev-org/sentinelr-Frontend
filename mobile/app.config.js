@@ -50,6 +50,7 @@ export default {
     },
     plugins: [
       './plugins/withLargeScreenSupport',
+      'expo-background-task',
       [
         'expo-camera',
         {

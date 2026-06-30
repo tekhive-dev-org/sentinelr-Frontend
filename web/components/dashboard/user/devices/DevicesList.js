@@ -32,8 +32,10 @@ export default function DevicesList({
   maxDevices = null,
 }) {
   if (loading) {
-    return <TableSkeleton rows={5} columns={6} />;
+    return <TableSkeleton rows={5} columns={8} />;
   }
+
+  
 
   if (devices.length === 0) {
     return (
@@ -101,8 +103,10 @@ export default function DevicesList({
         <thead>
           <tr>
             <th>Device Name</th>
-            <th>Device Type</th>
-            <th>Battery Percentage</th>
+            <th>Type</th>
+            <th>Brand</th>
+            <th>OS</th>
+            <th>Battery</th>
             <th>Last Seen</th>
             <th>Status</th>
             <th></th>
@@ -112,16 +116,20 @@ export default function DevicesList({
           {devices.map((device) => (
             <tr key={device.id}>
               <td className={styles.deviceNameCell}>
-                {device.deviceName || device.name}
+                {device.name || device.deviceName || "—"}
+              </td>
+              <td className={styles.capitalizeCell}>
+                {device.type || "—"}
+              </td>
+              <td className={styles.capitalizeCell}>
+                {device.brand || "—"}
               </td>
               <td>
-                {device.type === "Phone" && device.platform
-                  ? device.platform.toLowerCase() === "ios"
-                    ? "iOS"
-                    : "Android"
-                  : device.type || "—"}
+                {device.platform || "—"}
               </td>
-              <td>{device.batteryLevel}%</td>
+              <td>
+                {device.batteryLevel != null ? `${device.batteryLevel}%` : "—"}
+              </td>
               <td>{formatRelativeTime(device.lastSeen)}</td>
               <td>
                 <span

@@ -1,5 +1,5 @@
 .container {
-  @apply mobile:!px-4;
+  @apply mobile:!px-2;
   padding: 24px;
   background-color: transparent;
   min-height: 100dvh;
@@ -131,6 +131,10 @@
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 24px;
+}
+
+.mainContentGridFull {
+  grid-template-columns: 1fr;
 }
 
 @media (max-width: 768px) {

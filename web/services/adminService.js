@@ -1,3 +1,6 @@
+import { cachedFetch } from '../utils/apiCache';
+import { enqueueMutation } from '../utils/requestQueue';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const getAuthToken = () => {
@@ -14,27 +17,43 @@ const parseResponse = async (response) => {
 };
 
 const apiRequest = async (endpoint, options = {}) => {
-  const token = getAuthToken();
-  if (!token) {
-    throw new Error("Missing auth token");
-  }
+  return cachedFetch(endpoint, options, async () => {
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error("Missing auth token");
+    }
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-      "x-access-token": token,
-      ...options.headers,
-    },
-    ...options,
+    const maxRetries = options.skipRetry ? 1 : 3;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "x-access-token": token,
+          ...options.headers,
+        },
+        ...options,
+      });
+
+      // 429 — retry with exponential backoff
+      if (response.status === 429 && attempt < maxRetries) {
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 8000);
+        console.warn(`[adminService] 429 on ${endpoint}, retrying in ${delay}ms (attempt ${attempt}/${maxRetries})`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
+      }
+
+      const data = await parseResponse(response);
+      if (!response.ok) {
+        throw new Error(data?.message || data || "Request failed");
+      }
+
+      return data;
+    }
+
+    throw new Error("API Error: 429");
   });
-
-  const data = await parseResponse(response);
-  if (!response.ok) {
-    throw new Error(data?.message || data || "Request failed");
-  }
-
-  return data;
 };
 
 const adminService = {
@@ -48,10 +67,12 @@ const adminService = {
     return apiRequest(`/admin/verified?verified=${verified}`, { method: "GET" });
   },
   updateUserBlockStatus(userId, action) {
-    return apiRequest(`/admin/${userId}/block`, {
-      method: "PATCH",
-      body: JSON.stringify({ action }),
-    });
+    return enqueueMutation(() =>
+      apiRequest(`/admin/${userId}/block`, {
+        method: "PATCH",
+        body: JSON.stringify({ action }),
+      })
+    );
   },
 };
 

@@ -3,6 +3,9 @@
  * Handles all family management API calls
  */
 
+import { cachedFetch } from '../utils/apiCache';
+import { enqueueMutation } from '../utils/requestQueue';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // Helper to get auth token
@@ -15,34 +18,50 @@ const getAuthToken = () => {
 
 // API request helper
 async function apiRequest(endpoint, options = {}) {
-  const token = getAuthToken();
+  return cachedFetch(endpoint, options, async () => {
+    const token = getAuthToken();
 
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-      ...(token && {
-        Authorization: `Bearer ${token}`,
-        "x-access-token": token,
-      }),
-      ...options.headers,
-    },
-    ...options,
-  };
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && {
+          Authorization: `Bearer ${token}`,
+          "x-access-token": token,
+        }),
+        ...options.headers,
+      },
+      ...options,
+    };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    const maxRetries = options.skipRetry ? 1 : 3;
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    // Auto-logout on 401 (expired/invalid token)
-    if (response.status === 401 && typeof window !== "undefined") {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+
+      // 429 — retry with exponential backoff
+      if (response.status === 429 && attempt < maxRetries) {
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 8000);
+        console.warn(`[familyService] 429 on ${endpoint}, retrying in ${delay}ms (attempt ${attempt}/${maxRetries})`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
+      }
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        // Auto-logout on 401 (expired/invalid token)
+        if (response.status === 401 && typeof window !== "undefined") {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          window.location.href = "/login";
+        }
+        throw new Error(error.message || `API Error: ${response.status}`);
+      }
+
+      return response.json();
     }
-    throw new Error(error.message || `API Error: ${response.status}`);
-  }
 
-  return response.json();
+    throw new Error("API Error: 429");
+  });
 }
 
 export const familyService = {
@@ -52,10 +71,12 @@ export const familyService = {
    * @returns {Promise<{ success: boolean, message: string, family: object }>}
    */
   async createFamily(familyName) {
-    return apiRequest("/family/create-family", {
-      method: "POST",
-      body: JSON.stringify({ familyName }),
-    });
+    return enqueueMutation(() =>
+      apiRequest("/family/create-family", {
+        method: "POST",
+        body: JSON.stringify({ familyName }),
+      })
+    );
   },
 
   /**
@@ -71,7 +92,6 @@ export const familyService = {
     relationship,
     phone,
   }) {
-    // Build payload: use userId if available, otherwise add new member details
     const payload = { familyId, relationship, role: "Member" };
     if (userId) {
       payload.userId = userId;
@@ -82,10 +102,12 @@ export const familyService = {
       payload.phone = phone;
     }
 
-    return apiRequest("/family/add-member", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
+    return enqueueMutation(() =>
+      apiRequest("/family/add-member", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      })
+    );
   },
 
   /**
@@ -94,10 +116,12 @@ export const familyService = {
    * @returns {Promise<{ message: string, user: object }>}
    */
   async createChild({ userName, email, phone }) {
-    return apiRequest("/family/create-child", {
-      method: "POST",
-      body: JSON.stringify({ userName, email, phone }),
-    });
+    return enqueueMutation(() =>
+      apiRequest("/family/create-child", {
+        method: "POST",
+        body: JSON.stringify({ userName, email, phone }),
+      })
+    );
   },
 
   /**
@@ -129,12 +153,15 @@ export const familyService = {
    * Remove a member from a family
    * @param {number} familyId - Family ID
    * @param {number} userId - User ID to remove
-   * @returns {Promise<{ message: string }>}
+   * @returns {Promise<{ success: boolean, message: string, familyId: number, removedUserId: number }>}
    */
   async removeFamilyMember(familyId, userId) {
-    return apiRequest(`/family/${familyId}/members/${userId}`, {
-      method: "DELETE",
-    });
+    return enqueueMutation(() =>
+      apiRequest("/family/remove-member", {
+        method: "DELETE",
+        body: JSON.stringify({ familyId, userId }),
+      })
+    );
   },
 
   /**
@@ -144,10 +171,12 @@ export const familyService = {
    * @returns {Promise<{ success: boolean, family: object }>}
    */
   async updateFamily(familyId, updates) {
-    return apiRequest(`/family/${familyId}`, {
-      method: "PATCH",
-      body: JSON.stringify(updates),
-    });
+    return enqueueMutation(() =>
+      apiRequest(`/family/${familyId}`, {
+        method: "PATCH",
+        body: JSON.stringify(updates),
+      })
+    );
   },
 
   /**
@@ -156,9 +185,11 @@ export const familyService = {
    * @returns {Promise<{ message: string }>}
    */
   async deleteFamily(familyId) {
-    return apiRequest(`/family/${familyId}`, {
-      method: "DELETE",
-    });
+    return enqueueMutation(() =>
+      apiRequest(`/family/${familyId}`, {
+        method: "DELETE",
+      })
+    );
   },
 };
 

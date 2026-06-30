@@ -141,7 +141,17 @@ export default function LiveLocationMap({ showDetails = true }) {
             </>
           ) : (
             <div className={styles.noDataState}>
-              {loading ? "Locating tracker..." : "No location data received yet"}
+              {loading ? (
+                <>
+                  <GpsFixedIcon className={styles.noDataIcon} />
+                  <span>Locating tracker</span>
+                  <span className={styles.noDataDots}>
+                    <span /><span /><span />
+                  </span>
+                </>
+              ) : (
+                "No location data received yet"
+              )}
             </div>
           )}
         </div>
@@ -189,6 +199,19 @@ export default function LiveLocationMap({ showDetails = true }) {
             >
               <RemoveIcon fontSize="small" />
             </button>
+          </div>
+        )}
+
+        {/* Beautiful locating radar overlay on the map */}
+        {loading && !hasLocation && devices.length > 0 && (
+          <div className={styles.locatingOverlay}>
+            <div className={styles.locatingRadar}>
+              <div className={styles.locatingRadarRing} />
+              <div className={styles.locatingRadarRing} />
+              <div className={styles.locatingRadarRing} />
+              <div className={styles.locatingRadarInner} />
+              <span className={styles.locatingLabel}>Locating</span>
+            </div>
           </div>
         )}
 

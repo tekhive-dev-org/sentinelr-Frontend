@@ -72,6 +72,55 @@ export const storageService = {
     return enabled === 'true';
   },
 
+  async resetLastPingLocation() {
+    await AsyncStorage.removeItem(STORAGE_KEYS.LAST_PING_LOCATION);
+  },
+
+  async shouldUploadLocationPing(location) {
+    if (!location) return false;
+
+    const signature = [
+      Number(location.latitude).toFixed(6),
+      Number(location.longitude).toFixed(6),
+    ].join(",");
+    const lastSignature = await AsyncStorage.getItem(STORAGE_KEYS.LAST_PING_LOCATION);
+
+    return signature !== lastSignature;
+  },
+
+  async markLocationPingUploaded(location) {
+    if (!location) return;
+
+    const signature = [
+      Number(location.latitude).toFixed(6),
+      Number(location.longitude).toFixed(6),
+    ].join(",");
+    await AsyncStorage.setItem(STORAGE_KEYS.LAST_PING_LOCATION, signature);
+  },
+
+  async getLastHeartbeatStatus() {
+    const status = await AsyncStorage.getItem(STORAGE_KEYS.LAST_HEARTBEAT_STATUS);
+    if (!status) return null;
+
+    try {
+      return JSON.parse(status);
+    } catch {
+      await AsyncStorage.removeItem(STORAGE_KEYS.LAST_HEARTBEAT_STATUS);
+      return null;
+    }
+  },
+
+  async setLastHeartbeatStatus(status) {
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.LAST_HEARTBEAT_STATUS,
+      JSON.stringify(status),
+    );
+  },
+
+  async resetLastHeartbeatStatus() {
+    await AsyncStorage.removeItem(STORAGE_KEYS.LAST_HEARTBEAT_STATUS);
+  },
+
   // Clear all data (for unpair)
   async clearAll() {
     await AsyncStorage.multiRemove([
@@ -81,6 +130,8 @@ export const storageService = {
       STORAGE_KEYS.AUTH_TOKEN,
       STORAGE_KEYS.IS_PAIRED,
       STORAGE_KEYS.TRACKING_ENABLED,
+      STORAGE_KEYS.LAST_PING_LOCATION,
+      STORAGE_KEYS.LAST_HEARTBEAT_STATUS,
     ]);
   },
 

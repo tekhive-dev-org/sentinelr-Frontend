@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import styles from './FullPageLoader.module.css';
 
 /**
@@ -19,7 +18,7 @@ export default function FullPageLoader({ message = 'Loading…', visible = true 
       {/* Logo mark with orbiting spinner */}
       <div className={styles.logoContainer}>
         <div className={styles.logoMark} aria-hidden="true">
-          <Image src="/favicon.png" alt="" width={36} height={36} priority />
+          <img className={styles.logoImage} src="/favicon.png" alt="" width="36" height="36" />
         </div>
         <div className={styles.spinnerRing} aria-hidden="true" />
       </div>

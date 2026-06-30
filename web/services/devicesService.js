@@ -3,6 +3,9 @@
  * Handles all device pairing and management API calls
  */
 
+import { cachedFetch } from '../utils/apiCache';
+import { enqueueMutation } from '../utils/requestQueue';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // Helper to get auth token
@@ -15,34 +18,50 @@ const getAuthToken = () => {
 
 // API request helper
 async function apiRequest(endpoint, options = {}) {
-  const token = getAuthToken();
+  return cachedFetch(endpoint, options, async () => {
+    const token = getAuthToken();
 
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-      ...(token && {
-        Authorization: `Bearer ${token}`,
-        "x-access-token": token,
-      }),
-      ...options.headers,
-    },
-    ...options,
-  };
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && {
+          Authorization: `Bearer ${token}`,
+          "x-access-token": token,
+        }),
+        ...options.headers,
+      },
+      ...options,
+    };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    const maxRetries = options.skipRetry ? 1 : 3;
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    // Auto-logout on 401 (expired/invalid token)
-    if (response.status === 401 && typeof window !== "undefined") {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+
+      // 429 — retry with exponential backoff
+      if (response.status === 429 && attempt < maxRetries) {
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 8000);
+        console.warn(`[devicesService] 429 on ${endpoint}, retrying in ${delay}ms (attempt ${attempt}/${maxRetries})`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
+      }
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        // Auto-logout on 401 (expired/invalid token)
+        if (response.status === 401 && typeof window !== "undefined") {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          window.location.href = "/login";
+        }
+        throw new Error(error.message || `API Error: ${response.status}`);
+      }
+
+      return response.json();
     }
-    throw new Error(error.message || `API Error: ${response.status}`);
-  }
 
-  return response.json();
+    throw new Error("API Error: 429");
+  });
 }
 
 export const devicesService = {
@@ -57,10 +76,12 @@ export const devicesService = {
     deviceType,
     platform,
   }) {
-    return apiRequest("/device/generate/pair/code", {
-      method: "POST",
-      body: JSON.stringify({ memberUserId, deviceName, deviceType, platform }),
-    });
+    return enqueueMutation(() =>
+      apiRequest("/device/generate/pair/code", {
+        method: "POST",
+        body: JSON.stringify({ memberUserId, deviceName, deviceType, platform }),
+      })
+    );
   },
 
   /**
@@ -98,7 +119,7 @@ export const devicesService = {
    * @returns {Promise<Device>}
    */
   async getDevice(deviceId) {
-    return apiRequest(`/devices/${deviceId}`);
+    return apiRequest(`/device/${deviceId}`);
   },
 
   /**
@@ -108,10 +129,12 @@ export const devicesService = {
    * @returns {Promise<{ success: boolean, device: Device }>}
    */
   async unpairDevice(deviceId) {
-    return apiRequest(`/device/${deviceId}/unpair`, {
-      method: "PATCH",
-      body: JSON.stringify({ pairStatus: "Unpaired" }),
-    });
+    return enqueueMutation(() =>
+      apiRequest(`/device/${deviceId}/unpair`, {
+        method: "PATCH",
+        body: JSON.stringify({ pairStatus: "Unpaired" }),
+      })
+    );
   },
 
   /**
@@ -121,9 +144,11 @@ export const devicesService = {
    * @returns {Promise<{ success: boolean }>}
    */
   async removeDevice(deviceId) {
-    return apiRequest(`/device/${deviceId}`, {
-      method: "DELETE",
-    });
+    return enqueueMutation(() =>
+      apiRequest(`/device/${deviceId}`, {
+        method: "DELETE",
+      })
+    );
   },
 
   /**

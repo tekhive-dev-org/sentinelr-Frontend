@@ -2,11 +2,14 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import { Alert, AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiService } from "../services/api";
+import { heartbeatService } from "../services/heartbeatService";
+import { geofencingService } from "../services/geofencingService";
 import { getSupabase } from "../services/supabaseClient";
 import {
-  applyAndroidParentalControls,
-  clearAndroidParentalControls,
+  applyNativeControls,
+  clearNativeControls,
 } from "../services/androidParentalEnforcement";
+import { useDevicesSubscription } from "./RealtimeSubscriptionContext";
 
 const DeviceContext = createContext(null);
 
@@ -16,6 +19,8 @@ const STORAGE_KEYS = {
   UPLOAD_TOKEN: "@sentinelr/upload_token",
   IS_PAIRED: "@sentinelr/is_paired",
   TRACKING_ENABLED: "@sentinelr/tracking_enabled",
+  LAST_HEARTBEAT_STATUS: "@sentinelr/last_heartbeat_status",
+  LAST_PING_LOCATION: "@sentinelr/last_ping_location",
 };
 
 export function DeviceProvider({ children }) {
@@ -37,41 +42,21 @@ export function DeviceProvider({ children }) {
 
   const syncParentalControls = useCallback(async () => {
     if (!isPaired) {
-      await clearAndroidParentalControls();
+      await clearNativeControls();
       setParentalControls(null);
       setParentalActivities([]);
       setParentalSyncError(null);
       return;
     }
 
-    try {
-      const [statusRes, activityRes] = await Promise.allSettled([
-        apiService.getParentalStatus(deviceId),
-        apiService.getParentalActivity(deviceId, 10),
-      ]);
-
-      if (statusRes.status === 'fulfilled') {
-        const data = statusRes.value;
-        if (data?.authError) {
-          // Device token not accepted — keep existing state, mark error
-          setParentalSyncError('auth');
-        } else {
-          setParentalControls(data?.controls || null);
-          setParentalSyncError(null);
-          await applyAndroidParentalControls(data?.controls || null);
-        }
-      } else {
-        setParentalSyncError('network');
-      }
-
-      if (activityRes.status === 'fulfilled' && !activityRes.value?.authError) {
-        setParentalActivities(activityRes.value?.activities || []);
-      }
-    } catch (error) {
-      setParentalSyncError('network');
-      console.warn("[DeviceContext] parental control sync failed:", error?.message || error);
-    }
-  }, [isPaired, deviceId]);
+    // Parental controls are managed via the web dashboard.
+    // The mobile API does not support device-token-authenticated control retrieval,
+    // so the device relies on the last known state from previous syncs.
+    // When a parent changes controls through the dashboard, the device will
+    // pick up the changes on the next successful device-status heartbeat.
+    setParentalControls({});
+    setParentalSyncError(null);
+  }, [isPaired]);
 
   // Query the database directly for the device's current pairStatus
   const checkPairStatusInDb = useCallback(async (id) => {
@@ -94,7 +79,7 @@ export function DeviceProvider({ children }) {
         return true; // row not found — could be RLS, assume still paired
       }
       const status = data.pairStatus;
-      console.log("[DeviceContext] DB pairStatus:", status, "for device:", checkId);
+      // console.log("[DeviceContext] DB pairStatus:", status, "for device:", checkId);
       if (status === "Unpaired" || status === "unpaired") {
         return false;
       }
@@ -110,9 +95,9 @@ export function DeviceProvider({ children }) {
     // Stop background services
     try {
       const { locationService } = await import("../services/locationService");
-      const { heartbeatService } = await import("../services/heartbeatService");
       await locationService.stop();
       heartbeatService.stop();
+      await geofencingService.stop();
     } catch {}
 
     await Promise.all([
@@ -121,6 +106,8 @@ export function DeviceProvider({ children }) {
       AsyncStorage.removeItem(STORAGE_KEYS.UPLOAD_TOKEN),
       AsyncStorage.removeItem(STORAGE_KEYS.IS_PAIRED),
       AsyncStorage.removeItem(STORAGE_KEYS.TRACKING_ENABLED),
+      AsyncStorage.removeItem(STORAGE_KEYS.LAST_HEARTBEAT_STATUS),
+      AsyncStorage.removeItem(STORAGE_KEYS.LAST_PING_LOCATION),
     ]);
     setDeviceId(null);
     setUploadToken(null);
@@ -132,7 +119,7 @@ export function DeviceProvider({ children }) {
     setConnectionStatus("offline");
 
     try {
-      await clearAndroidParentalControls();
+      await clearNativeControls();
     } catch {}
 
     if (showAlert) {
@@ -159,39 +146,17 @@ export function DeviceProvider({ children }) {
     }
   }, [forceUnpair, checkPairStatusInDb]);
 
-  // Real-time subscription — listen for device row changes via Supabase
-  useEffect(() => {
-    if (!isPaired || !deviceId) return;
-
-    const supabase = getSupabase();
-    if (!supabase) return;
-
-    const channel = supabase
-      .channel(`device-${deviceId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "Devices",
-          filter: `id=eq.${deviceId}`,
-        },
-        (payload) => {
-          const newStatus = payload.new?.pairStatus;
-          if (
-            newStatus === "Unpaired" ||
-            newStatus === "unpaired"
-          ) {
-            forceUnpair(true);
-          }
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [isPaired, deviceId, forceUnpair]);
+  // Real-time subscription via centralized service — listen for unpair events
+  useDevicesSubscription(
+    (payload) => {
+      const newStatus = payload.new?.pairStatus;
+      if (newStatus === "Unpaired" || newStatus === "unpaired") {
+        forceUnpair(true);
+      }
+    },
+    { deviceId, event: 'UPDATE' },
+    [deviceId, forceUnpair],
+  );
 
   // Re-check pairStatus in DB when app comes back to foreground
   useEffect(() => {
@@ -288,7 +253,7 @@ export function DeviceProvider({ children }) {
 
   useEffect(() => {
     if (!isPaired) {
-      clearAndroidParentalControls().catch(() => {});
+      clearNativeControls().catch(() => {});
       return;
     }
 
@@ -415,13 +380,36 @@ export function DeviceProvider({ children }) {
     setLastPingTime(new Date());
   };
 
-  const updateBattery = (level) => {
+  const updateBattery = useCallback((level) => {
     setBatteryLevel(level);
-  };
+  }, []);
 
   const updateConnectionStatus = (status) => {
     setConnectionStatus(status);
   };
+
+  useEffect(() => {
+    if (!isPaired || isLoading) {
+      heartbeatService.stop();
+      return;
+    }
+
+    heartbeatService.start(undefined, updateBattery);
+
+    return () => {
+      heartbeatService.stop();
+    };
+  }, [isPaired, isLoading, updateBattery]);
+
+  // Start / restore geofencing monitoring when device is paired
+  useEffect(() => {
+    if (!isPaired || isLoading) {
+      geofencingService.stop().catch(() => {});
+      return;
+    }
+
+    geofencingService.ensureGeofencingState();
+  }, [isPaired, isLoading]);
 
   const value = {
     // Pairing state

@@ -1,6 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { alertsService } from "../../../services/alertsService";
 import { devicesService } from "../../../services/devicesService";
+import {
+  useAlertsSubscription,
+  useDevicesSubscription,
+} from "../../../context/RealtimeSubscriptionContext";
 
 const isToday = (value) => {
   if (!value) return false;
@@ -29,61 +33,95 @@ export default function useUserDashboardStats() {
   const [error, setError] = useState("");
   const [errors, setErrors] = useState({ devices: "", alerts: "", sos: "" });
 
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    setError("");
-    setErrors({ devices: "", alerts: "", sos: "" });
+  const refresh = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) {
+      setLoading(true);
+      setError("");
+      setErrors({ devices: "", alerts: "", sos: "" });
+    }
 
     try {
+      // Stagger requests by 300ms each to avoid 429 rate-limit bursts
       const [devicesResult, alertsResult, sosResult] = await Promise.allSettled([
         devicesService.getFamilyDevices({ pairStatus: "Paired" }),
-        alertsService.getAlerts({ limit: 100 }),
-        alertsService.getSOSAlerts(),
+        new Promise((resolve) => setTimeout(resolve, 300)).then(() =>
+          alertsService.getAlerts({ limit: 100 })
+        ),
+        new Promise((resolve) => setTimeout(resolve, 600)).then(() =>
+          alertsService.getSOSAlerts()
+        ),
       ]);
 
       if (devicesResult.status === "fulfilled") {
         setDevices(devicesResult.value?.devices || []);
-      } else {
+      } else if (!silent) {
         setDevices([]);
         setErrors((current) => ({ ...current, devices: "Unable to load devices." }));
       }
 
       if (alertsResult.status === "fulfilled") {
         setAlerts(alertsResult.value?.alerts || []);
-      } else {
+      } else if (!silent) {
         setAlerts([]);
         setErrors((current) => ({ ...current, alerts: "Unable to load alerts." }));
       }
 
       if (sosResult.status === "fulfilled") {
         setSosAlerts(sosResult.value?.alerts || []);
-      } else {
+      } else if (!silent) {
         setSosAlerts([]);
         setErrors((current) => ({ ...current, sos: "Unable to load SOS alerts." }));
       }
 
-      const failures = [devicesResult, alertsResult, sosResult].filter((result) => result.status === "rejected");
-      if (failures.length === 3) {
-        throw failures[0].reason;
+      if (!silent) {
+        const failures = [devicesResult, alertsResult, sosResult].filter((result) => result.status === "rejected");
+        if (failures.length === 3) {
+          throw failures[0].reason;
+        }
       }
     } catch (err) {
-      setDevices([]);
-      setAlerts([]);
-      setSosAlerts([]);
-      setError(err?.message || "Unable to load dashboard stats.");
-      setErrors({
-        devices: "Unable to load devices.",
-        alerts: "Unable to load alerts.",
-        sos: "Unable to load SOS alerts.",
-      });
+      if (!silent) {
+        setDevices([]);
+        setAlerts([]);
+        setSosAlerts([]);
+        setError(err?.message || "Unable to load dashboard stats.");
+        setErrors({
+          devices: "Unable to load devices.",
+          alerts: "Unable to load alerts.",
+          sos: "Unable to load SOS alerts.",
+        });
+      }
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, []);
+
+  // Throttled refresh: only fires at most once every 15s from real-time events
+  const lastRefreshRef = useRef(0);
+  const throttledRefresh = useCallback(() => {
+    const now = Date.now();
+    if (now - lastRefreshRef.current < 15000) return;
+    lastRefreshRef.current = now;
+    refresh({ silent: true });
+  }, [refresh]);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  // Subscribe to Alerts table changes via the centralized channel
+  useAlertsSubscription(() => {
+    throttledRefresh();
+  }, [throttledRefresh]);
+
+  // Subscribe to Devices table changes via the centralized channel
+  // so lastSeen, status, battery etc. update in real time without a page refresh
+  useDevicesSubscription(() => {
+    throttledRefresh();
+  }, [throttledRefresh]);
+
+  // Removed polling fallback — Supabase real-time is now confirmed working.
+  // Throttled real-time callbacks keep data fresh without hammering the API.
 
   const stats = useMemo(() => {
     const activeDevices = devices.filter((device) => String(device.status || "").toLowerCase() === "online");

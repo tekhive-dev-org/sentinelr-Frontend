@@ -23,6 +23,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 import { DeviceProvider, useDevice } from './src/context/DeviceContext';
+import { RealtimeSubscriptionProvider } from './src/context/RealtimeSubscriptionContext';
 import AnimatedSplash from './src/components/AnimatedSplash';
 import { locationService } from './src/services/locationService';
 import { geofencingService } from './src/services/geofencingService';
@@ -36,7 +37,6 @@ import PermissionsScreen from './src/screens/PermissionsScreen';
 import TrackingScreen from './src/screens/TrackingScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import SOSScreen from './src/screens/SOSScreen';
-import ParentalControlScreen from './src/screens/ParentalControlScreen';
 import PrivacyPolicyScreen from './src/screens/PrivacyPolicyScreen';
 import HelpCenterScreen from './src/screens/HelpCenterScreen';
 import TermsOfServiceScreen from './src/screens/TermsOfServiceScreen';
@@ -94,19 +94,6 @@ function MainTabs() {
           tabBarIcon: ({ focused, color, size }) => (
             <Ionicons
               name={focused ? 'home' : 'home-outline'}
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Controls"
-        component={ParentalControlScreen}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons
-              name={focused ? 'shield' : 'shield-outline'}
               size={size}
               color={color}
             />
@@ -251,9 +238,11 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <ThemeProvider>
-        <DeviceProvider>
-          <AppContent />
-        </DeviceProvider>
+        <RealtimeSubscriptionProvider>
+          <DeviceProvider>
+            <AppContent />
+          </DeviceProvider>
+        </RealtimeSubscriptionProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );

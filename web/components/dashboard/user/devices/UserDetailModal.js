@@ -2,6 +2,8 @@ import React from "react";
 import styles from "./DevicesAndUsers.module.css";
 import CloseIcon from "@mui/icons-material/Close";
 import LinkIcon from "@mui/icons-material/Link";
+import LinkOffIcon from "@mui/icons-material/LinkOff";
+import SmartphoneIcon from "@mui/icons-material/Smartphone";
 
 export default function UserDetailModal({
   isOpen,
@@ -9,10 +11,10 @@ export default function UserDetailModal({
   user,
   device,
   onPairDevice,
+  onUnpairDevice,
+  onRemoveMember,
 }) {
   if (!isOpen || !user) return null;
-
-  
 
   // Get initials for avatar
   const getInitials = (name) => {
@@ -33,23 +35,9 @@ export default function UserDetailModal({
     user?.imageUrl ||
     user?.photoUrl;
 
-  const controls = [
-    {
-      title: "Screen time limit",
-      description:
-        "Get notified whenever an anonymous activity is performed on your SENTINELR application.",
-    },
-    {
-      title: "Application blocking",
-      description:
-        "Get all the latest updates on all new content releases and product features.",
-    },
-    {
-      title: "Web filtering",
-      description:
-        "Get all the latest updates on all new content releases and product features.",
-    },
-  ];
+  const hasPairedDevice =
+    device &&
+    (device.pairStatus === "paired" || device.pairStatus === "Paired");
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -57,6 +45,15 @@ export default function UserDetailModal({
         className={styles.userDetailModal}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Close Button */}
+        <button
+          className={styles.userDetailCloseBtn}
+          onClick={onClose}
+          aria-label="Close"
+        >
+          <CloseIcon className={styles.userDetailCloseIcon} />
+        </button>
+
         {/* User Header Section */}
         <div className={styles.userDetailHeaderContainer}>
           <div className={styles.userDetailAvatar}>
@@ -82,18 +79,12 @@ export default function UserDetailModal({
                 className={`${styles.statusBadge} ${device?.status === "online" ? styles.statusOnlineBadge : styles.statusOfflineBadge}`}
               >
                 <span className={styles.statusDotSmall}></span>
-                {device?.status === "online" ? "Online" : "Offline"}
+                {device?.status === "online"
+                  ? "Online"
+                  : device
+                    ? "Offline"
+                    : "No device"}
               </span>
-
-              {device && device?.pairStatus !== "paired" && (
-                <button
-                  className={styles.pairDeviceBtn}
-                  onClick={() => onPairDevice && onPairDevice(user)}
-                >
-                  <LinkIcon className={styles.pairDeviceIcon} />
-                  Pair Device
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -101,23 +92,83 @@ export default function UserDetailModal({
         {/* Divider */}
         <div className={styles.userDetailDivider}></div>
 
-        {/* Active Controls Section */}
-        <div className={styles.activeControlsSection}>
-          <h3 className={styles.activeControlsTitle}>Active Controls</h3>
-          <p className={styles.activeControlsSubtitle}>
-            Below are user authorizations.
-          </p>
+        {/* Device Pairing Section */}
+        <div className={styles.memberDeviceSection}>
+          <div className={styles.memberDeviceCard}>
+            <div
+              className={`${styles.memberDeviceIconWrap} ${
+                hasPairedDevice
+                  ? styles.memberDeviceIconPaired
+                  : styles.memberDeviceIconEmpty
+              }`}
+            >
+              {hasPairedDevice ? (
+                <SmartphoneIcon className={styles.memberDeviceIcon} />
+              ) : (
+                <LinkIcon className={styles.memberDeviceIcon} />
+              )}
+            </div>
 
-          <div className={styles.controlsList}>
-            {controls.map((control, index) => (
-              <div key={index} className={styles.controlItem}>
-                <h4 className={styles.controlTitle}>{control.title}</h4>
-                <p className={styles.controlDescription}>
-                  {control.description}
-                </p>
-              </div>
-            ))}
+            <div className={styles.memberDeviceCopy}>
+              <span className={styles.memberDeviceEyebrow}>
+                Protected device
+              </span>
+              <h3 className={styles.memberDeviceTitle}>
+                {hasPairedDevice
+                  ? device.deviceName || device.name || "Paired device"
+                  : "No device paired yet"}
+              </h3>
+              <p className={styles.memberDeviceDescription}>
+                {hasPairedDevice
+                  ? "This member already has a paired device. Unpair it if they no longer use it, or pair a new device if they are switching phones."
+                  : "Pair this member's phone to enable location tracking, SOS alerts, and parental controls."}
+              </p>
+              {hasPairedDevice && (
+                <div className={styles.memberDeviceMetaRow}>
+                  <span>{device.type || "Mobile device"}</span>
+                  <span>{device.platform || "Generic platform"}</span>
+                  <span>{device.pairStatus || "Paired"}</span>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.memberDeviceActions}>
+              {hasPairedDevice && (
+                <button
+                  type="button"
+                  className={`${styles.memberDeviceActionBtn} ${styles.memberDeviceUnpairBtn}`}
+                  onClick={() => onUnpairDevice && onUnpairDevice(device)}
+                >
+                  <LinkOffIcon className={styles.memberDeviceActionIcon} />
+                  Unpair
+                </button>
+              )}
+              <button
+                type="button"
+                className={`${styles.memberDeviceActionBtn} ${styles.memberDevicePairBtn}`}
+                onClick={() => onPairDevice && onPairDevice(user, device)}
+              >
+                <LinkIcon className={styles.memberDeviceActionIcon} />
+                {hasPairedDevice ? "Pair new device" : "Pair device"}
+              </button>
+            </div>
           </div>
+        </div>
+
+        {/* Remove Member — Danger Zone */}
+        <div className={styles.userDetailDivider}></div>
+        <div className={styles.removeMemberSection}>
+          <p className={styles.removeMemberWarning}>
+            Removing this member will revoke their access to the family
+            dashboard, unlink all their devices, and delete their parental
+            control settings.
+          </p>
+          <button
+            className={styles.removeMemberBtn}
+            onClick={() => onRemoveMember && onRemoveMember(user)}
+          >
+            Remove Family Member
+          </button>
         </div>
       </div>
     </div>

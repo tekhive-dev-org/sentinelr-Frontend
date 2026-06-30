@@ -2,6 +2,7 @@
 import {
   View,
   Text,
+  TextInput,
   Animated,
   Pressable,
   Vibration,
@@ -23,6 +24,7 @@ const HOLD_SECONDS = 3;
 const BUTTON_SIZE = 170;
 const RING_SIZE = 210;
 const RING_STROKE = 5;
+const SOS_MESSAGE_MAX_LENGTH = 200;
 
 export default function SOSScreen() {
   const { colors } = useTheme();
@@ -31,6 +33,8 @@ export default function SOSScreen() {
   const [countdown, setCountdown] = useState(HOLD_SECONDS);
   const [triggered, setTriggered] = useState(false);
   const [currentAddress, setCurrentAddress] = useState(null);
+  const [sosMessage, setSosMessage] = useState('');
+  const [isMessageFocused, setIsMessageFocused] = useState(false);
   const [toast, setToast] = useState(null); // { message, type: 'success'|'error'|'warning' }
 
   const toastAnim = useRef(new Animated.Value(0)).current;
@@ -207,11 +211,12 @@ export default function SOSScreen() {
       const result = await apiService.triggerSOS({
         latitude: loc.coords.latitude,
         longitude: loc.coords.longitude,
-        message: 'Emergency SOS triggered',
+        message: sosMessage.trim() || 'Emergency SOS triggered',
       });
 
       const toastMsg = result?.message || 'Alert sent to all family members.';
       showToast(toastMsg, 'success');
+      setSosMessage('');
     } catch (err) {
       console.error('[SOS] trigger error:', err);
       setTriggered(false);
@@ -295,6 +300,52 @@ export default function SOSScreen() {
               In case of an immediate threat or medical{'\n'}emergency, use the
               button below.
             </Text>
+          </View>
+
+          {/* SOS Message Input */}
+          <View style={sosStyles.messageContainer}>
+            <View style={sosStyles.messageHeader}>
+              <Text style={[sosStyles.messageLabel, { color: colors.text }]}>
+                Message optional
+              </Text>
+              <Text style={[sosStyles.messageCount, { color: colors.textMuted }]}>
+                {sosMessage.length}/{SOS_MESSAGE_MAX_LENGTH}
+              </Text>
+            </View>
+            <View
+              style={[
+                sosStyles.messageInputWrap,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: isMessageFocused ? colors.danger : colors.border,
+                  shadowColor: colors.neuDark,
+                },
+                triggered && { opacity: 0.62 },
+              ]}
+            >
+              <Ionicons
+                name="chatbubble-ellipses"
+                size={18}
+                color={isMessageFocused ? colors.danger : colors.textMuted}
+              />
+              <TextInput
+                style={[
+                  sosStyles.messageInput,
+                  {
+                    color: colors.text,
+                  },
+                ]}
+                placeholder="Add details responders should see"
+                placeholderTextColor={colors.textMuted}
+                value={sosMessage}
+                onChangeText={setSosMessage}
+                onFocus={() => setIsMessageFocused(true)}
+                onBlur={() => setIsMessageFocused(false)}
+                maxLength={SOS_MESSAGE_MAX_LENGTH}
+                returnKeyType="done"
+                editable={!triggered}
+              />
+            </View>
           </View>
 
           {/* ΓöÇΓöÇ SOS Button Area ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
@@ -584,6 +635,49 @@ const sosStyles = StyleSheet.create({
     ...typography.bodySemiBold,
     flex: 1,
     color: '#fff',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  messageContainer: {
+    width: '100%',
+    marginTop: 18,
+    marginBottom: 2,
+  },
+  messageHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+    paddingHorizontal: 2,
+  },
+  messageLabel: {
+    ...typography.bodySemiBold,
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  messageCount: {
+    ...typography.bodyMedium,
+    fontSize: 11,
+    lineHeight: 14,
+  },
+  messageInputWrap: {
+    minHeight: 52,
+    borderWidth: 1,
+    borderRadius: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 14,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 14,
+    elevation: 3,
+  },
+  messageInput: {
+    ...typography.bodyMedium,
+    flex: 1,
+    minHeight: 48,
+    paddingVertical: 0,
     fontSize: 14,
     lineHeight: 20,
   },

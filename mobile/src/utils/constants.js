@@ -26,6 +26,7 @@ export const LOCATION_CONFIG = {
   accuracy: "high",
   distanceInterval: 10, // meters
   timeInterval: 30000, // 30 seconds
+  duplicateDistanceThreshold: 10, // meters
 };
 
 // Storage Keys

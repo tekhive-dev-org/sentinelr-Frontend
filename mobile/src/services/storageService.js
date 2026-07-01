@@ -1,6 +1,48 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { STORAGE_KEYS } from '../utils/constants';
+import { LOCATION_CONFIG, STORAGE_KEYS } from '../utils/constants';
 import { getSupabase } from './supabaseClient';
+
+const toCoordinateSnapshot = (location) => {
+  const latitude = Number(location?.latitude);
+  const longitude = Number(location?.longitude);
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return null;
+  }
+
+  return {
+    latitude,
+    longitude,
+    timestamp: location.timestamp || null,
+  };
+};
+
+const getDistanceInMeters = (from, to) => {
+  const earthRadiusMeters = 6371000;
+  const toRadians = (value) => (value * Math.PI) / 180;
+  const latDelta = toRadians(to.latitude - from.latitude);
+  const lonDelta = toRadians(to.longitude - from.longitude);
+  const fromLat = toRadians(from.latitude);
+  const toLat = toRadians(to.latitude);
+
+  const a =
+    Math.sin(latDelta / 2) ** 2 +
+    Math.cos(fromLat) * Math.cos(toLat) * Math.sin(lonDelta / 2) ** 2;
+
+  return earthRadiusMeters * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
+
+const parseLastPingLocation = (value) => {
+  if (!value) return null;
+
+  try {
+    const parsed = JSON.parse(value);
+    return toCoordinateSnapshot(parsed);
+  } catch {
+    const [latitude, longitude] = value.split(",").map(Number);
+    return toCoordinateSnapshot({ latitude, longitude });
+  }
+};
 
 /**
  * Storage service for persistent data
@@ -77,25 +119,28 @@ export const storageService = {
   },
 
   async shouldUploadLocationPing(location) {
-    if (!location) return false;
+    const currentLocation = toCoordinateSnapshot(location);
+    if (!currentLocation) return false;
 
-    const signature = [
-      Number(location.latitude).toFixed(6),
-      Number(location.longitude).toFixed(6),
-    ].join(",");
     const lastSignature = await AsyncStorage.getItem(STORAGE_KEYS.LAST_PING_LOCATION);
+    const lastLocation = parseLastPingLocation(lastSignature);
 
-    return signature !== lastSignature;
+    if (!lastLocation) return true;
+
+    return (
+      getDistanceInMeters(lastLocation, currentLocation) >=
+      LOCATION_CONFIG.duplicateDistanceThreshold
+    );
   },
 
-  async markLocationPingUploaded(location) {
-    if (!location) return;
+  async markLocationPingAttempted(location) {
+    const currentLocation = toCoordinateSnapshot(location);
+    if (!currentLocation) return;
 
-    const signature = [
-      Number(location.latitude).toFixed(6),
-      Number(location.longitude).toFixed(6),
-    ].join(",");
-    await AsyncStorage.setItem(STORAGE_KEYS.LAST_PING_LOCATION, signature);
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.LAST_PING_LOCATION,
+      JSON.stringify(currentLocation),
+    );
   },
 
   async getLastHeartbeatStatus() {

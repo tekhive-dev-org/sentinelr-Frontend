@@ -2,6 +2,7 @@ import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
 import { apiService } from "./api";
 import { storageService } from "./storageService";
+import { LOCATION_CONFIG } from "../utils/constants";
 
 const LOCATION_TASK_NAME = "sentinelr-background-location";
 
@@ -65,9 +66,9 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
           continue;
         }
 
+        await storageService.markLocationPingAttempted(ping);
         console.log("[Location] Uploading ping:", JSON.stringify(ping));
         await apiService.uploadPing(ping);
-        await storageService.markLocationPingUploaded(ping);
         console.log("[Location] Ping uploaded successfully");
         locationEvents._emit(ping);
       } catch (err) {
@@ -112,13 +113,12 @@ export const locationService = {
     }
 
     // Start background location updates
-    await storageService.resetLastPingLocation();
     await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
       accuracy: Location.Accuracy.High,
-      distanceInterval: 0, // send even when stationary (time-driven heartbeat)
+      distanceInterval: LOCATION_CONFIG.distanceInterval,
       timeInterval: 300000, // 5 minutes
       deferredUpdatesInterval: 300000, // flush every 5 minutes to keep backend up to date
-      deferredUpdatesDistance: 0, // do not wait for movement before dispatching
+      deferredUpdatesDistance: LOCATION_CONFIG.distanceInterval,
       showsBackgroundLocationIndicator: true,
       foregroundService: {
         notificationTitle: "Sentinelr",

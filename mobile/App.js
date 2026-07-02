@@ -26,7 +26,6 @@ import { DeviceProvider, useDevice } from './src/context/DeviceContext';
 import { RealtimeSubscriptionProvider } from './src/context/RealtimeSubscriptionContext';
 import AnimatedSplash from './src/components/AnimatedSplash';
 import { locationService } from './src/services/locationService';
-import { geofencingService } from './src/services/geofencingService';
 import { FONT_FAMILIES } from './src/utils/typography';
 
 // Screens
@@ -34,6 +33,7 @@ import LandingScreen from './src/screens/LandingScreen';
 import PairingScreen from './src/screens/PairingScreen';
 import QRScannerScreen from './src/screens/QRScannerScreen';
 import PermissionsScreen from './src/screens/PermissionsScreen';
+import ParentalControlScreen from './src/screens/ParentalControlScreen';
 import TrackingScreen from './src/screens/TrackingScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import SOSScreen from './src/screens/SOSScreen';
@@ -161,6 +161,7 @@ function AppNavigator() {
         <>
           <Stack.Screen name="MainTabs" component={MainTabs} />
           <Stack.Screen name="Permissions" component={PermissionsScreen} />
+          <Stack.Screen name="ParentalControls" component={ParentalControlScreen} />
           <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
           <Stack.Screen name="HelpCenter" component={HelpCenterScreen} />
           <Stack.Screen name="TermsOfService" component={TermsOfServiceScreen} />
@@ -185,7 +186,6 @@ function AppContent() {
         // Fire-and-forget: restore background services without blocking the splash screen.
         // These make network calls that can stall on app resume when the radio is waking up.
         locationService.ensureTrackingState().catch(() => {});
-        geofencingService.ensureGeofencingState().catch(() => {});
         // Hide native splash screen immediately — don't wait for network
         await SplashScreen.hideAsync();
         setAppReady(true);

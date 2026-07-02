@@ -584,7 +584,7 @@ export const parentalControlService = {
    * Send device heartbeat (mobile API)
    * POST /device/heartbeat
    * @param {string} deviceToken
-   * @param {object} status - { battery_level, is_charging, network_type }
+   * @param {object} status - { batteryLevel, isCharging, deviceName, deviceModel, brand, osVersion, timestamp }
    */
   async sendMobileHeartbeat(deviceToken, status) {
     const response = await fetch(`${API_BASE_URL}/device/heartbeat`, {

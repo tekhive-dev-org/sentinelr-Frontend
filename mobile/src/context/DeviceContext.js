@@ -3,7 +3,6 @@ import { Alert, AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiService } from "../services/api";
 import { heartbeatService } from "../services/heartbeatService";
-import { geofencingService } from "../services/geofencingService";
 import { getSupabase } from "../services/supabaseClient";
 import {
   applyNativeControls,
@@ -49,13 +48,54 @@ export function DeviceProvider({ children }) {
       return;
     }
 
-    // Parental controls are managed via the web dashboard.
-    // The mobile API does not support device-token-authenticated control retrieval,
-    // so the device relies on the last known state from previous syncs.
-    // When a parent changes controls through the dashboard, the device will
-    // pick up the changes on the next successful device-status heartbeat.
-    setParentalControls({});
-    setParentalSyncError(null);
+    try {
+      const [controlsResult, activityResult] = await Promise.allSettled([
+        apiService.getMyParentalControls(),
+        apiService.getMyParentalActivity(),
+      ]);
+
+      if (activityResult.status === "fulfilled") {
+        setParentalActivities(activityResult.value?.activities || []);
+      } else if (
+        activityResult.reason?.status === 401 ||
+        activityResult.reason?.code === "DEVICE_AUTH_INVALID"
+      ) {
+        setParentalSyncError("auth");
+      }
+
+      if (controlsResult.status === "fulfilled") {
+        const controls = controlsResult.value?.controls || null;
+        setParentalControls(controls);
+        setParentalSyncError(null);
+
+        if (controls) {
+          await applyNativeControls(controls).catch(() => {});
+        } else {
+          await clearNativeControls().catch(() => {});
+        }
+        return;
+      }
+
+      const error = controlsResult.reason;
+      if (error?.code === "PARENTAL_CONTROLS_NOT_FOUND" || error?.status === 404) {
+        setParentalControls(null);
+        setParentalSyncError(null);
+        await clearNativeControls().catch(() => {});
+        return;
+      }
+
+      if (error?.status === 401 || error?.code === "DEVICE_AUTH_INVALID") {
+        setParentalSyncError("auth");
+      } else {
+        setParentalSyncError("sync");
+      }
+    } catch (error) {
+      setParentalSyncError(
+        error?.status === 401 || error?.code === "DEVICE_AUTH_INVALID"
+          ? "auth"
+          : "sync",
+      );
+    }
   }, [isPaired]);
 
   // Query the database directly for the device's current pairStatus
@@ -97,7 +137,6 @@ export function DeviceProvider({ children }) {
       const { locationService } = await import("../services/locationService");
       await locationService.stop();
       heartbeatService.stop();
-      await geofencingService.stop();
     } catch {}
 
     await Promise.all([
@@ -400,16 +439,6 @@ export function DeviceProvider({ children }) {
       heartbeatService.stop();
     };
   }, [isPaired, isLoading, updateBattery]);
-
-  // Start / restore geofencing monitoring when device is paired
-  useEffect(() => {
-    if (!isPaired || isLoading) {
-      geofencingService.stop().catch(() => {});
-      return;
-    }
-
-    geofencingService.ensureGeofencingState();
-  }, [isPaired, isLoading]);
 
   const value = {
     // Pairing state

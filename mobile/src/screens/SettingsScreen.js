@@ -16,7 +16,6 @@ import { useDevice } from "../context/DeviceContext";
 import { useTheme } from "../context/ThemeContext";
 import NavigationHeader from "../components/NavigationHeader";
 import GlassCard from "../components/GlassCard";
-import { ParentalControlsContent } from "./ParentalControlScreen";
 import { APP_NAME, APP_VERSION } from "../utils/constants";
 import { typography } from "../utils/typography";
 
@@ -69,6 +68,10 @@ export default function SettingsScreen({ navigation }) {
 
   const openPermissions = () => {
     openStackScreen("Permissions");
+  };
+
+  const openParentalControls = () => {
+    openStackScreen("ParentalControls");
   };
 
   const handleUnpair = () => {
@@ -250,8 +253,15 @@ export default function SettingsScreen({ navigation }) {
 
           {/* ── Parental Controls ── */}
           <SectionLabel label="PARENTAL CONTROLS" />
-          <GlassCard>
-            <ParentalControlsContent embedded />
+          <GlassCard noPadding>
+            <NavRow
+              icon="shield-outline"
+              iconColor="#3d09d0"
+              title="Parental Controls"
+              subtitle="Monitoring, limits, blocks, and activity"
+              onPress={openParentalControls}
+              isLast
+            />
           </GlassCard>
 
           {/* ── Privacy & Security ── */}

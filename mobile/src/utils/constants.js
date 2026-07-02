@@ -12,8 +12,8 @@ export const ENDPOINTS = {
   REMOVE_DEVICE: "/device/:id", // DELETE — hides device from dashboard
   SOS_TRIGGER: "/alerts/sos/trigger", // POST — sends SOS emergency alert
   INTRUDER_REPORT: "/alerts/intruder/report", // POST — report intruder attempt
-  GEOFENCES: "/geofences", // GET — fetch all geofences for this device
-  GEOFENCE_EVENT: "/geofences/event", // POST — report a geofence entry/exit event
+  MY_PARENTAL_CONTROLS: "/parental-controls/device/my-controls",
+  MY_PARENTAL_ACTIVITY: "/parental-controls/device/my-parental-activity",
 };
 
 // App Constants

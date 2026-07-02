@@ -26,7 +26,9 @@ function formatMinutes(mins) {
 }
 
 function timeAgo(timestamp) {
+  if (!timestamp) return 'Just now';
   const diff = Date.now() - new Date(timestamp).getTime();
+  if (!Number.isFinite(diff)) return 'Just now';
   const minutes = Math.floor(diff / 60000);
   if (minutes < 1) return 'Just now';
   if (minutes < 60) return `${minutes}m ago`;
@@ -35,7 +37,7 @@ function timeAgo(timestamp) {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-export default function ParentalControlScreen() {
+export default function ParentalControlScreen({ navigation }) {
   const { colors } = useTheme();
   const { parentalControls: controls, parentalActivities: activities, parentalSyncError, syncParentalControls, isPaired } = useDevice();
   const [refreshing, setRefreshing] = useState(false);
@@ -51,7 +53,13 @@ export default function ParentalControlScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
-        <NavigationHeader title="Parental Controls" subtitle="Protection status" showMenu={false} />
+        <NavigationHeader
+          title="Parental Controls"
+          subtitle="Protection status"
+          onBack={() => navigation.goBack()}
+          backLabel="Settings"
+          showMenu={false}
+        />
 
         <ScrollView
           style={{ flex: 1 }}
@@ -152,6 +160,14 @@ export function ParentalControlsContent({ embedded = false }) {
                 Your device session has expired. Ask a parent to unpair and re-pair this device.
               </Text>
             </>
+          ) : parentalSyncError === 'sync' ? (
+            <>
+              <Ionicons name="cloud-offline-outline" size={36} color="#dc323f" />
+              <Text style={[s.emptyTitle, { color: colors.text }]}>Unable to Sync</Text>
+              <Text style={[s.emptySubtitleSmall, { color: colors.textSecondary }]}>
+                Pull down to try fetching the latest parental controls again.
+              </Text>
+            </>
           ) : (
             <>
               <Ionicons name="shield-outline" size={36} color={colors.textMuted} />
@@ -175,6 +191,14 @@ export function ParentalControlsContent({ embedded = false }) {
                 <Text style={[s.emptyTitle, { color: colors.text }]}>Session Expired</Text>
                 <Text style={[s.emptySubtitle, { color: colors.textSecondary }]}>
                   Your device session has expired. Ask a parent to unpair and re-pair this device to restore parental control visibility.
+                </Text>
+              </>
+            ) : parentalSyncError === 'sync' ? (
+              <>
+                <Ionicons name="cloud-offline-outline" size={56} color="#dc323f" />
+                <Text style={[s.emptyTitle, { color: colors.text }]}>Unable to Sync</Text>
+                <Text style={[s.emptySubtitle, { color: colors.textSecondary }]}>
+                  We couldn&apos;t fetch the latest parental controls. Pull down to try again.
                 </Text>
               </>
             ) : (
@@ -375,7 +399,7 @@ export function ParentalControlsContent({ embedded = false }) {
                         {act.description}
                       </Text>
                       <Text style={[s.activityTime, { color: colors.textMuted }]}>
-                        {timeAgo(act.timestamp)}
+                        {timeAgo(act.timestamp || act.createdAt)}
                       </Text>
                     </View>
                   </View>

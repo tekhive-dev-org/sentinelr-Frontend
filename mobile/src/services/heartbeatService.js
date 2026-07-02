@@ -8,6 +8,7 @@ import { storageService } from "./storageService";
 
 const BACKGROUND_HEARTBEAT_TASK = "sentinelr-background-heartbeat";
 const BACKGROUND_HEARTBEAT_INTERVAL_MINUTES = 15;
+const FOREGROUND_HEARTBEAT_INTERVAL_MS = 5 * 60 * 1000;
 
 let isHeartbeatRunning = false;
 let errorCallback = null;
@@ -15,6 +16,7 @@ let batteryCallback = null;
 let appStateSubscription = null;
 let batteryLevelSubscription = null;
 let batteryStateSubscription = null;
+let heartbeatInterval = null;
 
 // Track last sent status to avoid redundant uploads
 let lastStatus = null;
@@ -36,7 +38,9 @@ function statusesMatch(currentStatus, previousStatus) {
 async function getCurrentStatus() {
   const batteryLevel = await Battery.getBatteryLevelAsync();
   const batteryState = await Battery.getBatteryStateAsync();
-  const batteryPct = Math.round(batteryLevel * 100);
+  const batteryPct = Number.isFinite(batteryLevel)
+    ? Math.max(0, Math.min(100, Math.round(batteryLevel * 100)))
+    : null;
 
   return {
     batteryLevel: batteryPct,
@@ -45,6 +49,18 @@ async function getCurrentStatus() {
     deviceModel: Device.modelName || "Unknown",
     brand: Device.brand || "Unknown",
     osVersion: Device.osVersion || "Unknown",
+  };
+}
+
+function buildHeartbeatPayload(status) {
+  return {
+    batteryLevel: status.batteryLevel,
+    isCharging: status.isCharging,
+    deviceName: status.deviceName,
+    deviceModel: status.deviceModel,
+    brand: status.brand,
+    osVersion: status.osVersion,
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -68,7 +84,7 @@ async function unregisterBackgroundHeartbeat() {
 
 TaskManager.defineTask(BACKGROUND_HEARTBEAT_TASK, async () => {
   try {
-    await heartbeatService.sendHeartbeat();
+    await heartbeatService.sendHeartbeat({ force: true });
     return BackgroundTask.BackgroundTaskResult.Success;
   } catch (error) {
     console.warn("[Heartbeat] Background heartbeat failed:", error?.message || error);
@@ -92,8 +108,12 @@ export const heartbeatService = {
 
     isHeartbeatRunning = true;
 
-    // Send initial heartbeat after pairing/app restore. Later sends are status-driven.
-    this.sendHeartbeat();
+    // Send immediately after pairing/app restore, then keep lastSeen fresh even
+    // when battery/device status has not changed.
+    this.sendHeartbeat({ force: true });
+    heartbeatInterval = setInterval(() => {
+      this.sendHeartbeat({ force: true });
+    }, FOREGROUND_HEARTBEAT_INTERVAL_MS);
     registerBackgroundHeartbeat();
 
     batteryLevelSubscription = Battery.addBatteryLevelListener(() => {
@@ -104,11 +124,11 @@ export const heartbeatService = {
       this.sendHeartbeat();
     });
 
-    // Refresh status when the app becomes active again without forcing an upload.
+    // Refresh the dashboard when the app becomes active again.
     if (!appStateSubscription) {
       appStateSubscription = AppState.addEventListener('change', (nextState) => {
         if (nextState === 'active') {
-          this.sendHeartbeat();
+          this.sendHeartbeat({ force: true });
         }
       });
     }
@@ -134,13 +154,19 @@ export const heartbeatService = {
       batteryStateSubscription.remove();
       batteryStateSubscription = null;
     }
+    if (heartbeatInterval) {
+      clearInterval(heartbeatInterval);
+      heartbeatInterval = null;
+    }
     unregisterBackgroundHeartbeat();
   },
 
   /**
    * Send single heartbeat with device status
    */
-  async sendHeartbeat() {
+  async sendHeartbeat(options = {}) {
+    const { force = false } = options;
+
     if (heartbeatInFlight) {
       return;
     }
@@ -165,22 +191,15 @@ export const heartbeatService = {
       // Keep UI in sync with exactly what we send to the API
       if (batteryCallback) batteryCallback(status.batteryLevel);
 
-      // Check if we should send only when status changes.
       const previousStatus = lastStatus || await storageService.getLastHeartbeatStatus();
-      const shouldSend = !statusesMatch(status, previousStatus);
+      const shouldSend = force || !statusesMatch(status, previousStatus);
 
       if (!shouldSend) {
         // console.log("[Heartbeat] No changes, skipping");
         return;
       }
 
-      // Add timestamp for API
-      const payload = {
-        ...status,
-        timestamp: new Date().toISOString(),
-      };
-
-      await apiService.sendHeartbeat(payload);
+      await apiService.sendHeartbeat(buildHeartbeatPayload(status));
 
       // Update last state
       lastStatus = status;
@@ -195,6 +214,7 @@ export const heartbeatService = {
         errorCallback(error);
         this.stop();
       }
+      console.warn("[Heartbeat] Send failed:", error?.message || error, error?.status || error?.code || "");
     } finally {
       heartbeatInFlight = false;
     }

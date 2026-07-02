@@ -124,6 +124,50 @@ async function apiRequest(endpoint, data = {}) {
   return response.json();
 }
 
+async function deviceGetRequest(endpoint, context = {}) {
+  const [token, deviceId, deviceUserId] = await Promise.all([
+    storageService.getUploadToken(),
+    storageService.getDeviceId(),
+    storageService.getDeviceUserId(),
+  ]);
+  const url = `${requireApiBaseUrl()}${ENDPOINTS[endpoint]}`;
+  const authContext = {
+    deviceId: context.deviceId || deviceId,
+    userId: context.userId || deviceUserId,
+  };
+
+  let response = await fetch(url, {
+    method: "GET",
+    headers: buildDeviceAuthHeaders(token, false, authContext),
+  });
+
+  if ((response.status === 401 || response.status === 403) && token) {
+    response = await fetch(url, {
+      method: "GET",
+      headers: buildDeviceAuthHeaders(token, true, authContext),
+    });
+  }
+
+  const body = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const error = new Error(
+      body.message || `API Error: ${response.status}`,
+    );
+    error.status = response.status;
+    error.code = body.code;
+    error.body = body;
+
+    if (response.status === 401 && authFailureCallback) {
+      authFailureCallback(error);
+    }
+
+    throw error;
+  }
+
+  return body;
+}
+
 export const apiService = {
   /**
    * Pair device with pairing code
@@ -218,7 +262,7 @@ export const apiService = {
 
   /**
    * Send heartbeat with device status
-   * @param {object} status - { battery_level, is_charging, network_type }
+   * @param {object} status - { batteryLevel, isCharging, deviceName, deviceModel, brand, osVersion, timestamp }
    */
   async sendHeartbeat(status) {
     return apiRequest("HEARTBEAT", status);
@@ -335,98 +379,19 @@ export const apiService = {
   },
 
   /**
-   * Fetch all geofences assigned to this device.
-   * @returns {Promise<{ success: boolean, geofences: Array }>}
+   * Fetch parental controls assigned to this paired device.
+   * @returns {Promise<{ success: boolean, controls: object }>}
    */
-  async getGeofences() {
-    const [token, deviceId, deviceUserId] = await Promise.all([
-      storageService.getUploadToken(),
-      storageService.getDeviceId(),
-      storageService.getDeviceUserId(),
-    ]);
-    const params = new URLSearchParams();
-    if (deviceId) params.set("deviceId", deviceId);
-    if (deviceUserId) params.set("deviceUserId", deviceUserId);
-    const query = params.toString();
-    const url = `${requireApiBaseUrl()}${ENDPOINTS.GEOFENCES}${query ? `?${query}` : ""}`;
-    const authContext = { deviceId, userId: deviceUserId };
-
-    let response = await fetch(url, {
-      method: "GET",
-      headers: buildDeviceAuthHeaders(token, false, authContext),
-    });
-
-    if ((response.status === 401 || response.status === 403) && token) {
-      response = await fetch(url, {
-        method: "GET",
-        headers: buildDeviceAuthHeaders(token, true, authContext),
-      });
-    }
-
-    if (!response.ok) {
-      const errorBody = await response.json().catch(() => ({}));
-      if (response.status === 401 || response.status === 403) {
-        console.log(
-          "[API] getGeofences auth rejected; skipping geofence sync:",
-          errorBody.message || response.status,
-        );
-        return { success: false, geofences: [], authError: true };
-      }
-      const error = new Error(
-        errorBody.message || `API Error: ${response.status}`,
-      );
-      error.status = response.status;
-      throw error;
-    }
-
-    return response.json();
+  async getMyParentalControls() {
+    return deviceGetRequest("MY_PARENTAL_CONTROLS");
   },
 
   /**
-   * Report a geofence entry or exit event to the backend.
-   * @param {object} data - { geofenceId, type: 'entry'|'exit', latitude, longitude, timestamp }
-   * @returns {Promise<{ success: boolean }>}
+   * Fetch recent parental-control activity for this paired device.
+   * @returns {Promise<{ success: boolean, activities: Array }>}
    */
-  async reportGeofenceEvent(data) {
-    const [token, deviceId, deviceUserId] = await Promise.all([
-      storageService.getUploadToken(),
-      storageService.getDeviceId(),
-      storageService.getDeviceUserId(),
-    ]);
-    const params = new URLSearchParams();
-    if (deviceId) params.set("deviceId", deviceId);
-    if (deviceUserId) params.set("deviceUserId", deviceUserId);
-    const query = params.toString();
-    const url = `${requireApiBaseUrl()}${ENDPOINTS.GEOFENCE_EVENT}${query ? `?${query}` : ""}`;
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: buildDeviceAuthHeaders(token, false, { deviceId, userId: deviceUserId }),
-      body: JSON.stringify({
-        ...data,
-        deviceId: data.deviceId || deviceId,
-        deviceUserId: data.deviceUserId || deviceUserId,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorBody = await response.json().catch(() => ({}));
-      if (response.status === 401 || response.status === 403) {
-        console.log(
-          "[API] reportGeofenceEvent auth rejected; event skipped:",
-          errorBody.message || response.status,
-        );
-        return { success: false, authError: true };
-      }
-      const error = new Error(
-        errorBody.message || `API Error: ${response.status}`,
-      );
-      error.status = response.status;
-      error.code = errorBody.code;
-      throw error;
-    }
-
-    return response.json();
+  async getMyParentalActivity() {
+    return deviceGetRequest("MY_PARENTAL_ACTIVITY");
   },
 
   /**

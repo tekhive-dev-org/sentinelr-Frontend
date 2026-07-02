@@ -16,18 +16,20 @@ export default {
       backgroundColor: '#000000',
     },
     ios: {
-      supportsTablet: true,
-      bundleIdentifier: 'com.techhive.sentinelr',
-      infoPlist: {
-        NSLocationWhenInUseUsageDescription:
-          'Sentinelr needs access to your location to track device position for family safety.',
-        NSLocationAlwaysAndWhenInUseUsageDescription:
-          'Sentinelr needs continuous access to your location for real-time tracking and safety alerts.',
-        UIBackgroundModes: ['location', 'fetch'],
-        LSApplicationQueriesSchemes: ['mailto', 'http', 'https'],
-        ITSAppUsesNonExemptEncryption: false,
-      },
-    },
+  supportsTablet: true,
+  bundleIdentifier: 'com.techhive.sentinelr',
+  infoPlist: {
+    NSLocationWhenInUseUsageDescription:
+      'Sentinelr needs access to your location to track device position for family safety.',
+    NSLocationAlwaysAndWhenInUseUsageDescription:
+      'Sentinelr needs continuous access to your location for real-time tracking and safety alerts.',
+    NSLocationAlwaysUsageDescription:
+      'Sentinelr needs background location access to keep family safety tracking active even when the app is not open.',
+    UIBackgroundModes: ['location', 'fetch', 'remote-notification'],
+    LSApplicationQueriesSchemes: ['mailto', 'http', 'https'],
+    ITSAppUsesNonExemptEncryption: false,
+  },
+},
     android: {
       package: 'com.techhive.sentinelr',
       versionCode: 11,
@@ -72,12 +74,13 @@ export default {
         },
       ],
       [
-        'expo-notifications',
-        {
-          icon: './assets/notification-icon.png',
-          color: '#1a1a2e',
-        },
-      ],
+  'expo-notifications',
+  {
+    icon: './assets/notification-icon.png',
+    color: '#1a1a2e',
+    enableBackgroundRemoteNotifications: true,
+  },
+],
     ],
     updates: {
       url: 'https://u.expo.dev/2542921c-4083-4d6d-83eb-1fbcfa79d891',

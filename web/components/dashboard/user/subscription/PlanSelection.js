@@ -5,7 +5,8 @@ import { CardSkeleton } from '../../../ui/loaders';
 export default function PlanSelection({ 
   plans, 
   plansLoading, 
-  billingCycle, 
+  billingCycle,
+  currentPlanId, 
   onBillingCycleChange, 
   onPlanSelect 
 }) {
@@ -49,6 +50,7 @@ export default function PlanSelection({
               key={plan.id}
               plan={plan}
               billingCycle={billingCycle}
+              isCurrentPlan={plan.id === currentPlanId}
               onSelect={onPlanSelect}
             />
           ))}

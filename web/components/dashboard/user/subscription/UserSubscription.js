@@ -28,6 +28,9 @@ export default function UserSubscription() {
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [isPaymentDetailsOpen, setIsPaymentDetailsOpen] = useState(false);
   
+  // Current active plan — all users default to free until subscription APIs are integrated
+  const [currentPlan] = useState('free');
+  
   // Plans Data
   const [plans, setPlans] = useState([]);
   const [plansLoading, setPlansLoading] = useState(true);
@@ -101,14 +104,17 @@ export default function UserSubscription() {
 
   // Handlers
   const handlePlanSelect = (plan) => {
-    if (plan.id === 'family') {
-      showSnackbar('Please contact us for custom pricing.', 'info');
+    // Free plan is already active — no action needed
+    if (plan.id === 'free') {
+      showSnackbar('You are already on the Freemium Plan.', 'info');
       return;
     }
-    setSelectedPlan({ ...plan, billingCycle });
-    setStep(2);
-    setIsPaymentDetailsOpen(false);
-    setErrors({});
+    // Paid plans are gated until subscription APIs are integrated
+    if (plan.id === 'family') {
+      showSnackbar('Family Plan coming soon! Please contact us for early access.', 'info');
+      return;
+    }
+    showSnackbar('Upgrade coming soon!', 'info');
   };
 
   const handleCardInputChange = (field, value) => {
@@ -302,11 +308,24 @@ export default function UserSubscription() {
 
   return (
     <div className={styles.container}>
+      {/* Current Plan Banner */}
+      <div className={styles.currentPlanBanner}>
+        <div className={styles.currentPlanIcon}>
+          <WorkspacePremiumOutlinedIcon />
+        </div>
+        <div className={styles.currentPlanInfo}>
+          <span className={styles.currentPlanLabel}>Current Plan</span>
+          <span className={styles.currentPlanName}>Freemium Plan — <strong>Active</strong></span>
+        </div>
+        <span className={styles.currentPlanBadge}>FREE</span>
+      </div>
+
       {step === 1 ? (
         <PlanSelection
           plans={plans}
           plansLoading={plansLoading}
           billingCycle={billingCycle}
+          currentPlanId={currentPlan}
           onBillingCycleChange={setBillingCycle}
           onPlanSelect={handlePlanSelect}
         />

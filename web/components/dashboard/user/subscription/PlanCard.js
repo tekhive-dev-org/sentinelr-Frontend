@@ -2,10 +2,11 @@ import Image from 'next/image';
 import styles from './UserSubscription.module.css';
 import { getPlanPrice, getPlanPeriod } from './utils';
 
-export default function PlanCard({ plan, billingCycle, onSelect }) {
+export default function PlanCard({ plan, billingCycle, onSelect, isCurrentPlan }) {
   return (
-    <div className={`${styles.planCard} ${plan.featured ? styles.featured : ''}`}>
+    <div className={`${styles.planCard} ${plan.featured ? styles.featured : ''} ${isCurrentPlan ? styles.currentPlan : ''}`}>
       {plan.featured && <span className={styles.featuredBadge}>Recommended</span>}
+      {isCurrentPlan && <span className={styles.currentBadge}>Active</span>}
       <h3 className={styles.planTitle}>{plan.name}</h3>
       <p className={styles.planDesc}>{plan.desc}</p>
       <div className={styles.planPrice}>
@@ -13,10 +14,11 @@ export default function PlanCard({ plan, billingCycle, onSelect }) {
       </div>
       <button 
         type="button"
-        className={`${styles.selectPlanBtn} ${styles[plan.type]}`}
+        className={`${styles.selectPlanBtn} ${styles[plan.type]} ${isCurrentPlan ? styles.currentPlanBtn : ''}`}
         onClick={() => onSelect(plan)}
+        disabled={isCurrentPlan}
       >
-        {plan.btnText}
+        {isCurrentPlan ? 'Current Plan' : plan.btnText}
       </button>
       <p className={styles.includesLabel}>Includes:</p>
       <ul className={styles.featuresList}>

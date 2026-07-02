@@ -139,12 +139,12 @@ useEffect(() => {
       iconPath: '/assets/icons/megaphone.png',
       path: '/dashboard/alerts'
     },
-    {
-      id: 'history',
-      label: 'History & Reports',
-      iconPath: '/assets/icons/bill-line.png',
-      path: '/dashboard/history'
-    },
+    // {
+    //   id: 'history',
+    //   label: 'History & Reports',
+    //   iconPath: '/assets/icons/bill-line.png',
+    //   path: '/dashboard/history'
+    // },
     {
       id: 'parental',
       label: 'Parental Control',
@@ -157,12 +157,12 @@ useEffect(() => {
       iconPath: '/assets/icons/layout-grid.png', // Reusing layout-grid for now
       path: '/dashboard/geofencing'
     },
-    {
-      id: 'insights',
-      label: 'Usage Insights',
-      iconPath: '/assets/icons/line-chart.png',
-      path: '/dashboard/insights'
-    },
+    // {
+    //   id: 'insights',
+    //   label: 'Usage Insights',
+    //   iconPath: '/assets/icons/line-chart.png',
+    //   path: '/dashboard/insights'
+    // },
     {
       id: 'subscription',
       label: 'Subscription',

@@ -22,14 +22,14 @@ import styles from './BottomAppBar.module.css';
 const PRIMARY_ITEMS = [
   { id: 'dashboard', label: 'Home', path: '/dashboard', Icon: GridViewRoundedIcon },
   { id: 'devices',   label: 'Devices', path: '/dashboard/devices', Icon: DevicesRoundedIcon },
-  { id: 'history',   label: 'History', path: '/dashboard/history', Icon: HistoryRoundedIcon },
+  // { id: 'history',   label: 'History', path: '/dashboard/history', Icon: HistoryRoundedIcon },
   { id: 'alerts',    label: 'Alerts', path: '/dashboard/alerts', Icon: NotificationsRoundedIcon },
 ];
 
 const MORE_ITEMS = [
   { id: 'parental',     label: 'Parental Control', path: '/dashboard/parental', Icon: AdminPanelSettingsRoundedIcon },
   { id: 'geofencing',   label: 'Geofencing', path: '/dashboard/geofencing', Icon: FenceRoundedIcon },
-  { id: 'insights',     label: 'Usage Insights', path: '/dashboard/insights', Icon: InsightsRoundedIcon },
+  // { id: 'insights',     label: 'Usage Insights', path: '/dashboard/insights', Icon: InsightsRoundedIcon },
   { id: 'subscription', label: 'Subscription', path: '/dashboard/subscription', Icon: CreditCardRoundedIcon },
   { id: 'settings',     label: 'Settings', path: '/dashboard/settings', Icon: SettingsRoundedIcon },
 ];

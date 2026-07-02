@@ -264,8 +264,12 @@ export default function PermissionsScreen({ navigation }) {
     );
   };
 
-  // Progress count
-  const requiredStatuses = [locationStatus, backgroundStatus, notificationStatus, accessibilityStatus];
+  // Progress count (parental control access is Android-only — hidden on iOS
+  // until the Family Controls entitlement is granted)
+  const requiredStatuses =
+    Platform.OS === 'ios'
+      ? [locationStatus, backgroundStatus, notificationStatus]
+      : [locationStatus, backgroundStatus, notificationStatus, accessibilityStatus];
   const grantedCount = requiredStatuses.filter(s => s === 'granted').length;
   const totalRequired = requiredStatuses.length;
 
@@ -345,23 +349,21 @@ export default function PermissionsScreen({ navigation }) {
             onDisable={() => openSettingsToDisable('Notifications')}
             colors={colors}
           />
-          <PermissionRow
-            icon="shield-half-outline"
-            title="Parental Control Access"
-            description={
-              isExpoGoAndroid
-                ? 'Requires development build on Android'
-                : Platform.OS === 'ios' && isSimulator
-                  ? 'Screen Time APIs unavailable on iOS simulator — test on a real device'
-                  : Platform.OS === 'ios'
-                    ? 'Required for app blocking, freeze, and bedtime enforcement via Screen Time'
-                    : 'Required for real app blocking, freeze, and bedtime enforcement'
-            }
-            status={accessibilityStatus}
-            onEnable={requestAccessibilityPermission}
-            onDisable={requestAccessibilityPermission}
-            colors={colors}
-          />
+          {Platform.OS !== 'ios' && (
+            <PermissionRow
+              icon="shield-half-outline"
+              title="Parental Control Access"
+              description={
+                isExpoGoAndroid
+                  ? 'Requires development build on Android'
+                  : 'Required for real app blocking, freeze, and bedtime enforcement'
+              }
+              status={accessibilityStatus}
+              onEnable={requestAccessibilityPermission}
+              onDisable={requestAccessibilityPermission}
+              colors={colors}
+            />
+          )}
 
           {/* ── Open Settings ─────────────────────────────────────────────── */}
           <TouchableOpacity

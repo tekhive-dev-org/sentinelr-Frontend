@@ -35,8 +35,14 @@ function toNativePayload(controls) {
 }
 
 // ─── Cross-platform: is native module available at all? ─────────────────────
+// NOTE: iOS enforcement is disabled until Apple grants the Family Controls
+// distribution entitlement (com.apple.developer.family-controls). The feature
+// is hidden on iOS and all enforcement calls are no-ops there.
+
+const IOS_ENFORCEMENT_ENABLED = false;
 
 export function isNativeEnforcementAvailable() {
+  if (Platform.OS === 'ios' && !IOS_ENFORCEMENT_ENABLED) return false;
   return NativeParentalControls.isNativeModuleAvailable();
 }
 
@@ -46,7 +52,7 @@ export function isEnforcementPermissionGranted() {
   if (Platform.OS === 'android') {
     return NativeParentalControls.isAccessibilityServiceEnabled?.() ?? false;
   }
-  if (Platform.OS === 'ios') {
+  if (Platform.OS === 'ios' && IOS_ENFORCEMENT_ENABLED) {
     return NativeParentalControls.isFamilyControlsAuthorized?.() ?? false;
   }
   return false;
@@ -55,7 +61,7 @@ export function isEnforcementPermissionGranted() {
 // ─── Request permission ──────────────────────────────────────────────────────
 
 export function requestEnforcementPermission() {
-  if (Platform.OS === 'ios') {
+  if (Platform.OS === 'ios' && IOS_ENFORCEMENT_ENABLED) {
     NativeParentalControls.requestFamilyControlsAuthorization?.();
   }
   // Android: user must enable Accessibility Service manually via system settings.
@@ -66,7 +72,7 @@ export function openEnforcementSettings() {
   if (Platform.OS === 'android') {
     return NativeParentalControls.openAccessibilitySettings?.() ?? false;
   }
-  if (Platform.OS === 'ios') {
+  if (Platform.OS === 'ios' && IOS_ENFORCEMENT_ENABLED) {
     NativeParentalControls.openFamilyControlsSettings?.();
     return true;
   }

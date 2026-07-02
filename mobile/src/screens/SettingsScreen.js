@@ -251,18 +251,22 @@ export default function SettingsScreen({ navigation }) {
             />
           </GlassCard>
 
-          {/* ── Parental Controls ── */}
-          <SectionLabel label="PARENTAL CONTROLS" />
-          <GlassCard noPadding>
-            <NavRow
-              icon="shield-outline"
-              iconColor="#3d09d0"
-              title="Parental Controls"
-              subtitle="Monitoring, limits, blocks, and activity"
-              onPress={openParentalControls}
-              isLast
-            />
-          </GlassCard>
+          {/* ── Parental Controls (Android only — iOS Screen Time entitlement pending) ── */}
+          {Platform.OS !== "ios" && (
+            <>
+              <SectionLabel label="PARENTAL CONTROLS" />
+              <GlassCard noPadding>
+                <NavRow
+                  icon="shield-outline"
+                  iconColor="#3d09d0"
+                  title="Parental Controls"
+                  subtitle="Monitoring, limits, blocks, and activity"
+                  onPress={openParentalControls}
+                  isLast
+                />
+              </GlassCard>
+            </>
+          )}
 
           {/* ── Privacy & Security ── */}
           <SectionLabel label="PRIVACY & SECURITY" />

@@ -1,4 +1,4 @@
-export const LAST_UPDATED = "April 11, 2026";
+export const LAST_UPDATED = "July 10, 2026";
 
 export const PRIVACY_POLICY_SECTIONS = [
   {
@@ -21,7 +21,7 @@ export const PRIVACY_POLICY_SECTIONS = [
   },
   {
     title: "3. How We Share Information",
-    body: "We do not sell personal information. We may share data with service providers that support hosting, analytics, notifications, and infrastructure operations under contractual privacy safeguards. We may also disclose data when required by law or to protect users, Sentinelr, or the public.",
+    body: "We do not sell personal information, share personal information with data brokers, or use personal information to track users across other companies' apps or websites. We may share data with service providers that support hosting, notifications, and infrastructure operations under contractual privacy safeguards. We may also disclose data when required by law or to protect users, Sentinelr, or the public.",
   },
   {
     title: "4. Data Retention",

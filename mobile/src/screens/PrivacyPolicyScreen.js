@@ -6,7 +6,7 @@ import GlassCard from "../components/GlassCard";
 import { useTheme } from "../context/ThemeContext";
 import { typography } from "../utils/typography";
 
-const LAST_UPDATED = "April 11, 2026";
+const LAST_UPDATED = "July 10, 2026";
 
 function Section({ title, children, colors }) {
   return (
@@ -63,8 +63,10 @@ export default function PrivacyPolicyScreen({ navigation }) {
 
             <Section title="3. Sharing and Disclosure" colors={colors}>
               <Text style={[styles.bodyText, { color: colors.textSecondary }]}>
-                We do not sell personal data. We may share information with trusted
-                service providers and when required by law.
+                We do not sell personal data, share personal data with data
+                brokers, or use personal data to track you across other
+                companies' apps or websites. We may share information with
+                trusted service providers and when required by law.
               </Text>
             </Section>
 

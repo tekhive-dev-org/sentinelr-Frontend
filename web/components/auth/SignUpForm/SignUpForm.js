@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Toast from "../../common/Toast";
+import AuthHomeLogo from "../AuthHomeLogo";
 import styles from "./SignUpForm.module.css";
 import { useSignUp } from "./hooks/useSignUp";
 
@@ -44,7 +45,7 @@ export default function SignUpForm() {
       <div className={styles.rightSection}>
         <div className={styles.formContainer}>
           <div className={styles.logoWrapper}>
-            <Image src="/logo.png" alt="Sentinelr" width={80} height={80} className={styles.logo} />
+            <AuthHomeLogo className={styles.logo} priority />
           </div>
           <h1 className={styles.title}>Create Account</h1>
 

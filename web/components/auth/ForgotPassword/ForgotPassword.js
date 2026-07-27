@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '../../../context/AuthContext';
+import AuthHomeLogo from '../AuthHomeLogo';
 import styles from './ForgotPassword.module.css';
 
 const validationSchema = Yup.object({
@@ -55,7 +56,7 @@ export default function ForgotPassword() {
       <div className={styles.rightSection}>
         <div className={styles.formContainer}>
           <div className={styles.logoWrapper}>
-            <Image src="/logo.png" alt="Sentinelr" width={80} height={80} className={styles.logo} />
+            <AuthHomeLogo className={styles.logo} priority />
           </div>
           {/* Lock Icon */}
           <div className={styles.iconWrapper}>

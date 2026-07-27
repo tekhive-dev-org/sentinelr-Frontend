@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Image, Keyboard, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import { useDevice } from '../context/DeviceContext';
 import { useTheme } from '../context/ThemeContext';
 import { apiService } from '../services/api';
@@ -14,16 +15,31 @@ export default function PairingScreen({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
   const { completePairing } = useDevice();
   const { colors, isDark } = useTheme();
-  const inputRef = useRef(null);
 
   const handleCodeChange = (text) => {
-    // Strip non-alphanumeric except hyphens, uppercase, limit to 9 chars
+    // Strip separators, uppercase, and limit to the expected code length
     let cleaned = text.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     // Auto-insert hyphen after 4th character (format: UX5H-2RTM)
     if (cleaned.length > 4) {
       cleaned = cleaned.slice(0, 4) + '-' + cleaned.slice(4, 8);
     }
     setCode(cleaned.slice(0, PAIRING_CODE_LENGTH));
+  };
+
+  const handlePasteCode = async () => {
+    try {
+      const clipboardText = await Clipboard.getStringAsync();
+
+      if (!clipboardText.trim()) {
+        Alert.alert('Nothing to Paste', 'Copy a pairing code, then try again.');
+        return;
+      }
+
+      handleCodeChange(clipboardText);
+      Keyboard.dismiss();
+    } catch {
+      Alert.alert('Paste Failed', 'Unable to read the copied pairing code. Please try again.');
+    }
   };
 
   const handlePair = async () => {
@@ -54,14 +70,6 @@ export default function PairingScreen({ navigation }) {
   };
 
   const isCodeComplete = code.length === PAIRING_CODE_LENGTH;
-
-  // Focus the hidden input when user taps on boxes
-  const focusInput = () => {
-    // Use setTimeout to ensure focus happens after touch event completes
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 100);
-  };
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -95,62 +103,72 @@ export default function PairingScreen({ navigation }) {
 
             {/* Code Input Boxes */}
             <GlassCard style={{ marginBottom: 24 }}>
-              {/* Hidden TextInput that captures all input */}
-              <TextInput
-                ref={inputRef}
-                value={code}
-                onChangeText={handleCodeChange}
-                keyboardType="default"
-                autoCapitalize="characters"
-                maxLength={PAIRING_CODE_LENGTH}
-                caretHidden={true}
-                style={{ position: 'absolute', left: -1000, width: 1, height: 1 }}
-              />
-
-              {/* Visual boxes - tap anywhere to focus */}
-              <View
-                style={pairStyles.boxRow}
-                onStartShouldSetResponder={() => true}
-                onResponderRelease={focusInput}
-              >
-                {Array.from({ length: PAIRING_CODE_LENGTH }, (_, index) => {
-                  if (index === 4) {
+              <View style={pairStyles.codeInputContainer}>
+                {/* Visual boxes rendered underneath the real input */}
+                <View style={pairStyles.boxRow} pointerEvents="none">
+                  {Array.from({ length: PAIRING_CODE_LENGTH }, (_, index) => {
+                    if (index === 4) {
+                      return (
+                        <Text
+                          key={index}
+                          style={[pairStyles.dash, { color: colors.textMuted }]}
+                        >
+                          -
+                        </Text>
+                      );
+                    }
+                    const filled = !!code[index];
+                    const isCursor = index === code.length;
                     return (
-                      <Text
+                      <View
                         key={index}
-                        style={[pairStyles.dash, { color: colors.textMuted }]}
+                        style={[
+                          pairStyles.codeBox,
+                          {
+                            backgroundColor: filled ? colors.neuInset : 'transparent',
+                            borderColor: filled
+                              ? colors.warning
+                              : isCursor
+                                ? colors.danger
+                                : colors.border,
+                          },
+                        ]}
                       >
-                        -
-                      </Text>
+                        <Text style={[pairStyles.codeChar, { color: colors.text }]}>
+                          {code[index] || ''}
+                        </Text>
+                      </View>
                     );
-                  }
-                  const filled = !!code[index];
-                  const isCursor = index === code.length;
-                  return (
-                    <View
-                      key={index}
-                      style={[
-                        pairStyles.codeBox,
-                        {
-                          backgroundColor: filled ? colors.neuInset : 'transparent',
-                          borderColor: filled
-                            ? colors.warning
-                            : isCursor
-                              ? colors.danger
-                              : colors.border,
-                        },
-                      ]}
-                    >
-                      <Text style={[pairStyles.codeChar, { color: colors.text }]}>
-                        {code[index] || ''}
-                      </Text>
-                    </View>
-                  );
-                })}
+                  })}
+                </View>
+                <TextInput
+                  value={code}
+                  onChangeText={handleCodeChange}
+                  keyboardType="default"
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                  caretHidden
+                  contextMenuHidden={false}
+                  style={pairStyles.codeInputOverlay}
+                  accessibilityLabel="Pairing code"
+                  accessibilityHint="Type a code or touch and hold to paste"
+                />
               </View>
               <Text style={[pairStyles.charCount, { color: colors.textMuted }]}>
                 {code.length}/{PAIRING_CODE_LENGTH} characters
               </Text>
+              <TouchableOpacity
+                style={pairStyles.pasteButton}
+                onPress={handlePasteCode}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel="Paste pairing code"
+              >
+                <Ionicons name="clipboard-outline" size={17} color={colors.warning} />
+                <Text style={[pairStyles.pasteButtonText, { color: colors.warning }]}>
+                  Paste code
+                </Text>
+              </TouchableOpacity>
             </GlassCard>
 
             {/* Pair Button */}
@@ -239,6 +257,15 @@ const pairStyles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 22,
   },
+  codeInputContainer: {
+    position: 'relative',
+  },
+  codeInputOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1,
+    color: 'transparent',
+    backgroundColor: 'transparent',
+  },
   boxRow: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -267,6 +294,19 @@ const pairStyles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     marginTop: 12,
+  },
+  pasteButton: {
+    alignSelf: 'center',
+    minHeight: 44,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pasteButtonText: {
+    ...typography.bodyBold,
+    fontSize: 14,
+    marginLeft: 6,
   },
   pairBtn: {
     borderRadius: 14,

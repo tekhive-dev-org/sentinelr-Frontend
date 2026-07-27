@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "../../../context/AuthContext";
+import AuthHomeLogo from "../AuthHomeLogo";
 import styles from "./LoginForm.module.css";
 
 const validationSchema = Yup.object({
@@ -84,7 +85,7 @@ export default function LoginForm() {
       <div className={styles.rightSection}>
         <div className={styles.formContainer}>
           <div className={styles.logoWrapper}>
-            <Image src="/logo.png" alt="Sentinelr" width={300} height={80} className={styles.logo} />
+            <AuthHomeLogo className={styles.logo} width={300} height={80} priority />
           </div>
           <h2 className={styles.title}>Welcome Back</h2>
 
@@ -265,28 +266,7 @@ export default function LoginForm() {
             Continue with Apple
           </button> */}
 
-          {/* Get it on Google Play */}
-          <div className={styles.appDownloadSection}>
-            <p className={styles.appDownloadLabel}>Get The Mobile App</p>
-            <a
-              href="https://play.google.com/store/apps/details?id=com.techhive.sentinelr"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.playStoreButton}
-            >
-              <Image
-                src="/assets/icons/playstore.png"
-                alt="Google Play"
-                width={24}
-                height={24}
-                className={styles.playStoreIcon}
-              />
-              <div className={styles.playStoreText}>
-                <span className={styles.playStoreLabel}>GET IT ON</span>
-                <span className={styles.playStoreName}>Google Play</span>
-              </div>
-            </a>
-          </div>
+
           </form>
         </div>
       </div>

@@ -174,36 +174,7 @@
   @apply bg-gray-400 cursor-not-allowed;
 }
 
-/* App Download Section */
-.appDownloadSection {
-  @apply flex flex-col items-center mt-2 pt-4 border-t border-gray-200;
-}
 
-.appDownloadLabel {
-  @apply text-xs text-gray-400 mb-3 uppercase tracking-wider font-medium;
-}
-
-.playStoreButton {
-  @apply flex items-center gap-3 bg-[#011721] text-white rounded-xl px-5 py-3 transition-all hover:bg-[#c95f20] hover:shadow-md active:scale-95;
-  text-decoration: none;
-}
-
-.playStoreIcon {
-  @apply w-6 h-6 object-contain flex-shrink-0;
-
-}
-
-.playStoreText {
-  @apply flex flex-col leading-tight;
-}
-
-.playStoreLabel {
-  @apply text-[10px] font-normal tracking-widest uppercase opacity-80;
-}
-
-.playStoreName {
-  @apply text-[16px] font-semibold;
-}
 
 /* Welcome Screen Styles */
 .welcomeContainer {
@@ -292,20 +263,17 @@
   box-shadow: 4px 4px 8px #c8cfd5, -4px -4px 8px #ffffff;
 }
 
-.socialButton,
-.playStoreButton {
+.socialButton {
   @apply border-0 rounded-2xl bg-transparent text-slate-700;
   box-shadow: 9px 9px 18px #c6cdd3, -9px -9px 18px #ffffff;
 }
 
-.socialButton:hover,
-.playStoreButton:hover {
+.socialButton:hover {
   background: #edf2f5;
   box-shadow: 6px 6px 12px #c6cdd3, -6px -6px 12px #ffffff;
 }
 
-.dividerLine,
-.appDownloadSection {
+.dividerLine {
   border-color: rgba(148, 163, 184, 0.38);
 }
 
@@ -435,7 +403,6 @@
 
 .subtitle,
 .label,
-.appDownloadLabel,
 .dividerText {
   color: #6f647c;
 }
@@ -507,8 +474,7 @@
   box-shadow: none;
 }
 
-.socialButton,
-.playStoreButton {
+.socialButton {
   min-height: 48px;
   border: 1px solid rgba(61, 9, 208, 0.12);
   border-radius: 16px;
@@ -518,8 +484,7 @@
   box-shadow: 0 12px 24px rgba(31, 22, 54, 0.06);
 }
 
-.socialButton:hover,
-.playStoreButton:hover {
+.socialButton:hover {
   transform: translateY(-1px);
   border-color: rgba(224, 111, 41, 0.28);
   background: #fffaf6;
@@ -527,13 +492,7 @@
   box-shadow: 0 16px 30px rgba(31, 22, 54, 0.09);
 }
 
-.playStoreButton {
-  background: linear-gradient(135deg, #160f24, #3d09d0);
-  color: #ffffff;
-}
-
-.dividerLine,
-.appDownloadSection {
+.dividerLine {
   border-color: rgba(61, 9, 208, 0.1);
 }
 

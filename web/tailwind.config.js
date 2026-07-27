@@ -19,10 +19,14 @@ module.exports = {
           redSurface: '#fff0f1',
           yellowSurface: '#fff8e8',
         },
+        'primary-green': '#e06f29',
+        'deep-forest': '#12061e',
       },
       fontFamily: {
         sans: ['Space Grotesk', 'sans-serif'],
         heading: ['Playfair Display', 'serif'],
+        display: ['Playfair Display', 'serif'],
+        body: ['Space Grotesk', 'sans-serif'],
       },
       screens: {
         mobile: { max: "640px" },

@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { useAuth } from '../../../context/AuthContext';
 import Toast from '../../common/Toast';
+import AuthHomeLogo from '../AuthHomeLogo';
 import styles from './VerificationCode.module.css';
 
 export default function VerificationCode({ email = '' }) {
@@ -189,7 +190,7 @@ export default function VerificationCode({ email = '' }) {
       <div className={styles.rightSection}>
         <div className={styles.formContainer}>
           <div className={styles.logoWrapper}>
-            <Image src="/logo.png" alt="Sentinelr" width={80} height={80} className={styles.logo} />
+            <AuthHomeLogo className={styles.logo} priority />
           </div>
           {/* Input State */}
           {verificationState === 'input' && (

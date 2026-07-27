@@ -8,6 +8,9 @@ import {
   ScrollView,
   TouchableOpacity,
   Animated,
+  Alert,
+  Linking,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -33,16 +36,38 @@ const relativeTime = (date) => {
 };
 
 // ── Stat tile ─────────────────────────────────────────────────────────────
-const StatTile = ({ icon, label, children, iconColor, iconBg }) => {
+const StatTile = ({ icon, label, children, iconColor, iconBg, onPress, accessibilityLabel }) => {
   const { colors } = useTheme();
-  return (
-    <GlassCard style={styles.tile}>
+  const tile = (
+    <GlassCard style={[styles.tile, onPress && styles.pressableTile]}>
       <View style={[styles.tileIcon, { backgroundColor: iconBg }]}>
         <Ionicons name={icon} size={18} color={iconColor} />
       </View>
       <Text style={[styles.tileLabel, { color: colors.textMuted }]}>{label}</Text>
       {children}
+      {onPress && (
+        <Ionicons
+          name="open-outline"
+          size={14}
+          color={colors.textMuted}
+          style={styles.tileOpenIcon}
+        />
+      )}
     </GlassCard>
+  );
+
+  if (!onPress) return tile;
+
+  return (
+    <TouchableOpacity
+      style={styles.tileTouchTarget}
+      onPress={onPress}
+      activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+    >
+      {tile}
+    </TouchableOpacity>
   );
 };
 
@@ -172,6 +197,41 @@ export default function TrackingScreen({ navigation }) {
 
   const shortId = deviceId ? `···${deviceId.slice(-6)}` : "—";
 
+  const handleOpenLocation = async () => {
+    const latitude = Number(currentLocation?.latitude);
+    const longitude = Number(currentLocation?.longitude);
+    const hasValidCoordinates =
+      Number.isFinite(latitude) &&
+      Number.isFinite(longitude) &&
+      latitude >= -90 &&
+      latitude <= 90 &&
+      longitude >= -180 &&
+      longitude <= 180;
+
+    if (!hasValidCoordinates) {
+      Alert.alert("Location Unavailable", "Wait for the device to get its current location, then try again.");
+      return;
+    }
+
+    const coordinates = `${latitude},${longitude}`;
+    const nativeMapUrl = Platform.select({
+      ios: `http://maps.apple.com/?ll=${coordinates}&q=Current%20Location`,
+      android: `geo:${coordinates}?q=${coordinates}`,
+      default: `https://www.google.com/maps/search/?api=1&query=${coordinates}`,
+    });
+    const webMapUrl = `https://www.google.com/maps/search/?api=1&query=${coordinates}`;
+
+    try {
+      await Linking.openURL(nativeMapUrl);
+    } catch {
+      try {
+        await Linking.openURL(webMapUrl);
+      } catch {
+        Alert.alert("Unable to Open Maps", "The Maps app could not be opened on this device.");
+      }
+    }
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -272,6 +332,10 @@ export default function TrackingScreen({ navigation }) {
               label="LOCATION"
               iconColor={colors.accent}
               iconBg={colors.accentSoft}
+              onPress={handleOpenLocation}
+              accessibilityLabel={
+                hasLocation ? `Open current location ${coordText} in Maps` : "Current location unavailable"
+              }
             >
               <Text
                 style={[
@@ -451,6 +515,17 @@ const styles = StyleSheet.create({
     width: "47.5%",
     gap: 6,
     minHeight: 100,
+  },
+  tileTouchTarget: {
+    width: "47.5%",
+  },
+  pressableTile: {
+    width: "100%",
+  },
+  tileOpenIcon: {
+    position: "absolute",
+    top: 16,
+    right: 16,
   },
   tileIcon: {
     width: 36,

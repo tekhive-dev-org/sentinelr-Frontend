@@ -1,7 +1,7 @@
 .grid {
   display: grid; grid-template-columns: repeat(1, 1fr); gap: 1.25rem;
 }.panel {
-  @apply flex flex-col rounded-2xl bg-white p-6 transition-all duration-300;
+  @apply flex flex-col rounded-2xl bg-white p-4 sm:p-6 transition-all duration-300;
   border: 1px solid rgba(224, 111, 41, 0.12);
   box-shadow: 0 10px 30px rgba(18, 6, 30, 0.035);
 }

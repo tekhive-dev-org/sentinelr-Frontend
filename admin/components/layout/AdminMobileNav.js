@@ -23,8 +23,8 @@ export default function AdminMobileNav({ badges = {} }) {
     return items;
   }, [can]);
 
-  const barItems = accessibleItems.slice(0, 5);
-  const hasMore = accessibleItems.length > 5;
+  const barItems = accessibleItems.slice(0, 3);
+  const hasMore = accessibleItems.length > 3;
 
   const groupedItems = useMemo(() => {
     const groups = {};

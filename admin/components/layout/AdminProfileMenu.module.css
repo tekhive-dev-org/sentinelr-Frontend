@@ -162,3 +162,16 @@
   background: #fff0f1;
   color: #a92731;
 }
+
+@media (max-width: 640px) {
+  .userInfo,
+  .chevron {
+    display: none;
+  }
+
+  .trigger {
+    padding: 3px;
+    border-radius: 999px;
+    gap: 0;
+  }
+}

@@ -1,4 +1,6 @@
 import { useRouter } from "next/router";
+import Link from "next/link";
+import Image from "next/image";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MenuOpenOutlinedIcon from "@mui/icons-material/MenuOpenOutlined";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
@@ -17,8 +19,19 @@ export default function AdminHeader({ onMenuToggle, isSidebarOpen, badges }) {
 
   return (
     <header className={styles.header}>
-      {/* ── Left: hamburger + breadcrumbs ── */}
+      {/* ── Left: mobile logo + hamburger + breadcrumbs ── */}
       <div className={styles.left}>
+        <Link href="/dashboard" className={styles.mobileLogoLink} aria-label="Sentinelr Dashboard">
+          <Image
+            src="/favicon.png"
+            alt="Sentinelr"
+            width={30}
+            height={30}
+            className={styles.mobileLogo}
+            priority
+          />
+        </Link>
+
         <button
           type="button"
           className={styles.menuButton}

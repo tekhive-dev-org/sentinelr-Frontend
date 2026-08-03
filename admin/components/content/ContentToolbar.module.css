@@ -1,0 +1,36 @@
+.toolbar {
+  @apply flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between;
+}
+
+.filters {
+  @apply flex flex-wrap items-center gap-2;
+}
+
+.searchWrap {
+  @apply relative min-w-[200px] max-w-[280px];
+}
+
+.searchIcon {
+  @apply absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none;
+  font-size: 1.125rem;
+}
+
+.searchInput {
+  @apply w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm text-slate-800 placeholder-slate-400 transition-colors focus:border-brand-secondary focus:outline-none focus:ring-2 focus:ring-brand-secondary/20;
+}
+
+.select {
+  @apply rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 transition-colors focus:border-brand-secondary focus:outline-none focus:ring-2 focus:ring-brand-secondary/20;
+}
+
+.actions {
+  @apply flex items-center gap-2;
+}
+
+.newButton {
+  @apply inline-flex items-center gap-1.5 rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-primaryHover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2;
+}
+
+.newButtonIcon {
+  font-size: 1.125rem;
+}

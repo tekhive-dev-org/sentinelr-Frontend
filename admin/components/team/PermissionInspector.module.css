@@ -1,0 +1,47 @@
+.wrapper {
+  @apply rounded-2xl border border-slate-200 bg-white p-6 shadow-sm;
+}
+
+.title {
+  @apply mb-1 text-base font-bold text-slate-900;
+}
+
+.subtitle {
+  @apply mb-5 text-sm text-slate-500;
+}
+
+.group {
+  @apply mb-4 last:mb-0;
+}
+
+.groupLabel {
+  @apply mb-2 text-xs font-bold uppercase tracking-wider text-slate-400;
+}
+
+.badges {
+  @apply flex flex-wrap gap-1.5;
+}
+
+.badge {
+  @apply inline-block rounded-md border border-slate-200 bg-slate-50 px-2 py-1 font-mono text-xs text-slate-600;
+}
+
+.empty {
+  @apply py-8 text-center text-sm text-slate-500;
+}
+
+.skeleton {
+  @apply animate-pulse space-y-4;
+}
+
+.skeletonGroup {
+  @apply space-y-2;
+}
+
+.skeletonLine {
+  @apply h-4 rounded bg-slate-200;
+}
+
+.skeletonBadge {
+  @apply h-6 w-32 rounded-md bg-slate-200;
+}

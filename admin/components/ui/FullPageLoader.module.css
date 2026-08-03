@@ -1,0 +1,25 @@
+.page {
+  @apply flex min-h-screen items-center justify-center px-4 py-10;
+  background:
+    radial-gradient(circle at 18% 14%, rgba(224, 111, 41, 0.16), transparent 30%),
+    radial-gradient(circle at 86% 82%, rgba(61, 9, 208, 0.12), transparent 34%),
+    var(--brand-surface);
+}
+
+.card {
+  @apply w-full max-w-lg rounded-2xl bg-white p-8 text-center;
+  border: 1px solid var(--brand-border);
+  box-shadow: 0 24px 64px var(--brand-shadow);
+}
+
+.spinner {
+  @apply mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-brand-primary;
+}
+
+.title {
+  @apply mt-6 font-heading text-2xl font-semibold text-deep-forest;
+}
+
+.message {
+  @apply mt-2 text-sm text-slate-500;
+}

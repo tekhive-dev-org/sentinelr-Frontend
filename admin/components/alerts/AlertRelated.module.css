@@ -1,0 +1,59 @@
+.list {
+  @apply flex flex-col divide-y divide-slate-100;
+}
+
+.row {
+  @apply flex items-center justify-between gap-3 py-3;
+}
+
+.rowMain {
+  @apply flex flex-col gap-0.5;
+}
+
+.link {
+  @apply text-sm font-medium text-brand-secondary transition-colors hover:text-brand-secondaryHover hover:underline;
+}
+
+.meta {
+  @apply flex items-center gap-2 text-xs text-slate-400;
+}
+
+.pills {
+  @apply flex shrink-0 gap-1.5;
+}
+
+.pill {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+}
+
+.pillCritical {
+  @apply bg-red-50 text-red-700 ring-1 ring-inset ring-red-200;
+}
+
+.pillHigh {
+  @apply bg-orange-50 text-orange-700 ring-1 ring-inset ring-orange-200;
+}
+
+.pillMedium {
+  @apply bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200;
+}
+
+.pillLow {
+  @apply bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-200;
+}
+
+.statusPill {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+}
+
+.statusActive {
+  @apply bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-200;
+}
+
+.statusResolved {
+  @apply bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200;
+}
+
+.statusFalseAlarm {
+  @apply bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200;
+}

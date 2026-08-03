@@ -1,0 +1,184 @@
+.backdrop {
+  @apply fixed inset-0 z-50 bg-black/40;
+  @apply transition-opacity duration-300;
+}
+
+.drawer {
+  @apply fixed right-0 top-0 z-50 h-full w-full max-w-[480px];
+  @apply flex flex-col bg-white shadow-2xl;
+  @apply transition-transform duration-300 ease-in-out;
+}
+
+.drawerOpen {
+  @apply translate-x-0;
+}
+
+.drawerClosed {
+  @apply translate-x-full;
+}
+
+.closeBtn {
+  @apply absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg;
+  @apply text-slate-400 transition-colors duration-150;
+  @apply hover:bg-slate-100 hover:text-slate-600;
+}
+
+.closeIcon {
+  @apply h-5 w-5;
+}
+
+/* Header */
+.header {
+  @apply border-b border-slate-200 px-6 py-5;
+}
+
+.headerTop {
+  @apply flex items-center gap-3;
+}
+
+.headerTitle {
+  @apply text-lg font-semibold text-slate-900;
+}
+
+.headerMeta {
+  @apply mt-2 flex items-center gap-3;
+}
+
+.headerTimestamp {
+  @apply text-sm text-slate-400;
+}
+
+/* Pills in header */
+.actionPill {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap;
+}
+
+.actionUser {
+  @apply bg-purple-50 text-purple-700 ring-1 ring-inset ring-purple-200;
+}
+
+.actionDevice {
+  @apply bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-200;
+}
+
+.actionAlert {
+  @apply bg-red-50 text-red-700 ring-1 ring-inset ring-red-200;
+}
+
+.actionSubscription {
+  @apply bg-green-50 text-green-700 ring-1 ring-inset ring-green-200;
+}
+
+.actionContent {
+  @apply bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200;
+}
+
+.actionRole {
+  @apply bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200;
+}
+
+.actionAdmin {
+  @apply bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-200;
+}
+
+.actionOther {
+  @apply bg-slate-100 text-slate-500 ring-1 ring-inset ring-slate-200;
+}
+
+.outcomePill {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
+
+.outcomeSuccess {
+  @apply bg-green-50 text-green-700 ring-1 ring-inset ring-green-200;
+}
+
+.outcomeFailed {
+  @apply bg-red-50 text-red-700 ring-1 ring-inset ring-red-200;
+}
+
+.outcomeDenied {
+  @apply bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200;
+}
+
+/* Body */
+.body {
+  @apply flex-1 overflow-y-auto px-6 py-5 space-y-6;
+}
+
+.section {
+  @apply space-y-1.5;
+}
+
+.sectionLabel {
+  @apply text-xs font-semibold uppercase tracking-wider text-slate-400;
+}
+
+.sectionValue {
+  @apply text-sm text-slate-800;
+}
+
+.sectionMono {
+  @apply text-xs font-mono text-slate-500;
+}
+
+.reasonText {
+  @apply text-sm text-slate-700 leading-relaxed whitespace-pre-wrap;
+}
+
+/* Change Summary */
+.changeGrid {
+  @apply grid grid-cols-2 gap-4;
+}
+
+.changeCol {
+  @apply space-y-1;
+}
+
+.changeColLabel {
+  @apply text-xs font-semibold uppercase tracking-wider text-slate-400;
+}
+
+.changeColContent {
+  @apply rounded-lg border border-slate-200 bg-slate-50 p-3;
+  @apply text-xs font-mono text-slate-600 whitespace-pre-wrap break-all;
+  @apply max-h-48 overflow-y-auto;
+}
+
+/* Technical Details */
+.techGrid {
+  @apply space-y-2;
+}
+
+.techRow {
+  @apply flex items-baseline gap-2;
+}
+
+.techLabel {
+  @apply text-xs font-medium text-slate-500 w-24 shrink-0;
+}
+
+.techValue {
+  @apply text-sm text-slate-800 font-mono;
+}
+
+/* Deep Link */
+.deepLink {
+  @apply inline-flex items-center gap-1.5 rounded-lg px-3 py-2;
+  @apply text-sm font-medium text-brand-secondary;
+  @apply bg-brand-purpleSurface transition-colors duration-150;
+  @apply hover:bg-purple-100;
+}
+
+.deepLinkIcon {
+  @apply h-4 w-4;
+}
+
+/* Footer */
+.footer {
+  @apply border-t border-slate-200 px-6 py-4;
+}
+
+.footerNote {
+  @apply text-xs text-slate-400 text-center;
+}

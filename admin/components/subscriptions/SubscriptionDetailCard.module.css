@@ -1,0 +1,116 @@
+.content {
+  @apply flex flex-col gap-3;
+}
+
+.topRow {
+  @apply flex flex-wrap items-start justify-between gap-2;
+}
+
+.userInfo {
+  @apply flex flex-col gap-1;
+}
+
+.subscriberName {
+  @apply text-base font-semibold text-brand-primary underline decoration-transparent transition-colors hover:decoration-brand-primary;
+}
+
+.email {
+  @apply text-sm text-slate-500;
+}
+
+.planRow {
+  @apply flex flex-wrap items-center gap-2;
+}
+
+.planName {
+  @apply text-base font-semibold text-slate-800;
+}
+
+.statusPill {
+  @apply rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase;
+}
+
+.statusActive {
+  @apply bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200;
+}
+
+.statusTrialing {
+  @apply bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-200;
+}
+
+.statusPastDue {
+  @apply bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200;
+}
+
+.statusCancelled {
+  @apply bg-slate-100 text-slate-500 ring-1 ring-inset ring-slate-200;
+}
+
+.statusExpired {
+  @apply bg-slate-100 text-slate-500 ring-1 ring-inset ring-slate-200;
+}
+
+.details {
+  @apply flex flex-col gap-2;
+}
+
+.detailRow {
+  @apply flex gap-2;
+}
+
+.detailLabel {
+  @apply min-w-[100px] text-xs font-medium uppercase tracking-wide text-slate-400;
+}
+
+.detailValue {
+  @apply text-sm text-slate-700;
+}
+
+.amount {
+  @apply text-sm font-semibold text-slate-800;
+}
+
+.countdownLabel {
+  @apply ml-1 text-xs font-medium text-amber-600;
+}
+
+.countdownLabelUrgent {
+  @apply ml-1 text-xs font-medium text-red-600;
+}
+
+.trialBanner {
+  @apply mt-1 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-700;
+}
+
+/* State-specific borders applied to SectionCard wrapper */
+.cardPastDue {
+  @apply rounded-2xl border-2 border-red-300 bg-white shadow-sm;
+}
+
+.cardCancelled {
+  @apply rounded-2xl border border-slate-200 bg-slate-50/50 shadow-sm;
+}
+
+.cancelledOverlay {
+  @apply opacity-60;
+}
+
+.empty {
+  @apply py-4 text-center text-sm text-slate-400;
+}
+
+.skeletonGroup {
+  @apply flex flex-col gap-3;
+}
+
+.skeletonLine {
+  @apply block h-4 w-full animate-pulse rounded bg-slate-200;
+}
+
+.skeletonLineShort {
+  @apply w-3/5;
+}
+
+.skeletonLineMedium {
+  @apply w-4/5;
+}

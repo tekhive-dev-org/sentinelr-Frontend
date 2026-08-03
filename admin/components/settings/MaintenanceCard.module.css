@@ -1,0 +1,121 @@
+.card {
+  @apply rounded-2xl border-2 border-amber-300 bg-white shadow-sm;
+}
+
+.cardActive {
+  @apply border-red-400;
+}
+
+/* ── Header ───────────────────────────────────────────── */
+
+.header {
+  @apply flex items-start gap-3 border-b border-amber-100 px-6 py-5;
+}
+
+.headerIcon {
+  @apply mt-0.5 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600 text-xl;
+}
+
+.cardActive .headerIcon {
+  @apply bg-red-50 text-red-600;
+}
+
+.title {
+  @apply font-heading text-lg font-bold text-slate-900;
+}
+
+.subtitle {
+  @apply mt-0.5 text-sm text-slate-500;
+}
+
+/* ── Body ─────────────────────────────────────────────── */
+
+.body {
+  @apply space-y-4 px-6 py-5;
+}
+
+/* ── Status ───────────────────────────────────────────── */
+
+.statusRow {
+  @apply flex items-center justify-between;
+}
+
+.statusLabel {
+  @apply text-sm font-medium text-slate-600;
+}
+
+.statusPill {
+  @apply inline-flex items-center rounded-full px-3 py-0.5 text-xs font-bold uppercase tracking-wide;
+}
+
+.statusActive {
+  @apply bg-red-100 text-red-700;
+}
+
+.statusInactive {
+  @apply bg-emerald-100 text-emerald-700;
+}
+
+/* ── Toggle button ────────────────────────────────────── */
+
+.toggleButton {
+  @apply inline-flex w-full items-center justify-center gap-2 rounded-lg border border-amber-400 bg-amber-50 px-4 py-2.5 text-sm font-semibold text-amber-800 transition hover:bg-amber-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+.toggleButtonDanger {
+  @apply border-red-400 bg-red-50 text-red-700 hover:bg-red-100 focus-visible:ring-red-500;
+}
+
+.buttonIcon {
+  @apply text-base;
+}
+
+/* ── Confirmation ─────────────────────────────────────── */
+
+.confirmBox {
+  @apply flex gap-3 rounded-xl border border-amber-200 bg-brand-yellowSurface p-4;
+}
+
+.confirmIcon {
+  @apply mt-0.5 flex-shrink-0 text-amber-500;
+}
+
+.confirmTitle {
+  @apply text-sm font-semibold text-amber-900;
+}
+
+.warningText {
+  @apply mt-1 text-xs leading-relaxed text-slate-500;
+}
+
+.confirmActions {
+  @apply mt-3 flex items-center gap-2;
+}
+
+.confirmButton {
+  @apply inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+.cancelButton {
+  @apply rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+/* ── Restricted ───────────────────────────────────────── */
+
+.restrictedBanner {
+  @apply flex items-center gap-2 rounded-xl bg-brand-yellowSurface px-4 py-3 text-sm text-amber-800;
+}
+
+.restrictedIcon {
+  @apply flex-shrink-0 text-base text-amber-500;
+}
+
+/* ── Footer ───────────────────────────────────────────── */
+
+.footer {
+  @apply border-t border-amber-100 px-6 py-4;
+}
+
+.meta {
+  @apply mt-2 text-xs text-slate-400;
+}

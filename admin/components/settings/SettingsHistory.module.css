@@ -1,0 +1,109 @@
+/* ── Header ───────────────────────────────────────────── */
+
+.header {
+  @apply mb-5 flex items-start gap-3;
+}
+
+.headerIcon {
+  @apply mt-1 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-purple-50 text-brand-secondary text-xl;
+}
+
+.title {
+  @apply font-heading text-lg font-bold text-slate-900;
+}
+
+.subtitle {
+  @apply mt-0.5 text-sm text-slate-500;
+}
+
+/* ── Empty ────────────────────────────────────────────── */
+
+.empty {
+  @apply flex flex-col items-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center text-sm text-slate-500;
+}
+
+.emptyIcon {
+  @apply text-2xl text-slate-300;
+}
+
+/* ── Timeline ─────────────────────────────────────────── */
+
+.timeline {
+  @apply relative ml-2;
+}
+
+/* ── Entry ────────────────────────────────────────────── */
+
+.entry {
+  @apply relative flex gap-4 pb-6 last:pb-0;
+}
+
+.entryDot {
+  @apply relative z-10 mt-1.5 h-3 w-3 flex-shrink-0 rounded-full border-2 border-brand-secondary bg-white;
+}
+
+.entryLine {
+  @apply absolute left-[5px] top-5 h-full w-0.5 bg-slate-200;
+}
+
+.entryContent {
+  @apply min-w-0 flex-1 rounded-lg border border-slate-200 bg-white p-3;
+}
+
+.entryHeader {
+  @apply flex items-center justify-between gap-2;
+}
+
+.entryField {
+  @apply text-sm font-semibold text-slate-900;
+}
+
+.entryTime {
+  @apply flex-shrink-0 text-xs text-slate-400;
+}
+
+.entryChange {
+  @apply mt-1.5 flex items-center gap-1.5 text-sm;
+}
+
+.oldValue {
+  @apply rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs text-slate-500 line-through;
+}
+
+.arrowIcon {
+  @apply flex-shrink-0 text-slate-400 text-sm;
+}
+
+.newValue {
+  @apply rounded bg-emerald-50 px-1.5 py-0.5 font-mono text-xs font-medium text-emerald-700;
+}
+
+.entryMeta {
+  @apply mt-2 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-slate-400;
+}
+
+.entryReason {
+  @apply italic text-slate-400;
+}
+
+/* ── Skeleton ─────────────────────────────────────────── */
+
+.skeletonEntry {
+  @apply flex gap-4 pb-6 last:pb-0;
+}
+
+.skeletonDot {
+  @apply mt-1.5 h-3 w-3 flex-shrink-0 rounded-full bg-slate-200;
+}
+
+.skeletonContent {
+  @apply min-w-0 flex-1 rounded-lg border border-slate-200 bg-white p-3;
+}
+
+.skeletonLine {
+  @apply mb-2 h-4 w-2/3 animate-pulse rounded bg-slate-200;
+}
+
+.skeletonLineShort {
+  @apply h-3 w-1/3 animate-pulse rounded bg-slate-100;
+}

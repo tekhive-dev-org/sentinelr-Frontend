@@ -1,0 +1,27 @@
+.page {
+  @apply space-y-5;
+}
+
+.pageHeader {
+  @apply flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between;
+}
+
+.title {
+  @apply font-heading text-2xl font-bold text-slate-900;
+}
+
+.subtitle {
+  @apply text-sm text-slate-500;
+}
+
+.liveIndicator {
+  @apply inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700;
+}
+
+.liveDot {
+  @apply h-2 w-2 animate-pulse rounded-full bg-red-500;
+}
+
+.tableSection {
+  @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm;
+}

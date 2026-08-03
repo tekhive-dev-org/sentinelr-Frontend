@@ -3,8 +3,6 @@ import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
 import { DashboardLayout, SOSAlert } from '../../components/dashboard';
 import { FullPageLoader } from '../../components/ui/loaders';
-import ComingSoon from '../../components/common/ComingSoon';
-import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
 export default function Alerts() {
   const router = useRouter();
@@ -24,19 +22,9 @@ export default function Alerts() {
     return null;
   }
 
-  const isAdmin = user.role === 'admin';
-
   return (
     <DashboardLayout>
-      {isAdmin ? (
-        <ComingSoon
-          title="Alert & Report Handling"
-          description="Review and manage user-generated alerts, incidents, and reports from one central hub."
-          icon={ReportProblemIcon}
-        />
-      ) : (
-        <SOSAlert />
-      )}
+      <SOSAlert />
     </DashboardLayout>
   );
 }

@@ -1,0 +1,59 @@
+.toolbar {
+  @apply mb-6 space-y-4;
+}
+
+.topRow {
+  @apply flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between;
+}
+
+.searchWrap {
+  @apply relative flex-1 max-w-md;
+}
+
+.searchIcon {
+  @apply absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none;
+  @apply h-5 w-5 text-slate-400;
+}
+
+.searchInput {
+  @apply w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-10;
+  @apply text-sm text-slate-900 placeholder-slate-400;
+  @apply transition-colors duration-150;
+  @apply focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20;
+}
+
+.clearBtn {
+  @apply absolute right-2 top-1/2 -translate-y-1/2;
+  @apply flex h-6 w-6 items-center justify-center rounded-full;
+  @apply text-slate-400 transition-colors duration-150;
+  @apply hover:bg-slate-100 hover:text-slate-600;
+}
+
+.clearIcon {
+  @apply h-4 w-4;
+}
+
+.rightSection {
+  @apply flex items-center gap-3;
+}
+
+.deviceCount {
+  @apply text-sm text-slate-500;
+}
+
+.filters {
+  @apply flex flex-wrap gap-3;
+}
+
+.filterSelect {
+  @apply rounded-lg border border-slate-300 bg-white px-3 py-2;
+  @apply text-sm text-slate-700;
+  @apply transition-colors duration-150;
+  @apply cursor-pointer;
+  @apply focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}

@@ -1,0 +1,90 @@
+/* ---- Timeline ---- */
+
+.timeline {
+  @apply flex flex-col;
+}
+
+.timelineItem {
+  @apply flex gap-3;
+}
+
+.timelineItemLast {
+  @apply pb-0;
+}
+
+/* ---- Timeline node ---- */
+
+.timelineNode {
+  @apply flex flex-col items-center;
+  min-width: 12px;
+}
+
+.dot {
+  @apply mt-1.5 block h-2.5 w-2.5 rounded-full border-2 border-white ring-1;
+}
+
+.dotPaired {
+  @apply bg-emerald-500 ring-emerald-300;
+}
+
+.dotRepaired {
+  @apply bg-sky-500 ring-sky-300;
+}
+
+.dotUnpaired {
+  @apply bg-slate-400 ring-slate-300;
+}
+
+.dotDefault {
+  @apply bg-slate-300 ring-slate-200;
+}
+
+.timelineLine {
+  @apply mt-1.5 h-full w-px bg-slate-200;
+}
+
+/* ---- Timeline body ---- */
+
+.timelineBody {
+  @apply flex flex-col gap-1 pb-5;
+}
+
+.timelineItemLast .timelineBody {
+  @apply pb-0;
+}
+
+.eventRow {
+  @apply flex flex-wrap items-center gap-x-3 gap-y-1;
+}
+
+/* ---- Action pill ---- */
+
+.actionPill {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase;
+}
+
+.actionPaired {
+  @apply bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200;
+}
+
+.actionRepaired {
+  @apply bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-200;
+}
+
+.actionUnpaired {
+  @apply bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-200;
+}
+
+.actionDefault {
+  @apply bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-200;
+}
+
+/* ---- Date & actor ---- */
+
+.date {
+  @apply text-xs text-slate-400;
+}
+
+.actor {
+  @apply text-xs text-slate-500;
+}

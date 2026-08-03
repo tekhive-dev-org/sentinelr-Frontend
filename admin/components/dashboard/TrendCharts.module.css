@@ -1,0 +1,119 @@
+/* ── Section wrapper ── */
+.section {
+  @apply space-y-6;
+}
+
+/* ── Header row: title + date-range pills ── */
+.header {
+  @apply flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between;
+}
+
+.titleRow {
+  @apply flex items-center gap-2;
+}
+
+.calendarIcon {
+  @apply text-brand-secondary;
+}
+
+.titleText {
+  @apply font-heading text-2xl font-bold text-deep-forest;
+}
+
+
+
+/* ── Date-range pills ── */
+.pills {
+  @apply flex gap-1 rounded-xl bg-brand-purpleSurface/60 p-1 border border-slate-200/40;
+}
+
+.pill {
+  @apply rounded-lg px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-slate-500 transition-all duration-200 cursor-pointer;
+}
+
+.pill:hover {
+  @apply bg-white/80 text-slate-800 shadow-sm;
+  transform: scale(1.02);
+}
+
+.pillActive {
+  @apply bg-brand-secondary text-white shadow-md;
+}
+
+.pillActive:hover {
+  @apply bg-brand-secondaryHover text-white;
+}
+
+/* ── Chart grid ── */
+.grid {
+  display: grid; grid-template-columns: repeat(1, 1fr); gap: 1.25rem;
+}
+
+/* ── Chart card ── */
+.card {
+  @apply overflow-hidden rounded-2xl bg-white p-6 transition-all duration-300;
+  border: 1px solid rgba(224, 111, 41, 0.12);
+  box-shadow: 0 10px 30px rgba(18, 6, 30, 0.035);
+}
+
+.card:hover {
+  box-shadow: 0 20px 40px rgba(18, 6, 30, 0.05);
+}
+
+.cardTitle {
+  @apply mb-3.5 text-sm font-semibold text-slate-600;
+}
+
+.chartWrap {
+  @apply relative w-full;
+  height: 200px;
+}
+
+/* ── Skeleton shimmer ── */
+.skeleton {
+  @apply flex h-full w-full flex-col justify-end gap-2;
+}
+
+.shimmerBar {
+  @apply w-full rounded;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+  height: 12px;
+}
+
+.shimmerBarShort {
+  composes: shimmerBar;
+  width: 60%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ── Empty / error state ── */
+.stateWrap {
+  @apply flex h-full w-full flex-col items-center justify-center gap-2 text-center;
+}
+
+.unavailableText {
+  @apply text-sm text-slate-400;
+}
+
+.errorText {
+  @apply text-sm font-medium text-slate-700;
+}
+
+.retryText {
+  @apply cursor-pointer text-xs font-semibold text-brand-secondary underline underline-offset-2 transition-colors;
+}
+
+.retryText:hover {
+  @apply text-brand-secondaryHover;
+}
+@media (min-width: 768px) { .grid { grid-template-columns: repeat(2, 1fr); } }

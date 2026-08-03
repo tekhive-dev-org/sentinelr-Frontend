@@ -1,0 +1,175 @@
+.wrapper {
+  @apply min-w-0 w-full;
+}
+
+.tableWrap {
+  @apply w-full max-w-full overflow-x-auto rounded-xl border border-slate-200 bg-white;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+
+.table {
+  @apply w-full min-w-[1100px] border-collapse;
+}
+
+.headerRow {
+  @apply border-b border-slate-200 bg-slate-50;
+}
+
+.headerCell {
+  @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500;
+  @apply cursor-pointer select-none transition-colors duration-150;
+  @apply hover:text-slate-800;
+}
+
+.headerCellNonSortable {
+  @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500;
+}
+
+.headerContent {
+  @apply inline-flex items-center gap-1;
+}
+
+.sortIcon {
+  @apply inline-flex;
+}
+
+.sortArrow {
+  @apply h-3.5 w-3.5;
+}
+
+.row {
+  @apply border-b border-slate-100 transition-colors duration-100;
+  @apply cursor-pointer hover:bg-brand-surface;
+}
+
+.cell {
+  @apply px-4 py-3 text-sm text-slate-700;
+}
+
+.subjectText {
+  @apply font-medium text-slate-900;
+}
+
+.secondaryText {
+  @apply text-slate-600;
+}
+
+.mutedText {
+  @apply text-xs text-slate-400;
+}
+
+/* Category pills */
+.categoryBadge {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
+
+.categoryDevice {
+  @apply bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-200;
+}
+
+.categoryAlerts {
+  @apply bg-red-50 text-red-700 ring-1 ring-inset ring-red-200;
+}
+
+.categoryBilling {
+  @apply bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200;
+}
+
+.categoryTechnical {
+  @apply bg-purple-50 text-purple-700 ring-1 ring-inset ring-purple-200;
+}
+
+.categoryFeedback {
+  @apply bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200;
+}
+
+/* Priority pills */
+.priorityBadge {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
+
+.priorityHigh {
+  @apply bg-red-50 text-red-700 ring-1 ring-inset ring-red-200;
+}
+
+.priorityMedium {
+  @apply bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200;
+}
+
+.priorityLow {
+  @apply bg-slate-100 text-slate-500 ring-1 ring-inset ring-slate-200;
+}
+
+/* Status pills */
+.statusBadge {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
+
+.statusOpen {
+  @apply bg-red-50 text-red-700 ring-1 ring-inset ring-red-200;
+}
+
+.statusInprogress {
+  @apply bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200;
+}
+
+.statusResolved {
+  @apply bg-green-50 text-green-700 ring-1 ring-inset ring-green-200;
+}
+
+/* Skeleton */
+.skeleton {
+  @apply animate-pulse rounded bg-slate-200;
+}
+
+/* Error */
+.errorBanner {
+  @apply mb-4 flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3;
+}
+
+.errorIcon {
+  @apply h-5 w-5 shrink-0 text-red-500;
+}
+
+.errorText {
+  @apply flex-1 text-sm text-red-700;
+}
+
+.retryBtn {
+  @apply inline-flex items-center gap-1 rounded-md px-3 py-1.5;
+  @apply text-sm font-medium text-red-700 transition-colors duration-150;
+  @apply hover:bg-red-100;
+}
+
+.retryIcon {
+  @apply h-4 w-4;
+}
+
+/* Empty */
+.emptyCell {
+  @apply py-16;
+}
+
+.emptyState {
+  @apply flex flex-col items-center justify-center text-center;
+}
+
+.emptyIcon {
+  @apply h-12 w-12 text-slate-300;
+}
+
+.emptyTitle {
+  @apply mt-4 text-base font-semibold text-slate-700;
+}
+
+.emptyDesc {
+  @apply mt-1 text-sm text-slate-400;
+}
+
+@media (max-width: 767px) {
+  .tableWrap {
+    @apply hidden;
+  }
+}

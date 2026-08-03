@@ -1,0 +1,29 @@
+.content {
+  @apply flex flex-col gap-4;
+}
+
+.rows {
+  @apply flex flex-col gap-2;
+}
+
+.row {
+  @apply flex flex-col gap-0.5 sm:flex-row sm:gap-2;
+}
+
+.label {
+  @apply text-xs font-medium uppercase tracking-wide text-slate-400;
+  min-width: 120px;
+}
+
+.value {
+  @apply flex items-center gap-1.5 text-sm text-slate-700;
+}
+
+.link {
+  @apply text-sm font-medium text-brand-secondary transition-colors hover:text-brand-secondaryHover hover:underline
+         focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}

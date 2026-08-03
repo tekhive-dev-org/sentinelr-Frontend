@@ -1,0 +1,92 @@
+.wrapper {
+  @apply flex flex-col gap-3;
+}
+
+.item {
+  @apply rounded-xl border border-slate-200 bg-white p-4 shadow-sm;
+}
+
+.itemContent {
+  @apply flex flex-col;
+}
+
+.itemHeader {
+  @apply flex items-center justify-between;
+}
+
+.userName {
+  @apply text-sm font-semibold text-slate-900;
+}
+
+.starRating {
+  @apply inline-flex items-center gap-0.5;
+}
+
+.starFilled {
+  @apply h-4 w-4 text-amber-400;
+}
+
+.starEmpty {
+  @apply h-4 w-4 text-slate-300;
+}
+
+.comment {
+  @apply mt-2 text-sm text-slate-600;
+}
+
+.itemMeta {
+  @apply mt-2 flex items-center gap-2;
+}
+
+.categoryTag {
+  @apply inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500;
+}
+
+.dateText {
+  @apply text-xs text-slate-400;
+}
+
+/* Skeleton */
+.skeleton {
+  @apply animate-pulse rounded bg-slate-200;
+}
+
+/* Error */
+.errorBanner {
+  @apply flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3;
+}
+
+.errorIcon {
+  @apply h-5 w-5 shrink-0 text-red-500;
+}
+
+.errorText {
+  @apply flex-1 text-sm text-red-700;
+}
+
+.retryBtn {
+  @apply inline-flex items-center gap-1 rounded-md px-3 py-1.5;
+  @apply text-sm font-medium text-red-700 transition-colors duration-150;
+  @apply hover:bg-red-100;
+}
+
+.retryIcon {
+  @apply h-4 w-4;
+}
+
+/* Empty */
+.emptyState {
+  @apply flex flex-col items-center justify-center py-16 text-center;
+}
+
+.emptyIcon {
+  @apply h-12 w-12 text-slate-300;
+}
+
+.emptyTitle {
+  @apply mt-4 text-base font-semibold text-slate-700;
+}
+
+.emptyDesc {
+  @apply mt-1 text-sm text-slate-400;
+}

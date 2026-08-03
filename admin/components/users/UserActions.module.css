@@ -1,0 +1,71 @@
+.toolbar {
+  @apply flex flex-col gap-0 rounded-2xl bg-white p-2 transition-all duration-300;
+  border: 1px solid rgba(224, 111, 41, 0.12);
+  box-shadow: 0 10px 30px rgba(18, 6, 30, 0.035);
+}
+
+.toolbar:hover {
+  box-shadow: 0 16px 36px rgba(18, 6, 30, 0.05);
+}
+
+.groupWrapper {
+  @apply flex flex-col;
+}
+
+.group {
+  @apply flex flex-col gap-2 px-4 py-3;
+}
+
+.groupLabel {
+  @apply text-xs font-bold uppercase tracking-wider text-deep-forest/60;
+}
+
+.buttons {
+  @apply flex flex-wrap gap-2;
+}
+
+.divider {
+  @apply mx-4;
+  border-top: 1px solid rgba(224, 111, 41, 0.08);
+}
+
+.actionBtn {
+  @apply inline-flex items-center gap-1.5 rounded-xl border bg-white px-3.5 py-2
+         text-xs font-semibold text-slate-600 transition-all duration-200
+         hover:bg-brand-surface hover:text-brand-primary hover:-translate-y-px;
+  border-color: rgba(224, 111, 41, 0.15);
+  box-shadow: 0 4px 10px rgba(18, 6, 30, 0.02);
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary
+         focus-visible:ring-offset-1 disabled:cursor-not-allowed
+         disabled:border-slate-100 disabled:bg-slate-50 disabled:text-slate-400
+         disabled:hover:border-slate-100 disabled:hover:bg-slate-50 disabled:hover:-translate-y-0 disabled:shadow-none;
+}
+
+.actionBtn:hover {
+  border-color: var(--brand-primary);
+}
+
+.actionBtnDanger {
+  @apply text-red-500 hover:bg-brand-redSurface hover:text-brand-danger;
+  border-color: rgba(239, 68, 68, 0.15);
+}
+
+.actionBtnDanger:hover {
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.actionBtnLoading {
+  @apply cursor-wait;
+}
+
+.spinner {
+  @apply text-inherit;
+}
+
+.icon {
+  @apply text-base;
+}
+
+.btnWrapper {
+  @apply inline-flex;
+}

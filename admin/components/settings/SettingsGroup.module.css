@@ -1,0 +1,152 @@
+.group {
+  @apply space-y-6;
+}
+
+/* ── Header ───────────────────────────────────────────── */
+
+.groupHeader {
+  @apply flex items-start gap-3;
+}
+
+.groupIcon {
+  @apply mt-1 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-purple-50 text-brand-secondary text-xl;
+}
+
+.groupTitle {
+  @apply font-heading text-lg font-bold text-slate-900;
+}
+
+.groupDescription {
+  @apply mt-0.5 text-sm text-slate-500;
+}
+
+.dangerBadge {
+  @apply ml-auto flex-shrink-0 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-red-700;
+}
+
+/* ── Fields ───────────────────────────────────────────── */
+
+.fields {
+  @apply space-y-4;
+}
+
+.field {
+  @apply rounded-xl border border-slate-200 bg-white p-4 transition-colors;
+}
+
+.fieldDisabled {
+  @apply border-slate-100 bg-slate-50 opacity-70;
+}
+
+.fieldHeader {
+  @apply mb-3;
+}
+
+.fieldLabel {
+  @apply flex items-center gap-1.5 text-sm font-semibold text-slate-800;
+}
+
+.fieldLock {
+  @apply text-xs text-slate-400;
+}
+
+.fieldDescription {
+  @apply mt-0.5 text-xs text-slate-500;
+}
+
+.fieldInput {
+  @apply mb-2;
+}
+
+.fieldMeta {
+  @apply flex items-center gap-2 text-xs text-slate-400;
+}
+
+/* ── Inputs ───────────────────────────────────────────── */
+
+.textInput,
+.selectInput {
+  @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 transition-colors placeholder:text-slate-400 focus:border-brand-secondary focus:outline-none focus:ring-2 focus:ring-brand-secondary/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500;
+}
+
+.selectInput {
+  @apply appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22m6%208%204%204%204-4%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-8;
+}
+
+/* ── Toggle ───────────────────────────────────────────── */
+
+.toggle {
+  @apply inline-flex cursor-pointer items-center gap-3;
+}
+
+.toggleInput {
+  @apply sr-only;
+}
+
+.toggleInput:focus-visible + .toggleTrack {
+  @apply ring-2 ring-brand-secondary ring-offset-2;
+}
+
+.toggleTrack {
+  @apply relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors duration-200;
+  background-color: #cbd5e1;
+}
+
+.toggleInput:checked + .toggleTrack {
+  @apply bg-brand-secondary;
+}
+
+.toggleInput:disabled + .toggleTrack {
+  @apply cursor-not-allowed opacity-50;
+}
+
+.toggleThumb {
+  @apply inline-block h-4 w-4 translate-x-1 transform rounded-full bg-white shadow-sm transition-transform duration-200;
+}
+
+.toggleInput:checked + .toggleTrack .toggleThumb {
+  @apply translate-x-6;
+}
+
+.toggleLabel {
+  @apply text-sm font-medium text-slate-700;
+}
+
+/* ── Empty state ──────────────────────────────────────── */
+
+.emptyState {
+  @apply rounded-xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500;
+}
+
+/* ── Restricted banner ────────────────────────────────── */
+
+.restrictedBanner {
+  @apply flex items-start gap-2.5 rounded-xl border border-amber-200 bg-brand-yellowSurface px-4 py-3 text-sm text-amber-800;
+}
+
+.restrictedIcon {
+  @apply mt-0.5 flex-shrink-0 text-base text-amber-500;
+}
+
+/* ── Actions ──────────────────────────────────────────── */
+
+.groupActions {
+  @apply flex items-center gap-3 pt-2;
+}
+
+.saveButton,
+.discardButton {
+  @apply inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.saveButton {
+  @apply bg-brand-secondary text-white hover:bg-brand-secondaryHover focus-visible:ring-brand-secondary;
+}
+
+.discardButton {
+  @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus-visible:ring-slate-500;
+}
+
+.buttonIcon {
+  @apply text-base;
+}

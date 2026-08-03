@@ -1,0 +1,43 @@
+.content {
+  @apply flex flex-col gap-4;
+}
+
+.pills {
+  @apply flex flex-wrap gap-2;
+}
+
+.pill {
+  @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold;
+}
+
+.pillVerified {
+  @apply bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200;
+}
+
+.pillUnverified {
+  @apply bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-200;
+}
+
+.pillActive {
+  @apply bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-200;
+}
+
+.pillBlocked {
+  @apply bg-red-50 text-red-700 ring-1 ring-inset ring-red-200;
+}
+
+.pillSuspended {
+  @apply bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200;
+}
+
+.timestamps {
+  @apply flex flex-col gap-1;
+}
+
+.timestamp {
+  @apply text-xs text-slate-500;
+}
+
+.timestampLabel {
+  @apply font-medium text-slate-400;
+}

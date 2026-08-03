@@ -1,0 +1,50 @@
+.wrapper {
+  @apply w-full max-w-full overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+
+.table {
+  @apply w-full min-w-[600px] table-auto border-collapse;
+}
+
+.table thead th {
+  @apply border-b border-slate-200 bg-slate-50 px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500;
+}
+
+.table tbody td {
+  @apply border-b border-slate-100 px-4 py-3 text-sm text-slate-700;
+}
+
+.actionCell {
+  @apply font-medium text-slate-900;
+}
+
+.detailCell {
+  @apply max-w-[200px] truncate text-slate-500;
+}
+
+.targetCell {
+  @apply text-slate-600;
+}
+
+.timeCell {
+  @apply whitespace-nowrap text-xs text-slate-400;
+}
+
+.ipCell {
+  @apply font-mono text-xs text-slate-400;
+}
+
+.empty {
+  @apply px-4 py-10 text-center text-sm text-slate-500;
+}
+
+.skeleton {
+  @apply animate-pulse;
+}
+
+.skeletonBar {
+  @apply h-4 rounded bg-slate-200;
+}

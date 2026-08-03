@@ -1,0 +1,70 @@
+.list {
+  @apply flex flex-col gap-1;
+}
+
+.item {
+  @apply flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50/50 px-4 py-3 transition-colors hover:bg-slate-50;
+}
+
+.itemLeft {
+  @apply flex flex-col gap-0.5;
+}
+
+.invoiceNumber {
+  @apply text-sm font-semibold text-slate-800;
+}
+
+.itemMeta {
+  @apply flex flex-wrap items-center gap-3 text-xs text-slate-400;
+}
+
+.itemRight {
+  @apply flex items-center gap-2;
+}
+
+.amount {
+  @apply text-sm font-medium text-slate-700;
+}
+
+.statusPill {
+  @apply inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase;
+}
+
+.statusPaid {
+  @apply bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200;
+}
+
+.statusOpen {
+  @apply bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200;
+}
+
+.statusVoid {
+  @apply bg-slate-100 text-slate-500 ring-1 ring-inset ring-slate-200;
+}
+
+.actionBtn {
+  @apply inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600
+         transition-all duration-150 hover:border-brand-primary hover:bg-brand-surface hover:text-brand-primary
+         focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1
+         disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.resendBtn {
+  @apply border-slate-200 text-slate-500 hover:border-amber-400 hover:text-amber-700;
+}
+
+.empty {
+  @apply py-4 text-center text-sm text-slate-400;
+}
+
+.skeletonGroup {
+  @apply flex flex-col gap-3;
+}
+
+.skeletonLine {
+  @apply block h-4 w-full animate-pulse rounded bg-slate-200;
+}
+
+.skeletonLineShort {
+  @apply w-2/5;
+}

@@ -1,0 +1,27 @@
+.content {
+  @apply flex flex-col gap-3;
+}
+
+.addressLabel {
+  @apply text-sm font-medium text-slate-700;
+}
+
+.coords {
+  @apply text-xs text-slate-400;
+}
+
+.coordLabel {
+  @apply font-medium;
+}
+
+.mapBtn {
+  @apply self-start rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-brand-secondary transition-colors hover:border-brand-secondary hover:bg-brand-purpleSurface focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary focus-visible:ring-offset-1;
+}
+
+.mapBtn:disabled {
+  @apply cursor-not-allowed opacity-50;
+}
+
+.disclaimer {
+  @apply text-xs italic text-slate-400;
+}

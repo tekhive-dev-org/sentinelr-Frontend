@@ -1,0 +1,57 @@
+.nav {
+  @apply relative;
+}
+
+.tabList {
+  @apply flex gap-1 overflow-x-auto pb-1 md:flex-col md:gap-0.5 md:overflow-x-visible md:pb-0;
+  scrollbar-width: none;
+}
+
+.tabList::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  @apply flex shrink-0 items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:w-full;
+}
+
+.tabActive {
+  @apply bg-brand-secondary text-white hover:bg-brand-secondaryHover;
+}
+
+.tabDangerous:not(.tabActive) {
+  @apply text-red-600;
+}
+
+.tabDangerous.tabActive {
+  @apply bg-red-600 hover:bg-red-700;
+}
+
+.tabLocked {
+  @apply opacity-50;
+}
+
+.tabIcon {
+  @apply flex-shrink-0 text-lg;
+}
+
+.tabLabel {
+  @apply truncate;
+}
+
+.lockIcon {
+  @apply ml-auto flex-shrink-0 text-sm;
+}
+
+.fadeLeft,
+.fadeRight {
+  @apply pointer-events-none absolute inset-y-0 z-10 w-8 md:hidden;
+}
+
+.fadeLeft {
+  @apply left-0 bg-gradient-to-r from-white to-transparent;
+}
+
+.fadeRight {
+  @apply right-0 bg-gradient-to-l from-white to-transparent;
+}

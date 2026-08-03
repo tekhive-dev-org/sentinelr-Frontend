@@ -294,7 +294,7 @@ export default function SettingsScreen({ navigation }) {
               icon="git-branch-outline"
               iconColor="#e6ae12"
               title="App Version"
-              value="1.1.2"
+              value={APP_VERSION}
             />
             <InfoRow
               icon="checkmark-circle-outline"

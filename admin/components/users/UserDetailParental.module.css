@@ -1,0 +1,27 @@
+.content {
+  @apply flex flex-col gap-3;
+}
+
+.row {
+  @apply flex items-center justify-between gap-2;
+}
+
+.label {
+  @apply text-sm text-slate-600;
+}
+
+.value {
+  @apply text-sm font-medium text-slate-800;
+}
+
+.status {
+  @apply rounded-full px-2 py-0.5 text-[11px] font-semibold;
+}
+
+.statusOn {
+  @apply bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200;
+}
+
+.statusOff {
+  @apply bg-slate-100 text-slate-500 ring-1 ring-inset ring-slate-200;
+}

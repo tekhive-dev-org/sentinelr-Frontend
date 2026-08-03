@@ -1,0 +1,43 @@
+.content {
+  @apply flex flex-col gap-3;
+}
+
+.header {
+  @apply flex items-center gap-2;
+}
+
+.planName {
+  @apply text-base font-semibold text-slate-800;
+}
+
+.status {
+  @apply rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase;
+}
+
+.statusActive {
+  @apply bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200;
+}
+
+.statusPastDue {
+  @apply bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200;
+}
+
+.statusInactive {
+  @apply bg-slate-100 text-slate-500 ring-1 ring-inset ring-slate-200;
+}
+
+.details {
+  @apply flex flex-col gap-2;
+}
+
+.detailRow {
+  @apply flex gap-2;
+}
+
+.detailLabel {
+  @apply min-w-[80px] text-xs font-medium uppercase tracking-wide text-slate-400;
+}
+
+.detailValue {
+  @apply text-sm text-slate-700;
+}

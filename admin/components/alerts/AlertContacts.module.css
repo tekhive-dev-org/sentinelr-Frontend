@@ -1,0 +1,35 @@
+.content {
+  @apply flex flex-col gap-4;
+}
+
+.contactList {
+  @apply flex flex-col divide-y divide-slate-100;
+}
+
+.contactRow {
+  @apply flex flex-col gap-1 py-3;
+}
+
+.contactName {
+  @apply text-sm font-semibold text-slate-700;
+}
+
+.contactRelation {
+  @apply text-xs text-slate-400;
+}
+
+.contactPhone {
+  @apply text-sm tabular-nums text-slate-600;
+}
+
+.phonePlaceholder {
+  @apply text-sm text-slate-400;
+}
+
+.toggleBtn {
+  @apply self-start rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:border-brand-secondary hover:text-brand-secondary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary focus-visible:ring-offset-1;
+}
+
+.disclaimer {
+  @apply text-xs italic text-slate-400;
+}

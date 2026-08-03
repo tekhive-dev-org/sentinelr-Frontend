@@ -1,0 +1,89 @@
+export const ADMIN_ROLES = Object.freeze({
+  ADMIN: "admin",
+  SUPER_ADMIN: "super_admin",
+  OPERATIONS_ADMIN: "operations_admin",
+  SUPPORT_ADMIN: "support_admin",
+  FINANCE_ADMIN: "finance_admin",
+  CONTENT_ADMIN: "content_admin",
+  ANALYST: "analyst",
+});
+
+export const ADMIN_PERMISSIONS = Object.freeze({
+  ADMIN_ACCESS: "admin.access",
+  DASHBOARD_VIEW: "admin.dashboard.view",
+  USERS_VIEW: "admin.users.view",
+  USERS_MANAGE: "admin.users.manage",
+  ALERTS_VIEW: "admin.alerts.view",
+  ALERTS_MANAGE: "admin.alerts.manage",
+  CONTENT_VIEW: "admin.content.view",
+  CONTENT_MANAGE: "admin.content.manage",
+  CONTENT_PUBLISH: "admin.content.publish",
+  SUBSCRIPTIONS_VIEW: "admin.subscriptions.view",
+  SUBSCRIPTIONS_MANAGE: "admin.subscriptions.manage",
+  ANALYTICS_VIEW: "admin.analytics.view",
+  ANALYTICS_EXPORT: "admin.analytics.export",
+  SETTINGS_VIEW: "admin.settings.view",
+  SETTINGS_MANAGE: "admin.settings.manage",
+  DEVICES_VIEW: "admin.devices.view",
+  DEVICES_MANAGE: "admin.devices.manage",
+  GEOFENCING_VIEW: "admin.geofencing.view",
+  PARENTAL_VIEW: "admin.parental.view",
+  NOTIFICATIONS_VIEW: "admin.notifications.view",
+  NOTIFICATIONS_MANAGE: "admin.notifications.manage",
+  NOTIFICATIONS_SEND: "admin.notifications.send",
+  SUPPORT_VIEW: "admin.support.view",
+  TEAM_VIEW: "admin.team.view",
+  AUDIT_VIEW: "admin.audit.view",
+});
+
+const ALL_ADMIN_PERMISSIONS = Object.freeze(Object.values(ADMIN_PERMISSIONS));
+
+export const ADMIN_ROLE_PERMISSIONS = Object.freeze({
+  [ADMIN_ROLES.ADMIN]: ALL_ADMIN_PERMISSIONS,
+  [ADMIN_ROLES.SUPER_ADMIN]: Object.freeze(["*"]),
+  [ADMIN_ROLES.OPERATIONS_ADMIN]: Object.freeze([
+    ADMIN_PERMISSIONS.ADMIN_ACCESS,
+    ADMIN_PERMISSIONS.DASHBOARD_VIEW,
+    ADMIN_PERMISSIONS.USERS_VIEW,
+    ADMIN_PERMISSIONS.ALERTS_VIEW,
+    ADMIN_PERMISSIONS.ALERTS_MANAGE,
+    ADMIN_PERMISSIONS.DEVICES_VIEW,
+    ADMIN_PERMISSIONS.GEOFENCING_VIEW,
+    ADMIN_PERMISSIONS.PARENTAL_VIEW,
+    ADMIN_PERMISSIONS.NOTIFICATIONS_VIEW,
+    ADMIN_PERMISSIONS.SUPPORT_VIEW,
+    ADMIN_PERMISSIONS.AUDIT_VIEW,
+  ]),
+  [ADMIN_ROLES.SUPPORT_ADMIN]: Object.freeze([
+    ADMIN_PERMISSIONS.ADMIN_ACCESS,
+    ADMIN_PERMISSIONS.DASHBOARD_VIEW,
+    ADMIN_PERMISSIONS.USERS_VIEW,
+    ADMIN_PERMISSIONS.ALERTS_VIEW,
+    ADMIN_PERMISSIONS.DEVICES_VIEW,
+    ADMIN_PERMISSIONS.NOTIFICATIONS_VIEW,
+    ADMIN_PERMISSIONS.SUPPORT_VIEW,
+  ]),
+  [ADMIN_ROLES.FINANCE_ADMIN]: Object.freeze([
+    ADMIN_PERMISSIONS.ADMIN_ACCESS,
+    ADMIN_PERMISSIONS.DASHBOARD_VIEW,
+    ADMIN_PERMISSIONS.SUBSCRIPTIONS_VIEW,
+    ADMIN_PERMISSIONS.SUBSCRIPTIONS_MANAGE,
+    ADMIN_PERMISSIONS.ANALYTICS_VIEW,
+    ADMIN_PERMISSIONS.ANALYTICS_EXPORT,
+  ]),
+  [ADMIN_ROLES.CONTENT_ADMIN]: Object.freeze([
+    ADMIN_PERMISSIONS.ADMIN_ACCESS,
+    ADMIN_PERMISSIONS.DASHBOARD_VIEW,
+    ADMIN_PERMISSIONS.CONTENT_VIEW,
+    ADMIN_PERMISSIONS.CONTENT_MANAGE,
+  ]),
+  [ADMIN_ROLES.ANALYST]: Object.freeze([
+    ADMIN_PERMISSIONS.ADMIN_ACCESS,
+    ADMIN_PERMISSIONS.DASHBOARD_VIEW,
+    ADMIN_PERMISSIONS.ANALYTICS_VIEW,
+    ADMIN_PERMISSIONS.ANALYTICS_EXPORT,
+  ]),
+});
+
+export const ADMIN_DEFAULT_REDIRECT = "/dashboard";
+export const LOGIN_ROUTE = "/login";

@@ -6,36 +6,19 @@ import Sidebar from './Sidebar';
 import BottomAppBar from './BottomAppBar';
 import PageHeader from './PageHeader';
 import styles from './DashboardLayout.module.css';
-import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import UserBackground from './backgrounds/UserBackground';
-import AdminBackground from './backgrounds/AdminBackground';
 import { alertsService } from '../../services/alertsService';
 
 const pageConfig = {
   '/dashboard': {
     title: 'Dashboard',
-    subtitle: 'Manage all users available on Sentinelr',
+    subtitle: 'Personal sentinelr overview dashboard',
     icon: '/assets/icons/layout-grid.png'
-  },
-  '/dashboard/users': {
-    title: 'Users & Family Management',
-    subtitle: 'Manage all users available on Sentinelr',
-    icon: '/assets/icons/user.png'
-  },
-  '/dashboard/analytics': {
-    title: 'Analytics Management',
-    subtitle: 'Manage all users available on Sentinelr',
-    icon: '/assets/icons/line-chart.png'
   },
   '/dashboard/alerts': {
     title: 'Sos Alert',
     subtitle: 'Personal sentinelr overview dashboard',
     icon: '/assets/icons/megaphone.png'
-  },
-  '/dashboard/content': {
-    title: 'Content Management',
-    subtitle: 'Manage all users available on Sentinelr',
-    icon: DescriptionOutlinedIcon
   },
   '/dashboard/subscription': {
     title: 'Subscription',
@@ -55,7 +38,7 @@ const pageConfig = {
   '/dashboard/history': {
     title: 'History & Reports',
     subtitle: 'View history and reports',
-    icon: '/assets/icons/line-chart.png' // Using line-chart as placeholder
+    icon: '/assets/icons/line-chart.png'
   },
   '/dashboard/parental': {
     title: 'Parental Control',
@@ -81,7 +64,6 @@ export default function DashboardLayout({ children }) {
   });
   const router = useRouter();
   const { user, loggedUser, logout } = useAuth();
-  const isAdmin = user?.role === 'admin';
   const [activeAlertCount, setActiveAlertCount] = useState(0);
   // On mobile, user-role accounts use the BottomAppBar – never show the sidebar
   const [isMobile, setIsMobile] = useState(() => {
@@ -89,35 +71,9 @@ export default function DashboardLayout({ children }) {
     return false;
   });
   const prevIsMobileRef = useRef(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
-  const showSidebar = isAdmin || !isMobile;
+  const showSidebar = !isMobile;
   
   let currentPage = pageConfig[router.pathname] || pageConfig['/dashboard'];
-
-  // Override subtitle for user dashboard
-  if (router.pathname === '/dashboard' && user?.role !== 'admin') {
-    currentPage = {
-      ...currentPage,
-      subtitle: 'Personal sentinelr overview dashboard'
-    };
-  }
-
-  // Override title/subtitle for admin subscription page
-  if (router.pathname === '/dashboard/subscription' && user?.role === 'admin') {
-    currentPage = {
-      ...currentPage,
-      title: 'Subscription Management',
-      subtitle: 'Manage all users available on Sentinelr'
-    };
-  }
-
-  // Override title/subtitle for admin alerts page
-  if (router.pathname === '/dashboard/alerts' && user?.role === 'admin') {
-    currentPage = {
-      ...currentPage,
-      title: 'Alert & Report Handling',
-      subtitle: 'Manage all users available on Sentinelr'
-    };
-  }
 
   // Active alert count for the notification bell — fetched on mount
   // and kept up-to-date via the centralized Alerts realtime subscription.
@@ -174,7 +130,7 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className={styles.layout}>
-      {user?.role === 'admin' ? <AdminBackground /> : <UserBackground />}
+      <UserBackground />
       
       <div className={styles.dashboardContainer}>
         {showSidebar && isSidebarOpen && (
@@ -193,7 +149,7 @@ export default function DashboardLayout({ children }) {
             icon={currentPage?.icon}
             user={loggedUser || user}
             onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            isAdmin={isAdmin}
+            isAdmin={false}
             activeAlertCount={activeAlertCount}
             onLogout={() => { logout(); router.push('/login'); }}
           />
@@ -205,7 +161,7 @@ export default function DashboardLayout({ children }) {
       </div>
 
       {/* Mobile bottom navigation – users only */}
-      {!isAdmin && <BottomAppBar activeAlertCount={activeAlertCount} />}
+      <BottomAppBar activeAlertCount={activeAlertCount} />
     </div>
   );
 }

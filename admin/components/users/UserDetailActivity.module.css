@@ -1,0 +1,32 @@
+.list {
+  @apply flex flex-col divide-y divide-slate-100;
+}
+
+.row {
+  @apply flex flex-col gap-1 py-3;
+}
+
+.rowHeader {
+  @apply flex items-center justify-between gap-2;
+}
+
+.action {
+  @apply text-sm font-medium text-slate-800;
+}
+
+.timestamp {
+  @apply shrink-0 text-xs text-slate-400;
+}
+
+.detail {
+  @apply text-sm text-slate-600;
+}
+
+.meta {
+  @apply text-xs text-slate-400;
+}
+
+.userAgent {
+  @apply block truncate sm:inline;
+  max-width: 300px;
+}

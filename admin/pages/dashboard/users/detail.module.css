@@ -1,0 +1,55 @@
+.page {
+  @apply space-y-6;
+}
+
+.backLink {
+  @apply inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-700;
+}
+
+.backIcon {
+  @apply text-base;
+}
+
+.profileHeader {
+  @apply flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.errorCard {
+  @apply rounded-2xl border border-red-200 bg-red-50 p-8 text-center;
+}
+
+.errorIcon {
+  @apply mx-auto text-4xl text-red-500;
+}
+
+.errorTitle {
+  @apply mt-4 text-lg font-semibold text-red-800;
+}
+
+.errorMessage {
+  @apply mt-1 text-sm text-red-600;
+}
+
+.retryButton {
+  @apply mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700;
+}
+
+.loadingPage {
+  @apply flex min-h-[60vh] items-center justify-center;
+}
+
+.loadingSpinner {
+  @apply h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-brand-secondary;
+}

@@ -1,0 +1,21 @@
+.page {
+  @apply space-y-5;
+}
+
+.pageHeader {
+  @apply flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between;
+}
+
+.title {
+  @apply font-heading text-2xl font-bold text-slate-900;
+}
+
+.subtitle {
+  @apply text-sm text-slate-500;
+}
+
+.tableSection {
+  @apply overflow-hidden rounded-2xl bg-white;
+  border: 1px solid rgba(224, 111, 41, 0.12);
+  box-shadow: 0 10px 30px rgba(18, 6, 30, 0.035);
+}

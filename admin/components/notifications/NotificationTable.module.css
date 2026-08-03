@@ -1,0 +1,169 @@
+.wrap {
+  @apply w-full max-w-full overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+
+.table {
+  @apply w-full min-w-[950px] table-auto text-left text-sm;
+}
+
+.table thead th {
+  @apply border-b border-slate-200 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500;
+}
+
+.table tbody tr {
+  @apply border-b border-slate-100 transition-colors hover:bg-slate-50/50;
+}
+
+.table tbody tr:last-child {
+  @apply border-b-0;
+}
+
+.table tbody td {
+  @apply px-4 py-3 text-slate-700;
+}
+
+.titleCell {
+  @apply font-medium text-slate-900 max-w-[220px] truncate;
+}
+
+/* Channel pills */
+.channelPill {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+}
+
+.channelInApp {
+  @apply bg-blue-50 text-blue-700;
+}
+
+.channelPush {
+  @apply bg-emerald-50 text-emerald-700;
+}
+
+.channelEmail {
+  @apply bg-amber-50 text-amber-700;
+}
+
+/* Status pills */
+.statusPill {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+}
+
+.statusDraft {
+  @apply bg-slate-100 text-slate-600;
+}
+
+.statusScheduled {
+  @apply bg-blue-50 text-blue-700;
+}
+
+.statusSent {
+  @apply bg-emerald-50 text-emerald-700;
+}
+
+.statusFailed {
+  @apply bg-red-50 text-red-600;
+}
+
+/* Delivery counts */
+.deliveryStats {
+  @apply flex items-center gap-2 text-xs;
+}
+
+.deliverySent {
+  @apply text-slate-600;
+}
+
+.deliveryDelivered {
+  @apply text-emerald-600;
+}
+
+.deliveryFailed {
+  @apply text-red-600;
+}
+
+.actionsCell {
+  @apply relative text-right;
+}
+
+.actionsButton {
+  @apply inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600;
+}
+
+.actionsIcon {
+  font-size: 1.25rem;
+}
+
+.menu {
+  @apply absolute right-0 top-full z-20 mt-1 w-44 rounded-xl border border-slate-200 bg-white py-1 shadow-lg;
+}
+
+.menuItem {
+  @apply flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50;
+}
+
+.menuItemIcon {
+  font-size: 1rem;
+  @apply text-slate-400;
+}
+
+/* Skeleton */
+.skeletonRow {
+  @apply animate-pulse;
+}
+
+.skeletonCell {
+  @apply px-4 py-3;
+}
+
+.skeletonLine {
+  @apply h-4 rounded-md bg-slate-200;
+}
+
+/* Error state */
+.errorWrap {
+  @apply flex flex-col items-center justify-center py-16 text-center;
+}
+
+.errorIcon {
+  font-size: 2.5rem;
+  @apply mb-4 text-red-400;
+}
+
+.errorTitle {
+  @apply text-base font-semibold text-slate-800;
+}
+
+.errorMessage {
+  @apply mt-1 text-sm text-slate-500;
+}
+
+.errorRetry {
+  @apply mt-4 inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50;
+}
+
+/* Empty state */
+.emptyWrap {
+  @apply flex flex-col items-center justify-center py-16 text-center;
+}
+
+.emptyIcon {
+  font-size: 2.5rem;
+  @apply mb-4 text-slate-300;
+}
+
+.emptyTitle {
+  @apply text-base font-semibold text-slate-800;
+}
+
+.emptyMessage {
+  @apply mt-1 text-sm text-slate-500;
+}
+
+@media (max-width: 767px) {
+  .wrap {
+    @apply hidden;
+  }
+}

@@ -1,0 +1,55 @@
+export const DEMO_DASHBOARD_OVERVIEW = Object.freeze({
+  allUsers: 1284,
+  blockedUsers: 18,
+  verifiedUsers: 1167,
+  activeSOSIncidents: 3,
+  flaggedUsers: 41,
+});
+
+export const DEMO_DASHBOARD_TRENDS = Object.freeze({
+  newUsers: [
+    { name: "Mon", value: 22 },
+    { name: "Tue", value: 31 },
+    { name: "Wed", value: 27 },
+    { name: "Thu", value: 39 },
+    { name: "Fri", value: 46 },
+    { name: "Sat", value: 35 },
+    { name: "Sun", value: 42 },
+  ],
+  activeUsers: [
+    { name: "Mon", value: 684 },
+    { name: "Tue", value: 721 },
+    { name: "Wed", value: 706 },
+    { name: "Thu", value: 768 },
+    { name: "Fri", value: 802 },
+    { name: "Sat", value: 775 },
+    { name: "Sun", value: 824 },
+  ],
+  subscriptionGrowth: [
+    { name: "Mon", value: 412 },
+    { name: "Tue", value: 426 },
+    { name: "Wed", value: 439 },
+    { name: "Thu", value: 451 },
+    { name: "Fri", value: 468 },
+    { name: "Sat", value: 476 },
+    { name: "Sun", value: 493 },
+  ],
+  deviceActivity: [
+    { name: "Mon", value: 1038 },
+    { name: "Tue", value: 1084 },
+    { name: "Wed", value: 1062 },
+    { name: "Thu", value: 1127 },
+    { name: "Fri", value: 1174 },
+    { name: "Sat", value: 1148 },
+    { name: "Sun", value: 1196 },
+  ],
+  sosIncidents: [
+    { name: "Mon", value: 4 },
+    { name: "Tue", value: 2 },
+    { name: "Wed", value: 5 },
+    { name: "Thu", value: 3 },
+    { name: "Fri", value: 6 },
+    { name: "Sat", value: 2 },
+    { name: "Sun", value: 3 },
+  ],
+});

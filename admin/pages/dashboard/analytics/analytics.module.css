@@ -1,0 +1,4 @@
+.page { @apply space-y-5; }
+.pageHeader { @apply flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between; }
+.title { @apply font-heading text-2xl font-bold text-slate-900; }
+.subtitle { @apply text-sm text-slate-500; }

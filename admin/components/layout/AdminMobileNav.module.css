@@ -1,0 +1,100 @@
+/* ── Bottom bar ─────────────────────────────────────────────── */
+
+.bar {
+  @apply fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around border-t border-slate-200 bg-white px-1 py-2;
+  padding-bottom: env(safe-area-inset-bottom, 8px);
+}
+
+@media (min-width: 1024px) {
+  .bar {
+    display: none;
+  }
+}
+
+/* ── Nav button ─────────────────────────────────────────────── */
+
+.navButton {
+  @apply flex min-w-0 flex-col items-center gap-0.5 rounded-lg px-2 py-1.5 text-slate-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.navButtonActive {
+  @apply text-brand-primary;
+}
+
+.iconWrap {
+  @apply relative inline-flex;
+}
+
+.icon {
+  @apply text-xl;
+}
+
+.label {
+  @apply max-w-[64px] truncate text-[10px] font-medium leading-none;
+}
+
+.badge {
+  @apply absolute -right-2 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand-danger px-1 text-[10px] font-bold text-white;
+}
+
+/* ── Overlay / Drawer ───────────────────────────────────────── */
+
+.overlay {
+  @apply fixed inset-0 z-50 flex flex-col justify-end;
+}
+
+.backdrop {
+  @apply absolute inset-0 bg-black/50;
+}
+
+.drawer {
+  @apply relative z-10 flex max-h-[85vh] flex-col rounded-t-2xl bg-white shadow-xl;
+}
+
+.drawerHeader {
+  @apply flex items-center justify-between border-b border-slate-100 px-5 py-4;
+}
+
+.drawerTitle {
+  @apply text-lg font-semibold text-slate-900;
+}
+
+.closeButton {
+  @apply flex h-8 w-8 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary;
+}
+
+.drawerBody {
+  @apply flex-1 overflow-y-auto px-2 py-3;
+}
+
+/* ── Menu groups inside overlay ─────────────────────────────── */
+
+.group {
+  @apply mb-4;
+}
+
+.groupTitle {
+  @apply px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-400;
+}
+
+.menuItem {
+  @apply flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.menuItemActive {
+  @apply bg-brand-purpleSurface font-semibold text-brand-secondary;
+}
+
+.menuItemIcon {
+  @apply flex-shrink-0 text-xl;
+}
+
+.menuItemLabel {
+  @apply flex-1 text-sm;
+}
+
+.menuItemBadge {
+  @apply ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-brand-danger px-1.5 text-xs font-bold text-white;
+}

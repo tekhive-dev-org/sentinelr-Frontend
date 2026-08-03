@@ -1,0 +1,39 @@
+.list {
+  @apply flex flex-col divide-y divide-slate-100;
+}
+
+.row {
+  @apply flex flex-col gap-1 py-3;
+}
+
+.rowPrimary {
+  @apply flex items-center gap-2;
+}
+
+.deviceName {
+  @apply text-sm font-medium text-slate-800;
+}
+
+.deviceType {
+  @apply rounded-md bg-slate-100 px-1.5 py-0.5 text-[11px] font-medium uppercase text-slate-500;
+}
+
+.rowSecondary {
+  @apply flex flex-wrap items-center gap-x-3 gap-y-0.5;
+}
+
+.meta {
+  @apply text-xs text-slate-400;
+}
+
+.pairStatus {
+  @apply text-xs font-semibold;
+}
+
+.paired {
+  @apply text-emerald-600;
+}
+
+.unpaired {
+  @apply text-slate-400;
+}

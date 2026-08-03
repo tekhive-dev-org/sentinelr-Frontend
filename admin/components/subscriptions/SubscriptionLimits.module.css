@@ -1,0 +1,67 @@
+.content {
+  @apply flex flex-col gap-3;
+}
+
+.limitGroup {
+  @apply flex flex-col gap-2;
+}
+
+.limitGroupLabel {
+  @apply text-xs font-semibold uppercase tracking-wider text-slate-400;
+}
+
+.limitRow {
+  @apply flex items-center gap-2;
+}
+
+.limitLabel {
+  @apply min-w-[120px] text-sm text-slate-600;
+}
+
+.limitValue {
+  @apply text-sm font-semibold text-slate-800;
+}
+
+.limitUsed {
+  @apply ml-1 text-xs font-normal text-slate-400;
+}
+
+.entitlementCard {
+  @apply rounded-lg border border-slate-100 bg-slate-50/50 px-3 py-2.5;
+}
+
+.entitlementHeader {
+  @apply flex flex-wrap items-center justify-between gap-1;
+}
+
+.entitlementName {
+  @apply text-sm font-medium text-slate-700;
+}
+
+.entitlementExpiry {
+  @apply text-xs text-slate-400;
+}
+
+.entitlementExpired {
+  @apply text-xs text-red-500;
+}
+
+.empty {
+  @apply py-4 text-center text-sm text-slate-400;
+}
+
+.skeletonGroup {
+  @apply flex flex-col gap-3;
+}
+
+.skeletonLine {
+  @apply block h-4 w-full animate-pulse rounded bg-slate-200;
+}
+
+.skeletonLineShort {
+  @apply w-2/5;
+}
+
+.skeletonLineMedium {
+  @apply w-3/5;
+}

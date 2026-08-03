@@ -1,0 +1,121 @@
+.wrap {
+  @apply rounded-2xl border border-slate-200 bg-white p-6 shadow-sm;
+}
+
+.heading {
+  @apply text-sm font-semibold text-slate-700;
+}
+
+/* Stats grid */
+.statsGrid {
+  @apply mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4;
+}
+
+.statCard {
+  @apply rounded-xl bg-slate-50 p-4;
+}
+
+.statLabel {
+  @apply text-xs font-medium text-slate-500;
+}
+
+.statValue {
+  @apply mt-1 text-2xl font-bold text-slate-900;
+}
+
+.statSent {
+  @apply text-slate-700;
+}
+
+.statDelivered {
+  @apply text-emerald-600;
+}
+
+.statFailed {
+  @apply text-red-600;
+}
+
+.statOpened {
+  @apply text-blue-600;
+}
+
+/* Progress bars */
+.bars {
+  @apply mt-6 space-y-4;
+}
+
+.barRow {
+  @apply flex flex-col gap-1;
+}
+
+.barLabel {
+  @apply flex items-center justify-between text-xs text-slate-600;
+}
+
+.barLabelName {
+  @apply font-medium;
+}
+
+.barTrack {
+  @apply h-2 w-full overflow-hidden rounded-full bg-slate-200;
+}
+
+.barFill {
+  @apply h-2 rounded-full transition-all duration-500;
+}
+
+.barDelivered {
+  @apply bg-emerald-400;
+}
+
+.barOpened {
+  @apply bg-blue-400;
+}
+
+.barFailed {
+  @apply bg-red-400;
+}
+
+/* Failure list */
+.failureSection {
+  @apply mt-6;
+}
+
+.failureHeading {
+  @apply text-xs font-semibold uppercase tracking-wider text-red-600;
+}
+
+.failureList {
+  @apply mt-2 space-y-1.5;
+}
+
+.failureItem {
+  @apply flex items-start gap-2 rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm;
+}
+
+.failureIcon {
+  font-size: 1rem;
+  @apply mt-0.5 shrink-0 text-red-400;
+}
+
+.failureReason {
+  @apply text-red-700;
+}
+
+/* Note */
+.note {
+  @apply mt-6 border-t border-slate-100 pt-4 text-xs text-slate-400;
+}
+
+/* Skeleton */
+.skeleton {
+  @apply animate-pulse space-y-4;
+}
+
+.skeletonLine {
+  @apply h-4 rounded-md bg-slate-200;
+}
+
+.skeletonBar {
+  @apply h-2 rounded-full bg-slate-200;
+}

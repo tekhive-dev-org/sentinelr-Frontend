@@ -1,0 +1,43 @@
+.content {
+  @apply flex flex-col gap-4;
+}
+
+.form {
+  @apply flex flex-col gap-3;
+}
+
+.textarea {
+  @apply w-full resize-none rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 placeholder-slate-400 transition-colors focus:border-brand-secondary focus:outline-none focus:ring-2 focus:ring-brand-secondary/20;
+}
+
+.textarea:disabled {
+  @apply cursor-not-allowed opacity-60;
+}
+
+.submitBtn {
+  @apply self-end rounded-lg bg-brand-primary px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-primaryHover disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.noteList {
+  @apply flex flex-col divide-y divide-slate-100 border-t border-slate-100;
+}
+
+.noteRow {
+  @apply flex flex-col gap-1 py-3;
+}
+
+.noteHeader {
+  @apply flex items-center justify-between gap-2;
+}
+
+.noteAuthor {
+  @apply text-xs font-semibold text-slate-600;
+}
+
+.noteTime {
+  @apply shrink-0 text-xs text-slate-400;
+}
+
+.noteContent {
+  @apply text-sm leading-relaxed text-slate-700;
+}

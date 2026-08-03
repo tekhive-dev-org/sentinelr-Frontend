@@ -1,0 +1,51 @@
+.list {
+  @apply flex flex-col divide-y divide-slate-100;
+}
+
+.row {
+  @apply flex flex-col gap-1 py-3;
+}
+
+.rowHeader {
+  @apply flex items-center justify-between gap-2;
+}
+
+.code {
+  @apply text-sm font-semibold text-slate-800;
+}
+
+.status {
+  @apply rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase;
+}
+
+.statusResolved {
+  @apply bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200;
+}
+
+.statusActive {
+  @apply bg-red-50 text-red-700 ring-1 ring-inset ring-red-200;
+}
+
+.statusPending {
+  @apply bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200;
+}
+
+.rowMeta {
+  @apply flex flex-wrap items-center gap-x-2 text-xs text-slate-400;
+}
+
+.date {
+  @apply whitespace-nowrap;
+}
+
+.location {
+  @apply truncate;
+}
+
+.viewAll {
+  @apply border-t border-slate-100 pt-3;
+}
+
+.viewAllLink {
+  @apply text-xs font-semibold text-brand-secondary transition-colors hover:text-brand-secondaryHover;
+}

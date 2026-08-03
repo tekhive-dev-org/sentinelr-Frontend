@@ -1,0 +1,104 @@
+.content {
+  @apply flex flex-col gap-4;
+}
+
+/* ---- Stale banner ---- */
+
+.staleBanner {
+  @apply flex items-center gap-2 rounded-lg bg-brand-yellowSurface px-4 py-2.5 ring-1 ring-inset ring-amber-200;
+}
+
+.staleIcon {
+  @apply h-4 w-4 shrink-0 text-brand-warning;
+}
+
+.staleText {
+  @apply text-xs font-semibold text-amber-800;
+}
+
+/* ---- Device name ---- */
+
+.deviceName {
+  @apply text-lg font-semibold text-slate-900;
+}
+
+/* ---- Detail rows ---- */
+
+.rows {
+  @apply flex flex-col gap-2;
+}
+
+.row {
+  @apply flex flex-col gap-0.5 sm:flex-row sm:gap-2;
+}
+
+.label {
+  @apply text-xs font-medium uppercase tracking-wide text-slate-400;
+  min-width: 120px;
+}
+
+.value {
+  @apply flex items-center gap-1.5 text-sm text-slate-700;
+}
+
+/* ---- Platform ---- */
+
+.platformIcon {
+  @apply h-4 w-4 text-slate-500;
+}
+
+.osVersion {
+  @apply ml-1 text-xs text-slate-400;
+}
+
+/* ---- Device ID ---- */
+
+.copyBtn {
+  @apply inline-flex items-center gap-1.5 rounded-md px-1 py-0.5 text-left transition-colors
+         hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary;
+}
+
+.deviceId {
+  @apply text-xs text-slate-600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.copyIcon {
+  @apply h-3.5 w-3.5 shrink-0 text-slate-400;
+}
+
+/* ---- Status pill ---- */
+
+.pill {
+  @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold;
+}
+
+.pillActive {
+  @apply bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200;
+}
+
+.pillInactive {
+  @apply bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-200;
+}
+
+.pillStale {
+  @apply bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200;
+}
+
+/* ---- Battery ---- */
+
+.batteryRow {
+  @apply flex items-center gap-2;
+}
+
+.batteryBar {
+  @apply h-2.5 w-24 overflow-hidden rounded-full bg-slate-200;
+}
+
+.batteryFill {
+  @apply block h-full rounded-full bg-emerald-500 transition-all duration-300;
+}
+
+.batteryLabel {
+  @apply text-xs font-medium text-slate-500;
+}

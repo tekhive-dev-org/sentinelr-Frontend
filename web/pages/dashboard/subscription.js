@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
-import { DashboardLayout, SubscriptionManagement, UserSubscription } from '../../components/dashboard';
+import { DashboardLayout, UserSubscription } from '../../components/dashboard';
 import { FullPageLoader } from '../../components/ui/loaders';
 
 export default function Subscription() {
@@ -24,11 +24,7 @@ export default function Subscription() {
 
   return (
     <DashboardLayout>
-      {user?.role === 'admin' ? (
-        <SubscriptionManagement />
-      ) : (
-        <UserSubscription />
-      )}
+      <UserSubscription />
     </DashboardLayout>
   );
 }

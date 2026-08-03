@@ -1,0 +1,31 @@
+.list {
+  @apply flex flex-col divide-y divide-slate-100;
+}
+
+.row {
+  @apply flex items-center justify-between py-3;
+}
+
+.rowInfo {
+  @apply flex items-center gap-2;
+}
+
+.zoneName {
+  @apply text-sm font-medium text-slate-800;
+}
+
+.zoneType {
+  @apply rounded-md bg-slate-100 px-1.5 py-0.5 text-[11px] font-medium uppercase text-slate-500;
+}
+
+.activeBadge {
+  @apply rounded-full px-2 py-0.5 text-[11px] font-semibold;
+}
+
+.active {
+  @apply bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200;
+}
+
+.inactive {
+  @apply bg-slate-100 text-slate-500 ring-1 ring-inset ring-slate-200;
+}

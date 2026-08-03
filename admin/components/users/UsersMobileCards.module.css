@@ -1,0 +1,128 @@
+.wrapper {
+  @apply hidden flex-col gap-3;
+}
+
+.card {
+  @apply relative flex items-start gap-4 rounded-2xl bg-white p-4 transition-all duration-300;
+  border: 1px solid rgba(224, 111, 41, 0.12);
+  box-shadow: 0 8px 24px rgba(18, 6, 30, 0.02);
+  @apply cursor-pointer;
+  @apply focus:outline-none focus:ring-2 focus:ring-brand-primary/40;
+}
+
+.card:hover {
+  @apply -translate-y-0.5;
+  border-color: var(--brand-primary);
+  box-shadow: 0 16px 32px rgba(224, 111, 41, 0.06);
+}
+
+.cardSelected {
+  @apply border-brand-primary/45 bg-brand-surface/75;
+}
+
+.cardCheck {
+  @apply shrink-0 pt-1;
+}
+
+.avatar {
+  @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition-all duration-300;
+  @apply bg-brand-secondary/10 text-sm font-extrabold text-brand-secondary;
+}
+
+.card:hover .avatar {
+  @apply bg-brand-primary/10 text-brand-primary scale-105;
+}
+
+.cardInfo {
+  @apply flex min-w-0 flex-1 flex-col;
+}
+
+.userName {
+  @apply truncate text-sm font-bold text-slate-800;
+}
+
+.userEmail {
+  @apply truncate text-xs text-slate-500;
+}
+
+.cardBottom {
+  @apply mt-2 flex items-center gap-2;
+}
+
+.roleText {
+  @apply text-xs font-semibold text-slate-500;
+}
+
+.statusBadge {
+  @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold;
+}
+
+.statusGreen {
+  @apply bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/10;
+}
+
+.statusRed {
+  @apply bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-600/10;
+}
+
+.statusYellow {
+  @apply bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/10;
+}
+
+.statusOrange {
+  @apply bg-orange-50 text-orange-700 ring-1 ring-inset ring-orange-600/10;
+}
+
+.skeleton {
+  @apply animate-pulse rounded bg-slate-200;
+}
+
+.errorBanner {
+  @apply flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3;
+}
+
+.errorIcon {
+  @apply h-5 w-5 shrink-0 text-red-500;
+}
+
+.errorText {
+  @apply flex-1 text-sm text-red-700;
+}
+
+.retryBtn {
+  @apply inline-flex items-center gap-1 rounded-md px-3 py-1.5;
+  @apply text-sm font-medium text-red-700 transition-colors duration-150;
+  @apply hover:bg-red-100;
+}
+
+.retryIcon {
+  @apply h-4 w-4;
+}
+
+.emptyState {
+  @apply flex flex-col items-center justify-center py-16 text-center;
+}
+
+.emptyIcon {
+  @apply h-12 w-12 text-slate-300;
+}
+
+.emptyTitle {
+  @apply mt-4 text-base font-semibold text-slate-700;
+}
+
+.emptyDesc {
+  @apply mt-1 text-sm text-slate-400;
+}
+
+.checkbox {
+  @apply h-4 w-4 cursor-pointer rounded border-slate-300;
+  @apply accent-brand-primary;
+}
+
+/* Visible below md breakpoint */
+@media (max-width: 767px) {
+  .wrapper {
+    @apply flex;
+  }
+}

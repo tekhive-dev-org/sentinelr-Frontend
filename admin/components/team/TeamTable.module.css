@@ -1,0 +1,125 @@
+.wrapper {
+  @apply w-full max-w-full overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+
+.table {
+  @apply w-full min-w-[900px] table-auto border-collapse;
+}
+
+.table thead th {
+  @apply border-b border-slate-200 bg-slate-50 px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500;
+}
+
+.table tbody td {
+  @apply border-b border-slate-100 px-4 py-3 text-sm text-slate-700;
+}
+
+.table tbody tr {
+  @apply transition hover:bg-brand-surface;
+}
+
+.adminCell {
+  @apply flex items-center gap-3;
+}
+
+.avatar {
+  @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-100 text-sm font-bold text-brand-primary;
+}
+
+.adminName {
+  @apply font-medium text-slate-900;
+}
+
+.pill {
+  @apply inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold;
+}
+
+.pillActive {
+  @apply bg-emerald-50 text-emerald-700;
+}
+
+.pillInvited {
+  @apply bg-blue-50 text-blue-700;
+}
+
+.pillSuspended {
+  @apply bg-amber-50 text-amber-700;
+}
+
+.pillDeactivated {
+  @apply bg-slate-100 text-slate-500;
+}
+
+.rolePill {
+  @apply mr-1 inline-block rounded-full bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-700 last:mr-0;
+}
+
+.mfaCheck {
+  @apply text-emerald-500;
+}
+
+.mfaNone {
+  @apply text-slate-300;
+}
+
+.actionsBtn {
+  @apply inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+}
+
+.actionsIcon {
+  @apply text-lg;
+}
+
+.menuWrap {
+  @apply relative;
+}
+
+.menu {
+  @apply absolute right-0 z-20 mt-1 w-48 rounded-lg border border-slate-200 bg-white py-1 shadow-lg;
+}
+
+.menuItem {
+  @apply flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-slate-700 transition hover:bg-slate-50 focus-visible:bg-slate-50 focus-visible:outline-none;
+}
+
+.menuItemDanger {
+  @apply text-red-600 hover:bg-red-50;
+}
+
+.menuIcon {
+  @apply text-base;
+}
+
+/* States */
+.skeleton {
+  @apply animate-pulse;
+}
+
+.skeletonRow td {
+  @apply py-3;
+}
+
+.skeletonBar {
+  @apply h-4 rounded bg-slate-200;
+}
+
+.skeletonCircle {
+  @apply h-9 w-9 rounded-full bg-slate-200;
+}
+
+.empty {
+  @apply px-4 py-12 text-center text-sm text-slate-500;
+}
+
+.error {
+  @apply px-4 py-12 text-center text-sm text-red-600;
+}
+
+@media (max-width: 767px) {
+  .wrapper {
+    @apply hidden;
+  }
+}

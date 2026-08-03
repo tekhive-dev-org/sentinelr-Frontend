@@ -1,0 +1,115 @@
+/* ── Card wrapper ── */
+.card {
+  @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm;
+}
+
+/* ── Header ── */
+.header {
+  @apply flex items-center justify-between border-b border-slate-100 px-5 py-4;
+}
+
+.headerLeft {
+  @apply flex items-center gap-2;
+}
+
+.title {
+  @apply text-sm font-semibold text-slate-700;
+}
+
+.tooltipTrigger {
+  @apply flex h-5 w-5 cursor-help items-center justify-center rounded-full text-slate-400 transition-colors hover:text-slate-600 hover:bg-slate-100;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+.tooltipIcon {
+  @apply text-base;
+}
+
+.headerRight {
+  @apply flex items-center gap-1;
+}
+
+.exportIconBtn {
+  @apply flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:text-slate-600 hover:bg-slate-100;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.exportIcon {
+  @apply text-lg;
+}
+
+/* ── Body area ── */
+.body {
+  @apply p-5;
+}
+
+/* ── Chart area ── */
+.chartWrap {
+  @apply relative w-full;
+  height: 260px;
+}
+
+/* ── Skeleton (shimmer bars) ── */
+.skeleton {
+  @apply flex h-full w-full flex-col justify-end gap-3 px-2;
+}
+
+.shimmerBar {
+  @apply w-full rounded;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+}
+
+.shimmerExtraTall {
+  composes: shimmerBar;
+  height: 140px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ── State wrappers ── */
+.stateWrap {
+  @apply flex h-[260px] w-full flex-col items-center justify-center gap-3 text-center px-4;
+}
+
+.errorText {
+  @apply text-sm font-medium text-slate-700;
+}
+
+.retryText {
+  @apply cursor-pointer text-xs font-semibold text-brand-secondary underline underline-offset-2 transition-colors;
+}
+
+.retryText:hover {
+  @apply text-brand-secondaryHover;
+}
+
+.emptyText {
+  @apply text-sm text-slate-400;
+}
+
+/* ── Hidden accessible data table ── */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

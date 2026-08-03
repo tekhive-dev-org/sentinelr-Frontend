@@ -1,0 +1,57 @@
+/* ── Toolbar wrapper ── */
+.toolbar {
+  @apply mb-6 space-y-5;
+}
+
+/* ── Top row: pills + export buttons ── */
+.topRow {
+  @apply flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between;
+}
+
+/* ── Date-range pills ── */
+.pills {
+  @apply flex gap-1 rounded-xl bg-slate-100 p-1;
+}
+
+.pill {
+  @apply rounded-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 transition-colors;
+}
+
+.pill:hover {
+  @apply bg-white text-slate-700 shadow-sm;
+}
+
+.pillActive {
+  @apply bg-brand-secondary text-white shadow;
+}
+
+.pillActive:hover {
+  @apply bg-brand-secondaryHover text-white;
+}
+
+/* ── Export buttons ── */
+.exportGroup {
+  @apply flex gap-2;
+}
+
+.exportBtn {
+  @apply inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors cursor-not-allowed;
+}
+
+/* ── Filters row ── */
+.filters {
+  @apply flex flex-wrap gap-3;
+}
+
+.filterSelect {
+  @apply rounded-lg border border-slate-300 bg-white px-3 py-2;
+  @apply text-sm text-slate-700;
+  @apply transition-colors duration-150;
+  @apply cursor-pointer;
+  @apply focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}

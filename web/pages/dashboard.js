@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext';
-import { DashboardLayout, DashboardOverview, UserDashboardOverview } from '../components/dashboard';
+import { DashboardLayout, UserDashboardOverview } from '../components/dashboard';
 import { FullPageLoader } from '../components/ui/loaders';
 
 export default function Dashboard() {
@@ -24,11 +24,7 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      {user?.role === 'admin' ? (
-        <DashboardOverview />
-      ) : (
-        <UserDashboardOverview />
-      )}
+      <UserDashboardOverview />
     </DashboardLayout>
   );
 }

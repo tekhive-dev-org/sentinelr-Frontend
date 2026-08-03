@@ -1,0 +1,58 @@
+/* ── Grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Tooltip styling ── */
+.tooltipWrap {
+  @apply rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs shadow-lg;
+}
+
+.tooltipLabel {
+  @apply mb-1 font-semibold text-slate-700;
+}
+
+.tooltipRow {
+  @apply flex items-center justify-between gap-4;
+}
+
+.tooltipCurrent {
+  @apply font-medium text-slate-900;
+}
+
+.tooltipComparison {
+  @apply text-slate-500;
+}
+
+.tooltipChange {
+  @apply ml-2 font-semibold;
+}
+
+.tooltipChangeUp {
+  @apply text-emerald-600;
+}
+
+.tooltipChangeDown {
+  @apply text-red-500;
+}
+
+/* ── Hidden accessible table ── */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

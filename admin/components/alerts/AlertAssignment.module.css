@@ -1,0 +1,44 @@
+.content {
+  @apply flex flex-col;
+}
+
+.timeline {
+  @apply flex flex-col;
+}
+
+.entryRow {
+  @apply relative flex gap-3 pb-4 pl-6;
+}
+
+.entryRow::before {
+  content: '';
+  @apply absolute left-[7px] top-3 bottom-0 w-px bg-slate-200;
+}
+
+.entryRow:last-child::before {
+  @apply hidden;
+}
+
+.entryRow:last-child {
+  @apply pb-0;
+}
+
+.dot {
+  @apply absolute left-0 top-1.5 h-[15px] w-[15px] rounded-full border-2 border-white bg-sky-400 shadow-sm;
+}
+
+.entryBody {
+  @apply flex flex-col gap-0.5;
+}
+
+.entryText {
+  @apply text-sm text-slate-700;
+}
+
+.entryActor {
+  @apply font-medium text-slate-600;
+}
+
+.entryTime {
+  @apply text-xs text-slate-400;
+}

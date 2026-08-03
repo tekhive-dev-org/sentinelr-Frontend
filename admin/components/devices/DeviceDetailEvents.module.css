@@ -1,0 +1,61 @@
+.content {
+  @apply flex flex-col gap-0;
+}
+
+/* ---- Sub-section ---- */
+
+.subSection {
+  @apply flex flex-col gap-0;
+}
+
+.subSectionDivider {
+  @apply border-t border-slate-100 pt-5;
+}
+
+.subHeader {
+  @apply mb-3 flex items-center gap-1.5;
+}
+
+.subIcon {
+  @apply h-4 w-4 text-slate-500;
+}
+
+.subTitle {
+  @apply text-xs font-semibold uppercase tracking-wide text-slate-500;
+}
+
+/* ---- Event list ---- */
+
+.list {
+  @apply flex flex-col divide-y divide-slate-100;
+}
+
+.row {
+  @apply flex flex-col gap-1 py-3;
+}
+
+.rowHeader {
+  @apply flex items-center justify-between gap-2;
+}
+
+.eventType {
+  @apply text-sm font-medium text-slate-800;
+}
+
+.date {
+  @apply shrink-0 text-xs text-slate-400;
+}
+
+.summary {
+  @apply text-sm text-slate-600;
+}
+
+/* ---- View all ---- */
+
+.viewAll {
+  @apply border-t border-slate-100 pt-3;
+}
+
+.viewAllLink {
+  @apply text-xs font-semibold text-brand-secondary transition-colors hover:text-brand-secondaryHover;
+}

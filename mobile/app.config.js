@@ -5,7 +5,7 @@ export default {
     name: 'Sentinelr',
     slug: 'sentinelr-mobile',
     owner: 'techchive-llc',
-    version: '1.1.2',
+    version: '1.1.3',
     orientation: 'default',
     icon: './assets/icon.png',
     userInterfaceStyle: 'automatic',

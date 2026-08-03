@@ -1,0 +1,27 @@
+.list {
+  @apply flex flex-col divide-y divide-slate-100;
+}
+
+.row {
+  @apply flex items-center justify-between py-3;
+}
+
+.rowInfo {
+  @apply flex flex-col gap-0.5;
+}
+
+.familyName {
+  @apply text-sm font-medium text-slate-800;
+}
+
+.meta {
+  @apply text-xs text-slate-400;
+}
+
+.relationship {
+  @apply ml-1;
+}
+
+.viewLink {
+  @apply rounded-lg px-3 py-1 text-xs font-semibold text-brand-secondary transition-colors hover:bg-brand-purpleSurface;
+}

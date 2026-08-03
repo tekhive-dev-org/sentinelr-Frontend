@@ -63,23 +63,16 @@
   z-index: 5;
 }
 
-.logo {
-  flex-shrink: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #e06f29;
-  font-family: 'Playfair Display', serif;
+.sidebarLogo {
+  width: auto;
+  max-height: 38px;
+  object-fit: contain;
 }
 
-.brandName {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 1.125rem;
-  font-weight: 700;
-  letter-spacing: 0.025em;
-  color: #111827;
-  font-family: 'Playfair Display', serif;
+.faviconLogo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
 
 /* ── Scrollable nav ── */

@@ -6,6 +6,7 @@ export default class AdminDocument extends Document {
       <Html lang="en">
         <Head>
           <meta name="description" content="Sentinelr administration portal" />
+          <link rel="icon" href="/favicon.png" />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
           <link

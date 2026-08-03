@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Image from "next/image";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -68,7 +69,7 @@ export default function AdminSidebar({
   };
 
   const displayName = adminUser?.name || adminUser?.userName || "Admin";
-  const displayEmail = adminUser?.email || "admin@sentinelr.com";
+  const displayEmail = adminUser?.email || "admin@sentinelr.app";
   const initials = getInitials(displayName);
 
   return (
@@ -79,10 +80,27 @@ export default function AdminSidebar({
     >
       {/* ── Brand header ── */}
       <div className={styles.header}>
-        <span className={styles.logo} aria-hidden="true">
-          S
-        </span>
-        {!isCompact && <span className={styles.brandName}>Sentinelr</span>}
+        <Link href="/dashboard" className="flex items-center gap-2">
+          {isCompact ? (
+            <Image
+              src="/favicon.png"
+              alt="Sentinelr"
+              width={32}
+              height={32}
+              className={styles.faviconLogo}
+              priority
+            />
+          ) : (
+            <Image
+              src="/logo.png"
+              alt="Sentinelr"
+              width={140}
+              height={40}
+              className={styles.sidebarLogo}
+              priority
+            />
+          )}
+        </Link>
       </div>
 
       {/* ── Scrollable navigation ── */}

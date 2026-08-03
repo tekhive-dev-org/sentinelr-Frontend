@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
@@ -21,7 +22,6 @@ export default function AdminLoginForm() {
     handleSubmit,
   } = useAdminLogin();
 
-
   return (
     <div className={styles.container}>
       {/* Login Success Loading Screen Overlay */}
@@ -38,7 +38,14 @@ export default function AdminLoginForm() {
       {/* Login Form Card */}
       <div className={styles.card}>
         <div className={styles.logoWrapper}>
-          <div className={styles.logoBadge}>S</div>
+          <Image
+            src="/logo.png"
+            alt="Sentinelr Logo"
+            width={220}
+            height={60}
+            className={styles.loginLogo}
+            priority
+          />
         </div>
 
         <h1 className={styles.title}>{LOGIN_CONSTANTS.TITLE}</h1>

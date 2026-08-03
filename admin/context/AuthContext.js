@@ -15,7 +15,7 @@ const ALL_PERMISSIONS = Object.freeze(Object.values(ADMIN_PERMISSIONS));
 
 const DEMO_ADMIN = Object.freeze({
   id: "demo-admin-001",
-  email: "admin@sentinelr.com",
+  email: "admin@sentinelr.app",
   firstName: "Demo",
   lastName: "Admin",
   roles: ["admin"],

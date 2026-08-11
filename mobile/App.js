@@ -26,6 +26,7 @@ import { DeviceProvider, useDevice } from './src/context/DeviceContext';
 import { RealtimeSubscriptionProvider } from './src/context/RealtimeSubscriptionContext';
 import AnimatedSplash from './src/components/AnimatedSplash';
 import { locationService } from './src/services/locationService';
+import { initializeMetaAppEvents } from './src/services/metaAppEvents';
 import { FONT_FAMILIES } from './src/utils/typography';
 
 // Screens
@@ -178,6 +179,10 @@ function AppContent() {
   const { isLoading: deviceLoading } = useDevice();
   const [showSplash, setShowSplash] = useState(true);
   const [appReady, setAppReady] = useState(false);
+
+  useEffect(() => {
+    initializeMetaAppEvents();
+  }, []);
 
   // Hide native splash when contexts are loaded
   useEffect(() => {

@@ -52,6 +52,19 @@ export default {
     },
     plugins: [
       './plugins/withLargeScreenSupport',
+      [
+        'react-native-fbsdk-next',
+        {
+          appID: '1108542765065639',
+          clientToken: process.env.META_CLIENT_TOKEN,
+          displayName: 'Sentinelr',
+          scheme: 'fb1108542765065639',
+          isAutoInitEnabled: true,
+          autoLogAppEventsEnabled: true,
+          advertiserIDCollectionEnabled: false,
+          iosUserTrackingPermission: false,
+        },
+      ],
       'expo-background-task',
       [
         'expo-camera',

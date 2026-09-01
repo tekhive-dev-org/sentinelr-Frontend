@@ -5,7 +5,7 @@ export default {
     name: 'Sentinelr',
     slug: 'sentinelr-mobile',
     owner: 'techchive-llc',
-    version: '1.1.3',
+    version: '1.1.4',
     orientation: 'default',
     icon: './assets/icon.png',
     userInterfaceStyle: 'automatic',
@@ -33,6 +33,7 @@ export default {
     android: {
       package: 'com.techhive.sentinelr',
       versionCode: 11,
+      blockedPermissions: ['com.google.android.gms.permission.AD_ID'],
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#000000',

@@ -6,7 +6,7 @@ import OnboardingIllustration from './OnboardingIllustration';
 
 const DASHBOARD_URL = 'https://sentinelr.app/dashboard/devices';
 
-export default function OnboardingSlide({ slide, width, colors, accent }) {
+export default function OnboardingSlide({ slide, width, colors, accent, isLastSlide, onSkip }) {
   const handleOpenDashboard = async () => {
     try {
       await Linking.openURL(DASHBOARD_URL);
@@ -26,12 +26,26 @@ export default function OnboardingSlide({ slide, width, colors, accent }) {
       bounces={false}
       accessibilityLabel={`Step ${slide.step} of 5: ${slide.title}`}
     >
-      <View style={styles.copyHeader}>
-        <View style={[styles.channelBadge, { backgroundColor: `${accent}16` }]}>
-          <Ionicons name={slide.icon} size={14} color={accent} />
-          <Text style={[styles.channelText, { color: accent }]}>{slide.channel}</Text>
+      <View style={styles.headerSection}>
+        <View style={styles.titleRow}>
+          <Text style={[styles.guideHeading, { color: colors.text }]}>Setup Guide</Text>
+          {!isLastSlide && onSkip ? (
+            <TouchableOpacity
+              style={[styles.skipButton, { backgroundColor: colors.neuInset, borderColor: colors.border }]}
+              onPress={onSkip}
+              activeOpacity={0.72}
+              accessibilityRole="button"
+              accessibilityLabel="Skip setup guide"
+            >
+              <Text style={[styles.skipButtonText, { color: colors.textSecondary }]}>Skip</Text>
+              <Ionicons name="chevron-forward" size={14} color={colors.textSecondary} />
+            </TouchableOpacity>
+          ) : null}
         </View>
-        <Text style={[styles.title, { color: colors.text }]}>{slide.title}</Text>
+
+        <Text style={[styles.stepSubtitle, { color: colors.text }]}>
+          Step {slide.step}: {slide.title}
+        </Text>
         <Text style={[styles.description, { color: colors.textSecondary }]}>
           {slide.description}
         </Text>
@@ -48,7 +62,7 @@ export default function OnboardingSlide({ slide, width, colors, accent }) {
                 <Text style={[styles.breadcrumbText, { color: colors.textSecondary }]}>{item}</Text>
               </View>
               {index < slide.breadcrumb.length - 1 && (
-                <Ionicons name="chevron-forward" size={12} color={colors.textMuted} />
+                <Ionicons name="chevron-forward" size={11} color={colors.textMuted} />
               )}
             </React.Fragment>
           ))}
@@ -59,7 +73,7 @@ export default function OnboardingSlide({ slide, width, colors, accent }) {
         {slide.checklist.map((item) => (
           <View key={item} style={styles.checkRow}>
             <View style={[styles.checkIcon, { backgroundColor: `${accent}16` }]}>
-              <Ionicons name="checkmark" size={13} color={accent} />
+              <Ionicons name="checkmark" size={12} color={accent} />
             </View>
             <Text style={[styles.checkText, { color: colors.textSecondary }]}>{item}</Text>
           </View>
@@ -68,15 +82,20 @@ export default function OnboardingSlide({ slide, width, colors, accent }) {
 
       {slide.canOpenDashboard && (
         <TouchableOpacity
-          style={[styles.dashboardLink, { borderColor: colors.border }]}
+          style={[styles.dashboardLink, { backgroundColor: colors.card, borderColor: colors.border }]}
           onPress={handleOpenDashboard}
-          activeOpacity={0.72}
+          activeOpacity={0.75}
           accessibilityRole="link"
           accessibilityLabel="Open the Sentinelr web dashboard"
         >
-          <Ionicons name="globe-outline" size={16} color={accent} />
-          <Text style={[styles.dashboardLinkText, { color: accent }]}>Open web dashboard</Text>
-          <Ionicons name="open-outline" size={14} color={accent} />
+          <View style={[styles.dashboardIconCircle, { backgroundColor: `${accent}18` }]}>
+            <Ionicons name="globe-outline" size={20} color={accent} />
+          </View>
+          <View style={styles.dashboardLinkCopy}>
+            <Text style={[styles.dashboardLinkTitle, { color: colors.text }]}>Open Web Dashboard</Text>
+            <Text style={[styles.dashboardLinkSub, { color: colors.textMuted }]}>sentinelr.app/dashboard</Text>
+          </View>
+          <Ionicons name="open-outline" size={18} color={accent} />
         </TouchableOpacity>
       )}
     </ScrollView>
@@ -85,21 +104,26 @@ export default function OnboardingSlide({ slide, width, colors, accent }) {
 
 const styles = StyleSheet.create({
   page: { flex: 1 },
-  content: { paddingHorizontal: 22, paddingTop: 10, paddingBottom: 16 },
-  copyHeader: { alignItems: 'center', marginBottom: 18 },
-  channelBadge: { minHeight: 30, borderRadius: 999, paddingHorizontal: 11, flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 },
-  channelText: { ...typography.bodyBold, fontSize: 9, letterSpacing: 1.3 },
-  title: { ...typography.headingBlack, fontSize: 27, lineHeight: 33, textAlign: 'center', letterSpacing: -0.4, marginBottom: 8 },
-  description: { fontSize: 13.5, lineHeight: 20, textAlign: 'center', maxWidth: 360 },
-  routeSection: { marginTop: 17 },
-  sectionLabel: { ...typography.bodyBold, fontSize: 9, letterSpacing: 1.4, marginBottom: 8 },
-  breadcrumbRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 5 },
-  breadcrumbPill: { borderRadius: 8, paddingHorizontal: 8, paddingVertical: 6 },
-  breadcrumbText: { ...typography.bodySemiBold, fontSize: 9 },
-  checklist: { marginTop: 13, gap: 8 },
-  checkRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 9 },
-  checkIcon: { width: 22, height: 22, borderRadius: 7, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  checkText: { flex: 1, fontSize: 11.5, lineHeight: 17, paddingTop: 2 },
-  dashboardLink: { alignSelf: 'flex-start', minHeight: 44, marginTop: 13, borderWidth: 1, borderRadius: 12, paddingHorizontal: 13, flexDirection: 'row', alignItems: 'center', gap: 7 },
-  dashboardLinkText: { ...typography.bodyBold, fontSize: 11 },
+  content: { flexGrow: 1, paddingHorizontal: 20, paddingTop: 6, paddingBottom: 6 },
+  headerSection: { marginBottom: 14, paddingTop: 4 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
+  guideHeading: { ...typography.headingBlack, fontSize: 26, lineHeight: 32, letterSpacing: -0.5 },
+  skipButton: { flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 34, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1 },
+  skipButtonText: { ...typography.bodyBold, fontSize: 13 },
+  stepSubtitle: { ...typography.bodyBold, fontSize: 14.5, lineHeight: 20, marginTop: 2, marginBottom: 4 },
+  description: { fontSize: 12.5, lineHeight: 18 },
+  routeSection: { marginTop: 14 },
+  sectionLabel: { ...typography.bodyBold, fontSize: 8.5, letterSpacing: 1.3, marginBottom: 6 },
+  breadcrumbRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 4 },
+  breadcrumbPill: { borderRadius: 7, paddingHorizontal: 7, paddingVertical: 5 },
+  breadcrumbText: { ...typography.bodySemiBold, fontSize: 8.5 },
+  checklist: { marginTop: 10, gap: 7 },
+  checkRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  checkIcon: { width: 20, height: 20, borderRadius: 6, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  checkText: { flex: 1, fontSize: 11, lineHeight: 16, paddingTop: 1 },
+  dashboardLink: { marginTop: 'auto', marginBottom: 4, borderWidth: 1.5, borderRadius: 14, paddingHorizontal: 16, paddingVertical: 13, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  dashboardIconCircle: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  dashboardLinkCopy: { flex: 1 },
+  dashboardLinkTitle: { ...typography.bodyBold, fontSize: 15, lineHeight: 20 },
+  dashboardLinkSub: { fontSize: 11.5, marginTop: 2 },
 });

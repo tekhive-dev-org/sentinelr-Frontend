@@ -21,7 +21,6 @@ export function getOnboardingSlides(platform) {
         'Select Add Member to save the profile',
       ],
       visual: 'family',
-      canOpenDashboard: true,
     },
     {
       id: 'assign-device',
@@ -39,7 +38,6 @@ export function getOnboardingSlides(platform) {
         'Use Assign to Member, then select + Pair device',
       ],
       visual: 'device',
-      canOpenDashboard: true,
     },
     {
       id: 'pairing-code',
@@ -57,7 +55,6 @@ export function getOnboardingSlides(platform) {
         'In this app, use Pair Device or Scan QR Code',
       ],
       visual: 'pairing',
-      canOpenDashboard: true,
     },
     {
       id: 'permissions',
@@ -92,6 +89,7 @@ export function getOnboardingSlides(platform) {
         'Use the same Location Sharing switch to pause sharing',
       ],
       visual: 'tracking',
+      canOpenDashboard: true,
     },
   ];
 }

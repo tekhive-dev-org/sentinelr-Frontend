@@ -68,33 +68,16 @@ export default function OnboardingCarousel({ onComplete }) {
       <View style={styles.header}>
         <View style={styles.brand}>
           <Image source={require('../../../../assets/icon.png')} style={styles.logo} />
-          <View>
-            <Text style={[styles.brandName, { color: colors.text }]}>{APP_NAME}</Text>
-            <Text style={[styles.brandLabel, { color: colors.textMuted }]}>SETUP GUIDE</Text>
-          </View>
+          <Text style={[styles.brandName, { color: colors.text }]}>{APP_NAME}</Text>
         </View>
-        {!isLastSlide ? (
-          <TouchableOpacity
-            style={styles.skipButton}
-            onPress={onComplete}
-            activeOpacity={0.7}
-            accessibilityRole="button"
-            accessibilityLabel="Skip setup guide and pair device"
-          >
-            <Text style={[styles.skipText, { color: colors.textSecondary }]}>Skip</Text>
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.skipPlaceholder} />
-        )}
+        <View style={[styles.stepCounterBadge, { backgroundColor: colors.neuInset }]}>
+          <Text style={[styles.progressCount, { color: colors.textSecondary }]}>
+            {currentIndex + 1} / {slides.length}
+          </Text>
+        </View>
       </View>
 
       <View style={styles.progressArea}>
-        <View style={styles.progressCopy}>
-          <Text style={[styles.progressLabel, { color: colors.textMuted }]}>SETUP PROGRESS</Text>
-          <Text style={[styles.progressCount, { color: colors.textSecondary }]}>
-            {currentIndex + 1} of {slides.length}
-          </Text>
-        </View>
         <View style={[styles.progressTrack, { backgroundColor: colors.neuInset }]}>
           <View
             style={[
@@ -123,12 +106,14 @@ export default function OnboardingCarousel({ onComplete }) {
         )}
         onMomentumScrollEnd={handleMomentumScrollEnd}
         getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <OnboardingSlide
             slide={item}
             width={width}
             colors={colors}
             accent={toneColors[item.tone]}
+            isLastSlide={index === slides.length - 1}
+            onSkip={onComplete}
           />
         )}
       />
@@ -139,12 +124,12 @@ export default function OnboardingCarousel({ onComplete }) {
             const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
             const dotWidth = scrollX.interpolate({
               inputRange,
-              outputRange: [7, 24, 7],
+              outputRange: [6, 20, 6],
               extrapolate: 'clamp',
             });
             const opacity = scrollX.interpolate({
               inputRange,
-              outputRange: [0.35, 1, 0.35],
+              outputRange: [0.3, 1, 0.3],
               extrapolate: 'clamp',
             });
             return (
@@ -167,7 +152,7 @@ export default function OnboardingCarousel({ onComplete }) {
           <TouchableOpacity
             style={[
               styles.backButton,
-              { borderColor: colors.border, opacity: isFirstSlide ? 0.4 : 1 },
+              { borderColor: colors.border, opacity: isFirstSlide ? 0.35 : 1 },
             ]}
             onPress={() => moveToSlide(currentIndex - 1)}
             disabled={isFirstSlide}
@@ -175,7 +160,7 @@ export default function OnboardingCarousel({ onComplete }) {
             accessibilityRole="button"
             accessibilityLabel="Previous onboarding step"
           >
-            <Ionicons name="arrow-back" size={18} color={colors.textSecondary} />
+            <Ionicons name="arrow-back" size={16} color={colors.textSecondary} />
             <Text style={[styles.backText, { color: colors.textSecondary }]}>Back</Text>
           </TouchableOpacity>
 
@@ -189,8 +174,8 @@ export default function OnboardingCarousel({ onComplete }) {
             accessibilityRole="button"
             accessibilityLabel={isLastSlide ? 'Pair this device' : 'Next onboarding step'}
           >
-            <Text style={styles.nextText}>{isLastSlide ? 'Pair This Device' : 'Next'}</Text>
-            <Ionicons name={isLastSlide ? 'link' : 'arrow-forward'} size={18} color="#fff" />
+            <Text style={styles.nextText}>{isLastSlide ? 'Pair Device' : 'Next'}</Text>
+            <Ionicons name={isLastSlide ? 'link' : 'arrow-forward'} size={16} color="#fff" />
           </TouchableOpacity>
         </View>
       </View>
@@ -200,26 +185,21 @@ export default function OnboardingCarousel({ onComplete }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { minHeight: 62, paddingHorizontal: 20, paddingTop: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  brand: { flexDirection: 'row', alignItems: 'center', gap: 9 },
-  logo: { width: 38, height: 38, borderRadius: 11 },
-  brandName: { ...typography.heading, fontSize: 17, lineHeight: 19 },
-  brandLabel: { ...typography.bodyBold, fontSize: 7.5, letterSpacing: 1.4, marginTop: 2 },
-  skipButton: { minWidth: 52, minHeight: 44, alignItems: 'flex-end', justifyContent: 'center' },
-  skipPlaceholder: { width: 52, height: 44 },
-  skipText: { ...typography.bodyBold, fontSize: 13 },
-  progressArea: { paddingHorizontal: 22, paddingTop: 4, paddingBottom: 4 },
-  progressCopy: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7 },
-  progressLabel: { ...typography.bodyBold, fontSize: 8, letterSpacing: 1.3 },
-  progressCount: { ...typography.bodySemiBold, fontSize: 10 },
-  progressTrack: { height: 4, borderRadius: 2, overflow: 'hidden' },
+  header: { minHeight: 46, paddingHorizontal: 20, paddingTop: 4, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  brand: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  logo: { width: 30, height: 30, borderRadius: 8 },
+  brandName: { ...typography.heading, fontSize: 16, lineHeight: 18 },
+  stepCounterBadge: { borderRadius: 12, paddingHorizontal: 9, paddingVertical: 4 },
+  progressCount: { ...typography.bodyBold, fontSize: 10.5 },
+  progressArea: { paddingHorizontal: 20, paddingTop: 2, paddingBottom: 4 },
+  progressTrack: { height: 3.5, borderRadius: 2, overflow: 'hidden' },
   progressFill: { height: '100%', borderRadius: 2 },
-  footer: { borderTopWidth: 1, paddingHorizontal: 20, paddingTop: 10, paddingBottom: 12 },
-  pagination: { height: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6, marginBottom: 9 },
-  dot: { height: 7, borderRadius: 4 },
-  actions: { flexDirection: 'row', gap: 10 },
-  backButton: { minHeight: 50, paddingHorizontal: 16, borderRadius: 14, borderWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7 },
-  backText: { ...typography.bodyBold, fontSize: 13 },
-  nextButton: { minHeight: 50, flex: 1, borderRadius: 14, paddingHorizontal: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
-  nextText: { ...typography.bodyBold, color: '#fff', fontSize: 14 },
+  footer: { borderTopWidth: 1, paddingHorizontal: 20, paddingTop: 8, paddingBottom: 10 },
+  pagination: { height: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 5, marginBottom: 8 },
+  dot: { height: 6, borderRadius: 3 },
+  actions: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  backButton: { height: 42, paddingHorizontal: 16, borderRadius: 11, borderWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },
+  backText: { ...typography.bodyBold, fontSize: 12.5 },
+  nextButton: { height: 42, paddingHorizontal: 20, borderRadius: 11, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, minWidth: 96 },
+  nextText: { ...typography.bodyBold, color: '#fff', fontSize: 13 },
 });
